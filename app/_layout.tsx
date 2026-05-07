@@ -11,9 +11,10 @@ import {
 } from '@expo-google-fonts/inter';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../lib/store';
+import { Role } from '../lib/types';
 
 export default function RootLayout() {
-  const { session, role, setSession, setLoading } = useAuthStore();
+  const { session, role, setSession, setRole, setLoading } = useAuthStore();
 
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -23,13 +24,31 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    async function initSession() {
+      const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
+      if (session?.user) {
+        const { data } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        if (data?.role) setRole(data.role as Role);
+      }
       setLoading(false);
-    });
+    }
+    initSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
+      if (session?.user) {
+        const { data } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        if (data?.role) setRole(data.role as Role);
+      }
     });
 
     return () => subscription.unsubscribe();

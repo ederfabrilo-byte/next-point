@@ -8,18 +8,35 @@ export default function LoginScreen() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
 
   async function handleAuth() {
-    if (!email || !password) return;
+    console.log('[AUTH] handleAuth chamado. email:', email, 'password length:', password.length, 'isSignUp:', isSignUp);
+    if (!email || !password) {
+      console.log('[AUTH] campos vazios, abortando');
+      return;
+    }
     setLoading(true);
     setError('');
+    setInfo('');
 
-    const { error } = isSignUp
-      ? await supabase.auth.signUp({ email, password })
-      : await supabase.auth.signInWithPassword({ email, password });
-
-    if (error) setError(error.message);
-    setLoading(false);
+    try {
+      if (isSignUp) {
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        if (error) {
+          setError(error.message);
+        } else if (!data.session) {
+          setInfo('Conta criada! Verifique seu e-mail para confirmar o cadastro.');
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) setError(error.message);
+      }
+    } catch (e: any) {
+      setError(e?.message ?? 'Erro inesperado. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -57,6 +74,9 @@ export default function LoginScreen() {
 
           {error ? (
             <Text className="text-red-400 font-inter text-sm text-center">{error}</Text>
+          ) : null}
+          {info ? (
+            <Text className="text-green-400 font-inter text-sm text-center">{info}</Text>
           ) : null}
 
           <TouchableOpacity
