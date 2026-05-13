@@ -111,8 +111,18 @@ export default function TeacherHome() {
             onPress={() => router.push('/(teacher)/students')}
             className="bg-surface border border-border rounded-2xl p-5 active:opacity-75"
           >
-            <Text className="text-text-primary font-inter-bold text-lg">👥 Alunos</Text>
-            <Text className="text-text-secondary font-inter text-sm mt-1">Gerencie sua turma</Text>
+            <View className="flex-row items-center justify-between">
+              <View>
+                <Text className="text-text-primary font-inter-bold text-lg">👥 Alunos</Text>
+                <Text className="text-text-secondary font-inter text-sm mt-1">Gerencie sua turma</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => router.push('/(teacher)/students/new')}
+                className="bg-primary rounded-full px-3 py-1.5"
+              >
+                <Text className="text-black font-inter-bold text-xs">+ Adicionar</Text>
+              </TouchableOpacity>
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity

@@ -8,6 +8,22 @@ export interface UserRow {
   name: string | null;
   role: Role | null;
   avatar_url: string | null;
+  phone: string | null;
+  instagram: string | null;
+  cpf: string | null;
+  address: string | null;
+  push_token: string | null;
+  created_at: string;
+}
+
+export interface MatchResult {
+  id: string;
+  player_id: string;
+  opponent_id: string;
+  player_sets: number;
+  opponent_sets: number;
+  date: string;
+  notes: string | null;
   created_at: string;
 }
 

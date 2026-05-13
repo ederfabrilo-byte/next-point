@@ -1,104 +1,159 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
-import { supabase } from '../lib/supabase';
+import { View, Text, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
 
-export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [info, setInfo] = useState('');
+type SelectedRole = 'player' | 'teacher';
 
-  async function handleAuth() {
-    console.log('[AUTH] handleAuth chamado. email:', email, 'password length:', password.length, 'isSignUp:', isSignUp);
-    if (!email || !password) {
-      console.log('[AUTH] campos vazios, abortando');
-      return;
-    }
-    setLoading(true);
-    setError('');
-    setInfo('');
+export default function SplashScreen() {
+  const [role, setRole] = useState<SelectedRole>('player');
 
-    try {
-      if (isSignUp) {
-        const { data, error } = await supabase.auth.signUp({ email, password });
-        if (error) {
-          setError(error.message);
-        } else if (!data.session) {
-          setInfo('Conta criada! Verifique seu e-mail para confirmar o cadastro.');
-        }
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) setError(error.message);
-      }
-    } catch (e: any) {
-      setError(e?.message ?? 'Erro inesperado. Tente novamente.');
-    } finally {
-      setLoading(false);
-    }
+  function handlePlay() {
+    router.push({ pathname: '/login', params: { role } });
   }
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-bg"
+    <ImageBackground
+      source={require('../assets/zeca-mota.jpg')}
+      style={styles.bg}
+      resizeMode="cover"
     >
-      <View className="flex-1 justify-center px-6">
-        {/* Logo */}
-        <View className="items-center mb-12">
-          <Text className="text-primary font-inter-bold text-5xl tracking-tight">NP</Text>
-          <Text className="text-text-primary font-inter-bold text-2xl mt-2">Next Point</Text>
-          <Text className="text-text-secondary font-inter text-sm mt-1">Tênis inteligente</Text>
+      {/* Dark overlay */}
+      <View style={styles.overlay} />
+
+      <View style={styles.container}>
+        {/* Branding */}
+        <View style={styles.brand}>
+          <Text style={styles.logo}>NP</Text>
+          <Text style={styles.title}>Next Point</Text>
+          <Text style={styles.subtitle}>Tênis inteligente com IA</Text>
         </View>
 
-        {/* Form */}
-        <View className="gap-3">
-          <TextInput
-            className="bg-surface text-text-primary font-inter rounded-xl px-4 h-14 border border-border"
-            placeholder="E-mail"
-            placeholderTextColor="#9CA3AF"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-          <TextInput
-            className="bg-surface text-text-primary font-inter rounded-xl px-4 h-14 border border-border"
-            placeholder="Senha"
-            placeholderTextColor="#9CA3AF"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
+        {/* Role selector */}
+        <View style={styles.roleSection}>
+          <Text style={styles.roleLabel}>Você é:</Text>
+          <View style={styles.roleRow}>
+            <TouchableOpacity
+              style={[styles.roleBtn, role === 'player' && styles.roleBtnActive]}
+              onPress={() => setRole('player')}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.roleEmoji}>🎾</Text>
+              <Text style={[styles.roleBtnText, role === 'player' && styles.roleBtnTextActive]}>
+                Jogador
+              </Text>
+            </TouchableOpacity>
 
-          {error ? (
-            <Text className="text-red-400 font-inter text-sm text-center">{error}</Text>
-          ) : null}
-          {info ? (
-            <Text className="text-green-400 font-inter text-sm text-center">{info}</Text>
-          ) : null}
+            <TouchableOpacity
+              style={[styles.roleBtn, role === 'teacher' && styles.roleBtnActive]}
+              onPress={() => setRole('teacher')}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.roleEmoji}>🏫</Text>
+              <Text style={[styles.roleBtnText, role === 'teacher' && styles.roleBtnTextActive]}>
+                Professor
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
-          <TouchableOpacity
-            onPress={handleAuth}
-            disabled={loading}
-            className="bg-primary rounded-xl h-14 items-center justify-center mt-2"
-          >
-            {loading
-              ? <ActivityIndicator color="#000" />
-              : <Text className="text-black font-inter-bold text-base">{isSignUp ? 'Criar conta' : 'Entrar'}</Text>
-            }
+        {/* Play button */}
+        <View style={styles.playSection}>
+          <TouchableOpacity style={styles.playBtn} onPress={handlePlay} activeOpacity={0.85}>
+            <Text style={styles.playText}>▶  PLAY</Text>
           </TouchableOpacity>
-        </View>
-
-        {/* Toggle */}
-        <TouchableOpacity onPress={() => { setIsSignUp(!isSignUp); setError(''); }} className="mt-6 items-center">
-          <Text className="text-text-secondary font-inter text-sm">
-            {isSignUp ? 'Já tem conta? ' : 'Não tem conta? '}
-            <Text className="text-primary font-inter-semibold">{isSignUp ? 'Entrar' : 'Cadastrar'}</Text>
+          <Text style={styles.playHint}>
+            {role === 'player' ? 'Acesse como Jogador' : 'Acesse como Professor'}
           </Text>
-        </TouchableOpacity>
+        </View>
       </View>
-    </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  bg: { flex: 1 },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(10,10,10,0.72)',
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 28,
+    paddingTop: 80,
+    paddingBottom: 52,
+    justifyContent: 'space-between',
+  },
+  brand: { alignItems: 'center' },
+  logo: {
+    color: '#F97316',
+    fontSize: 52,
+    fontFamily: 'Inter_700Bold',
+    letterSpacing: -2,
+  },
+  title: {
+    color: '#FFFFFF',
+    fontSize: 28,
+    fontFamily: 'Inter_700Bold',
+    marginTop: 4,
+  },
+  subtitle: {
+    color: '#9CA3AF',
+    fontSize: 14,
+    fontFamily: 'Inter_400Regular',
+    marginTop: 4,
+  },
+  roleSection: { alignItems: 'center' },
+  roleLabel: {
+    color: '#9CA3AF',
+    fontSize: 13,
+    fontFamily: 'Inter_400Regular',
+    marginBottom: 14,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  roleRow: {
+    flexDirection: 'row',
+    gap: 14,
+  },
+  roleBtn: {
+    flex: 1,
+    backgroundColor: 'rgba(26,26,26,0.85)',
+    borderWidth: 1.5,
+    borderColor: '#374151',
+    borderRadius: 18,
+    paddingVertical: 20,
+    alignItems: 'center',
+    gap: 8,
+  },
+  roleBtnActive: {
+    borderColor: '#F97316',
+    backgroundColor: 'rgba(249,115,22,0.12)',
+  },
+  roleEmoji: { fontSize: 30 },
+  roleBtnText: {
+    color: '#9CA3AF',
+    fontSize: 15,
+    fontFamily: 'Inter_600SemiBold',
+  },
+  roleBtnTextActive: { color: '#F97316' },
+  playSection: { alignItems: 'center', gap: 12 },
+  playBtn: {
+    backgroundColor: '#F97316',
+    borderRadius: 16,
+    height: 58,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  playText: {
+    color: '#000',
+    fontSize: 18,
+    fontFamily: 'Inter_700Bold',
+    letterSpacing: 2,
+  },
+  playHint: {
+    color: '#6B7280',
+    fontSize: 12,
+    fontFamily: 'Inter_400Regular',
+  },
+});

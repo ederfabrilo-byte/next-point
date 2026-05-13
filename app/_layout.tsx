@@ -142,6 +142,9 @@ export default function RootLayout() {
       <StatusBar style="light" backgroundColor="#0A0A0A" />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#0A0A0A' } }}>
         <Stack.Screen name="index" />
+        <Stack.Screen name="login" />
+        <Stack.Screen name="register" />
+        <Stack.Screen name="forgot-password" />
         <Stack.Screen name="select-role" />
         <Stack.Screen name="(player)" />
         <Stack.Screen name="(teacher)" />
