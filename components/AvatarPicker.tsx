@@ -22,7 +22,7 @@ export default function AvatarPicker({ userId, avatarUrl, size = 80, onUpdate }:
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: 'images' as const,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.7,

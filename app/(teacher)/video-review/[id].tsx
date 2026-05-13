@@ -41,10 +41,36 @@ export default function VideoReviewScreen() {
       return;
     }
     setSaving(true);
+
     const { error } = await supabase
       .from('videos')
       .update({ feedback: feedback.trim(), status: 'reviewed' })
       .eq('id', id);
+
+    if (!error && video) {
+      // Envia push notification ao jogador
+      supabase
+        .from('users')
+        .select('push_token')
+        .eq('email', video.users?.email ?? '')
+        .maybeSingle()
+        .then(({ data: playerUser }) => {
+          if (playerUser?.push_token?.startsWith('ExponentPushToken')) {
+            fetch('https://exp.host/--/api/v2/push/send', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                to: playerUser.push_token,
+                title: '🎾 Feedback do Prof. Zeca!',
+                body: 'Seu vídeo foi avaliado. Confira a análise técnica.',
+                data: { screen: '/(player)/videos' },
+                sound: 'default',
+              }),
+            }).catch(() => {});
+          }
+        });
+    }
+
     setSaving(false);
     if (error) {
       Alert.alert('Erro', error.message);

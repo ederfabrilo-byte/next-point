@@ -11,6 +11,7 @@ export default function ProfileScreen() {
   const { user } = useAuthStore();
   const [profile, setProfile] = useState<Partial<PlayerProfile>>({});
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [aiFields, setAiFields] = useState<Set<AttributeKey>>(new Set());
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -19,9 +20,27 @@ export default function ProfileScreen() {
     Promise.all([
       supabase.from('player_profiles').select('*').eq('user_id', user.id).maybeSingle(),
       supabase.from('users').select('avatar_url').eq('id', user.id).single(),
-    ]).then(([profileRes, userRes]) => {
+      // Busca a análise de vídeo mais recente para saber quais campos vieram da IA
+      supabase
+        .from('video_analyses')
+        .select('forehand, backhand, serve, volley, movement, mental, video_id, videos!inner(player_id, target_type)')
+        .eq('videos.player_id', user.id)
+        .eq('videos.target_type', 'self')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    ]).then(([profileRes, userRes, analysisRes]) => {
       if (profileRes.data) setProfile(profileRes.data);
       if (userRes.data?.avatar_url) setAvatarUrl(userRes.data.avatar_url);
+      // Marca campos que foram definidos pela IA (não-null na última análise)
+      if (analysisRes.data) {
+        const aiSet = new Set<AttributeKey>();
+        const attrs: AttributeKey[] = ['forehand', 'backhand', 'serve', 'volley', 'movement', 'mental'];
+        attrs.forEach(k => {
+          if (analysisRes.data![k] !== null) aiSet.add(k);
+        });
+        setAiFields(aiSet);
+      }
       setLoading(false);
     });
   }, [user]);
@@ -70,6 +89,7 @@ export default function ProfileScreen() {
             label={ATTRIBUTE_LABELS[key]}
             value={profile[key] ?? null}
             onChange={(v) => setProfile((p) => ({ ...p, [key]: v }))}
+            source={profile[key] !== null ? (aiFields.has(key) ? 'ai' : 'manual') : null}
           />
         ))}
 

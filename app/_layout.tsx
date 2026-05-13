@@ -1,5 +1,6 @@
 import '../global.css';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { Platform } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import {
@@ -9,12 +10,57 @@ import {
   Inter_600SemiBold,
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
+import * as Notifications from 'expo-notifications';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../lib/store';
 import { Role } from '../lib/types';
 
+// Configuração global de como as notificações aparecem quando o app está aberto
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
+
+async function registerForPushNotifications(userId: string) {
+  if (Platform.OS === 'web') return;
+
+  try {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    if (finalStatus !== 'granted') return;
+
+    const tokenData = await Notifications.getExpoPushTokenAsync({
+      projectId: '3e292258-d710-4cbe-8778-b18a3a4c5663',
+    });
+
+    const token = tokenData.data;
+
+    // Salva token no banco (coluna push_token)
+    await supabase
+      .from('users')
+      .update({ push_token: token })
+      .eq('id', userId);
+  } catch (e) {
+    // Silencioso — notificações são opcionais
+    console.warn('Push registration failed:', e);
+  }
+}
+
 export default function RootLayout() {
   const { session, role, setSession, setRole, setLoading } = useAuthStore();
+  const notificationListener = useRef<Notifications.EventSubscription | null>(null);
+  const responseListener = useRef<Notifications.EventSubscription | null>(null);
 
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -34,6 +80,9 @@ export default function RootLayout() {
           .eq('id', session.user.id)
           .maybeSingle();
         if (data?.role) setRole(data.role as Role);
+
+        // Registra push notifications
+        registerForPushNotifications(session.user.id);
       }
       setLoading(false);
     }
@@ -48,10 +97,28 @@ export default function RootLayout() {
           .eq('id', session.user.id)
           .maybeSingle();
         if (data?.role) setRole(data.role as Role);
+        registerForPushNotifications(session.user.id);
       }
     });
 
-    return () => subscription.unsubscribe();
+    // Listener: notificação recebida com app aberto
+    notificationListener.current = Notifications.addNotificationReceivedListener(_notification => {
+      // Poderia atualizar um badge ou estado global aqui
+    });
+
+    // Listener: usuário tocou na notificação
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      const data = response.notification.request.content.data as Record<string, string> | undefined;
+      if (data?.screen) {
+        router.push(data.screen as any);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+      notificationListener.current?.remove();
+      responseListener.current?.remove();
+    };
   }, []);
 
   useEffect(() => {

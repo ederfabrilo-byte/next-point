@@ -32,7 +32,15 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#F97316",
+          "sounds": []
+        }
+      ]
     ],
     "extra": {
       "router": {},

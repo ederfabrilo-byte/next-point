@@ -10,6 +10,7 @@ export default function TeacherHome() {
   const [pendingVideos, setPendingVideos] = useState(0);
   const [studentCount, setStudentCount] = useState(0);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
   useFocusEffect(useCallback(() => {
@@ -17,11 +18,13 @@ export default function TeacherHome() {
     Promise.all([
       supabase.from('videos').select('id', { count: 'exact', head: true }).eq('status', 'pending_review'),
       supabase.from('student_teacher').select('student_id', { count: 'exact', head: true }).eq('teacher_id', user.id),
-      supabase.from('users').select('avatar_url').eq('id', user.id).single(),
+      supabase.from('users').select('avatar_url, name').eq('id', user.id).single(),
     ]).then(([videos, students, userRes]) => {
       setPendingVideos(videos.count ?? 0);
       setStudentCount(students.count ?? 0);
       if (userRes.data?.avatar_url) setAvatarUrl(userRes.data.avatar_url);
+      if (userRes.data?.name) setUserName(userRes.data.name);
+      else setUserName(user.email?.split('@')[0] ?? 'Professor');
       setLoading(false);
     });
   }, [user]));
@@ -52,7 +55,7 @@ export default function TeacherHome() {
             )}
             <View>
               <Text className="text-text-secondary font-inter text-xs">Professor</Text>
-              <Text className="text-text-primary font-inter-bold text-xl">Zeca Mota</Text>
+              <Text className="text-text-primary font-inter-bold text-xl">{userName || 'Professor'}</Text>
               <Text className="text-primary font-inter text-xs">Tennis Coach</Text>
             </View>
           </View>

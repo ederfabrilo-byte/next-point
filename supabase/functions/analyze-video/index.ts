@@ -1,6 +1,15 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 
+async function sendPushNotification(pushToken: string, title: string, body: string, data?: Record<string, string>) {
+  if (!pushToken.startsWith('ExponentPushToken')) return;
+  await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ to: pushToken, title, body, data, sound: 'default' }),
+  });
+}
+
 const VISION_PROMPT = `Você é um especialista em análise técnica de tênis. Analise estes frames de vídeo e retorne SOMENTE um objeto JSON válido com os atributos técnicos do jogador principal em cena.
 
 Regras:
@@ -184,6 +193,23 @@ Deno.serve(async (req) => {
       .from('videos')
       .update({ status: 'analyzed' })
       .eq('id', video_id);
+
+    // 9. Envia push notification ao jogador
+    const { data: playerUser } = await supabaseAdmin
+      .from('users')
+      .select('push_token')
+      .eq('id', video.player_id)
+      .single();
+
+    if (playerUser?.push_token) {
+      const updatedCount = Object.keys(updates).length;
+      await sendPushNotification(
+        playerUser.push_token,
+        '📹 Análise concluída!',
+        `${updatedCount} atributo${updatedCount !== 1 ? 's' : ''} atualizado${updatedCount !== 1 ? 's' : ''} no seu perfil.`,
+        { screen: '/(player)/videos' }
+      );
+    }
 
     return new Response(
       JSON.stringify({
