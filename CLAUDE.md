@@ -12,7 +12,7 @@ Desenvolvimento: vibe coding (você, Claude, gerando o código).
 
 | Camada | Tecnologia |
 |--------|-----------|
-| Frontend | React Native + Expo SDK 51 |
+| Frontend | React Native + Expo SDK 54 |
 | Navegação | Expo Router (file-based) |
 | Backend / DB | Supabase (auth + PostgreSQL + Storage) |
 | IA — Estratégias | Claude API `claude-sonnet-4-20250514` |
@@ -283,15 +283,38 @@ ANTHROPIC_API_KEY=          # Edge Function apenas — nunca no app
 
 ## Fase atual de desenvolvimento
 
-Construir na ordem:
-
-- [ ] **Fase 1** — Setup, auth, seleção de role, navegação base
-- [ ] **Fase 2** — Perfil, adversários, geração de estratégia
-- [ ] **Fase 3** — Upload de vídeo, análise IA, aplicação de scores
-- [ ] **Fase 4** — Avaliação técnica pelo Prof. Zeca, notificações
-- [ ] **Fase 5** — Área do professor, config de IA, registro de treinos
-- [ ] **Fase 6** — Polimento visual, animações, testes iOS + Android
+- [x] **Fase 1** — Setup, auth, seleção de role, navegação base
+- [x] **Fase 2** — Perfil, adversários, geração de estratégia
+- [x] **Fase 3** — Upload de vídeo, análise IA, aplicação de scores
+- [x] **Fase 4** — Avaliação técnica pelo Prof. Zeca, notificações, player de vídeo
+- [x] **Fase 5** — Área do professor, config de IA, registro de treinos
+- [ ] **Fase 6** — Polimento visual (animações de entrada e revisão de consistência feitas; faltam transições de navegação, animar telas de detalhe e testar em device iOS/Android)
 
 ---
 
-*Next Point MVP v1.1 — 06/05/2026*
+## Estado da sessão — retomar daqui
+
+> Última atualização: 2026-05-20 · Branch de trabalho: `claude/resume-next-point-LD9Ya`
+
+### Concluído recentemente
+- **Player de vídeo** — `components/VideoPlayer.tsx` (lib `expo-video`), usado na avaliação técnica do professor (`app/(teacher)/video-review/[id].tsx`) e na lista de vídeos do jogador (`app/(player)/videos/index.tsx`).
+- **Bucket `videos` público** — migração `supabase/migrations/20260520000001_videos_bucket_public.sql`, **já aplicada** manualmente no SQL Editor (o upload sempre gravou URLs públicas via `getPublicUrl`).
+- **Animações de entrada** — `components/FadeInView.tsx` (reanimated) nas homes e listas principais.
+- **Revisão de consistência visual** — placeholders padronizados no token `#9CA3AF`; raios de borda alinhados a `rounded-xl`/`rounded-2xl`.
+- `.env.example` e `expo-dev-client` adicionados ao projeto.
+
+### Próximo passo
+Testar o app num device físico via **development build do EAS** (NÃO usar Expo Go — ver gotchas):
+1. `cp .env.example .env` e preencher `EXPO_PUBLIC_SUPABASE_ANON_KEY` (dashboard Supabase → Settings → API → anon public).
+2. `eas login && eas build --profile development --platform android`.
+3. Instalar o `.apk` no celular; depois `npx expo start --dev-client` (celular na mesma Wi-Fi).
+4. Corrigir o que aparecer e seguir o restante da Fase 6.
+
+### Gotchas importantes
+- **Não é compatível com Expo Go.** O projeto fixa `react-native-reanimated@3.19.5` e `newArchEnabled: false`; o Expo Go do SDK 54 traz reanimated 4 + new architecture. Sempre usar development build.
+- Variáveis `EXPO_PUBLIC_SUPABASE_*` vêm do `.env` local (não commitado). URL do projeto: `https://aymztftngjojdjnwkgyn.supabase.co`.
+- Se for usar o Supabase CLI: a migração `20260520000001` foi aplicada à mão; rodar `supabase migration repair --status applied 20260520000001` antes de qualquer `supabase db push`.
+
+---
+
+*Next Point MVP v1.1 — atualizado 20/05/2026*
