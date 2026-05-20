@@ -56,7 +56,7 @@ export default function ForgotPasswordScreen() {
             backgroundColor: 'rgba(74,222,128,0.1)',
             borderWidth: 1,
             borderColor: '#4ade80',
-            borderRadius: 14,
+            borderRadius: 16,
             padding: 20,
             alignItems: 'center',
             gap: 10,
@@ -96,7 +96,7 @@ export default function ForgotPasswordScreen() {
                 fontSize: 15,
               }}
               placeholder="seu@email.com"
-              placeholderTextColor="#6B7280"
+              placeholderTextColor="#9CA3AF"
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
@@ -115,7 +115,7 @@ export default function ForgotPasswordScreen() {
               disabled={loading}
               style={{
                 backgroundColor: '#F97316',
-                borderRadius: 14,
+                borderRadius: 12,
                 height: 56,
                 alignItems: 'center',
                 justifyContent: 'center',

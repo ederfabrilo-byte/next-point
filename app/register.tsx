@@ -189,7 +189,7 @@ export default function RegisterScreen() {
             disabled={loading}
             style={{
               backgroundColor: '#F97316',
-              borderRadius: 14,
+              borderRadius: 12,
               height: 56,
               alignItems: 'center',
               justifyContent: 'center',
@@ -239,7 +239,7 @@ function Field({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor="#6B7280"
+        placeholderTextColor="#9CA3AF"
         keyboardType={keyboardType ?? 'default'}
         autoCapitalize={autoCapitalize ?? 'words'}
         secureTextEntry={secureTextEntry}

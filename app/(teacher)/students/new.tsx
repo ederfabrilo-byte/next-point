@@ -120,7 +120,7 @@ export default function AddStudentScreen() {
             <TextInput
               className="bg-surface border border-border rounded-xl px-4 h-14 text-text-primary font-inter"
               placeholder="jogador@email.com"
-              placeholderTextColor="#6B7280"
+              placeholderTextColor="#9CA3AF"
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"

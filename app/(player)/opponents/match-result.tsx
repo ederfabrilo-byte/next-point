@@ -134,7 +134,7 @@ export default function MatchResultScreen() {
             setDate(formatted);
           }}
           placeholder="DD/MM/AAAA"
-          placeholderTextColor="#6B7280"
+          placeholderTextColor="#9CA3AF"
           keyboardType="numeric"
         />
       </View>
@@ -149,7 +149,7 @@ export default function MatchResultScreen() {
           multiline
           numberOfLines={3}
           placeholder="Condições, pontos importantes..."
-          placeholderTextColor="#6B7280"
+          placeholderTextColor="#9CA3AF"
           textAlignVertical="top"
           style={{ minHeight: 80 }}
         />

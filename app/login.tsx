@@ -60,7 +60,7 @@ export default function LoginScreen() {
             <TextInput
               style={inputStyle}
               placeholder="E-mail"
-              placeholderTextColor="#6B7280"
+              placeholderTextColor="#9CA3AF"
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
@@ -70,7 +70,7 @@ export default function LoginScreen() {
             <TextInput
               style={inputStyle}
               placeholder="Senha"
-              placeholderTextColor="#6B7280"
+              placeholderTextColor="#9CA3AF"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -97,7 +97,7 @@ export default function LoginScreen() {
               disabled={loading}
               style={{
                 backgroundColor: '#F97316',
-                borderRadius: 14,
+                borderRadius: 12,
                 height: 56,
                 alignItems: 'center',
                 justifyContent: 'center',
