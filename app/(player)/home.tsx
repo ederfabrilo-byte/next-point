@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../../lib/store';
 import { supabase } from '../../lib/supabase';
 import AvatarPicker from '../../components/AvatarPicker';
+import FadeInView from '../../components/FadeInView';
 
 export default function PlayerHome() {
   const { user, reset, setRole } = useAuthStore();
@@ -80,6 +81,7 @@ export default function PlayerHome() {
         {loading ? (
           <ActivityIndicator color="#F97316" />
         ) : (
+          <FadeInView>
           <View className="flex-row gap-3 mb-2">
             <TouchableOpacity
               onPress={() => router.push('/(player)/opponents')}
@@ -110,10 +112,12 @@ export default function PlayerHome() {
               )}
             </TouchableOpacity>
           </View>
+          </FadeInView>
         )}
       </View>
 
       {/* Atalhos */}
+      <FadeInView index={1}>
       <View className="px-6 gap-3">
         <TouchableOpacity onPress={() => router.push('/(player)/profile')} className="bg-surface border border-border rounded-2xl p-5 active:opacity-75">
           <View className="flex-row items-center gap-3">
@@ -177,6 +181,7 @@ export default function PlayerHome() {
           </View>
         </TouchableOpacity>
       </View>
+      </FadeInView>
     </ScrollView>
   );
 }

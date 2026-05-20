@@ -4,6 +4,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useAuthStore } from '../../lib/store';
 import { supabase } from '../../lib/supabase';
 import AvatarPicker from '../../components/AvatarPicker';
+import FadeInView from '../../components/FadeInView';
 
 export default function TeacherHome() {
   const { user, reset, setRole } = useAuthStore();
@@ -73,6 +74,7 @@ export default function TeacherHome() {
         {loading ? (
           <ActivityIndicator color="#F97316" />
         ) : (
+          <FadeInView>
           <View className="flex-row gap-3 mb-6">
             <View className="flex-1 bg-surface border border-border rounded-2xl p-4 items-center">
               <Text className="text-primary font-inter-bold text-3xl">{studentCount}</Text>
@@ -86,9 +88,11 @@ export default function TeacherHome() {
               <Text className="text-text-secondary font-inter text-xs mt-1">Vídeos pendentes</Text>
             </TouchableOpacity>
           </View>
+          </FadeInView>
         )}
 
         {/* Atalhos */}
+        <FadeInView index={1}>
         <View className="gap-3">
           <TouchableOpacity
             onPress={() => router.push('/(teacher)/videos')}
@@ -151,6 +155,7 @@ export default function TeacherHome() {
             <Text className="text-text-secondary font-inter text-sm">Personalize o sistema de estratégias</Text>
           </TouchableOpacity>
         </View>
+        </FadeInView>
       </View>
     </ScrollView>
   );

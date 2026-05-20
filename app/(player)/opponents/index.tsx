@@ -4,6 +4,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { supabase } from '../../../lib/supabase';
 import { useAuthStore } from '../../../lib/store';
 import { Opponent } from '../../../lib/types';
+import FadeInView from '../../../components/FadeInView';
 
 export default function OpponentsList() {
   const { user } = useAuthStore();
@@ -53,7 +54,8 @@ export default function OpponentsList() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
           ItemSeparatorComponent={() => <View className="h-3" />}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
+            <FadeInView index={index}>
             <TouchableOpacity
               onPress={() => router.push(`/(player)/opponents/${item.id}`)}
               className="bg-surface border border-border rounded-2xl p-5 active:opacity-75"
@@ -72,6 +74,7 @@ export default function OpponentsList() {
                 )}
               </View>
             </TouchableOpacity>
+            </FadeInView>
           )}
         />
       )}

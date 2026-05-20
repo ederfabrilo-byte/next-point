@@ -4,6 +4,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
 import { useAuthStore } from '../../lib/store';
+import FadeInView from '../../components/FadeInView';
 
 interface Student {
   student_id: string;
@@ -52,9 +53,10 @@ export default function TeacherStudents() {
           keyExtractor={(item) => item.student_id}
           contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
           ItemSeparatorComponent={() => <View className="h-3" />}
-          renderItem={({ item }) => {
+          renderItem={({ item, index }) => {
             const name = item.users?.name ?? item.users?.email?.split('@')[0] ?? 'Jogador';
             return (
+              <FadeInView index={index}>
               <TouchableOpacity
                 onPress={() => router.push(`/(teacher)/student/${item.student_id}`)}
                 className="bg-surface border border-border rounded-2xl p-5 active:opacity-75 flex-row items-center justify-between"
@@ -70,6 +72,7 @@ export default function TeacherStudents() {
                 </View>
                 <Ionicons name="chevron-forward" size={18} color="#9CA3AF" />
               </TouchableOpacity>
+              </FadeInView>
             );
           }}
         />

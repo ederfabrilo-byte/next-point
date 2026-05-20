@@ -4,6 +4,7 @@ import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { supabase } from '../../../lib/supabase';
 import { useAuthStore } from '../../../lib/store';
 import { Opponent } from '../../../lib/types';
+import FadeInView from '../../../components/FadeInView';
 
 export default function StrategyScreen() {
   const { user } = useAuthStore();
@@ -61,9 +62,10 @@ export default function StrategyScreen() {
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 120 }}
             ItemSeparatorComponent={() => <View className="h-3" />}
-            renderItem={({ item }) => {
+            renderItem={({ item, index }) => {
               const isSelected = selected === item.id;
               return (
+                <FadeInView index={index}>
                 <TouchableOpacity
                   onPress={() => setSelected(item.id)}
                   className={`rounded-2xl p-5 border ${isSelected ? 'bg-primary border-primary' : 'bg-surface border-border'} active:opacity-75`}
@@ -73,6 +75,7 @@ export default function StrategyScreen() {
                     <Text className={`font-inter text-sm mt-1 capitalize ${isSelected ? 'text-black' : 'text-text-secondary'}`}>{item.style}</Text>
                   )}
                 </TouchableOpacity>
+                </FadeInView>
               );
             }}
           />

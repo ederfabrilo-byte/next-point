@@ -3,6 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
+import FadeInView from '../../components/FadeInView';
 
 interface Video {
   id: string;
@@ -58,10 +59,11 @@ export default function TeacherVideos() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
           ItemSeparatorComponent={() => <View className="h-3" />}
-          renderItem={({ item }) => {
+          renderItem={({ item, index }) => {
             const playerName = item.users?.name ?? item.users?.email?.split('@')[0] ?? 'Jogador';
             const target = item.target_type === 'self' ? 'próprio jogo' : `adversário: ${item.opponents?.name ?? '—'}`;
             return (
+              <FadeInView index={index}>
               <TouchableOpacity
                 onPress={() => router.push(`/(teacher)/video-review/${item.id}`)}
                 className="bg-surface border border-border rounded-2xl p-5 active:opacity-75"
@@ -86,6 +88,7 @@ export default function TeacherVideos() {
                   </View>
                 </View>
               </TouchableOpacity>
+              </FadeInView>
             );
           }}
         />

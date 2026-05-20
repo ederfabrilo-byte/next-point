@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../../lib/supabase';
 import { useAuthStore } from '../../../lib/store';
 import VideoPlayer from '../../../components/VideoPlayer';
+import FadeInView from '../../../components/FadeInView';
 
 const zecaPhoto = require('../../../assets/zeca-mota.jpg');
 
@@ -93,9 +94,10 @@ export default function VideosScreen() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
           ItemSeparatorComponent={() => <View className="h-3" />}
-          renderItem={({ item }) => {
+          renderItem={({ item, index }) => {
             const expanded = expandedId === item.id;
             return (
+            <FadeInView index={index}>
             <View className="bg-surface border border-border rounded-2xl p-4">
               <View className="flex-row items-center justify-between mb-2">
                 <View className="flex-row items-center gap-2">
@@ -166,6 +168,7 @@ export default function VideosScreen() {
                 </View>
               )}
             </View>
+            </FadeInView>
             );
           }}
         />
