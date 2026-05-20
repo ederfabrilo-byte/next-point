@@ -4,6 +4,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../../lib/supabase';
 import { useAuthStore } from '../../../lib/store';
+import VideoPlayer from '../../../components/VideoPlayer';
 
 const zecaPhoto = require('../../../assets/zeca-mota.jpg');
 
@@ -14,6 +15,7 @@ interface Video {
   status: 'processing' | 'analyzed' | 'pending_review' | 'reviewed';
   description: string | null;
   feedback: string | null;
+  storage_url: string;
   created_at: string;
   opponents?: { name: string } | null;
 }
@@ -36,6 +38,7 @@ export default function VideosScreen() {
   const { user } = useAuthStore();
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useFocusEffect(useCallback(() => {
     if (!user) return;
@@ -90,7 +93,9 @@ export default function VideosScreen() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
           ItemSeparatorComponent={() => <View className="h-3" />}
-          renderItem={({ item }) => (
+          renderItem={({ item }) => {
+            const expanded = expandedId === item.id;
+            return (
             <View className="bg-surface border border-border rounded-2xl p-4">
               <View className="flex-row items-center justify-between mb-2">
                 <View className="flex-row items-center gap-2">
@@ -120,6 +125,22 @@ export default function VideosScreen() {
                 {new Date(item.created_at).toLocaleDateString('pt-BR')}
               </Text>
 
+              {/* Player do vídeo */}
+              <TouchableOpacity
+                onPress={() => setExpandedId(expanded ? null : item.id)}
+                className="mt-3 flex-row items-center gap-2"
+              >
+                <Ionicons name={expanded ? 'chevron-up' : 'play-circle'} size={18} color="#F97316" />
+                <Text className="text-primary font-inter-semibold text-sm">
+                  {expanded ? 'Ocultar vídeo' : 'Assistir vídeo'}
+                </Text>
+              </TouchableOpacity>
+              {expanded && (
+                <View className="mt-3">
+                  <VideoPlayer url={item.storage_url} />
+                </View>
+              )}
+
               {/* Feedback do Prof. Zeca */}
               {item.purpose === 'technical_review' && item.status === 'reviewed' && item.feedback && (
                 <View className="mt-3 pt-3 border-t border-border">
@@ -145,7 +166,8 @@ export default function VideosScreen() {
                 </View>
               )}
             </View>
-          )}
+            );
+          }}
         />
       )}
     </View>

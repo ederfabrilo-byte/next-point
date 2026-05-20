@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert, ActivityInd
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../../lib/supabase';
+import VideoPlayer from '../../../components/VideoPlayer';
 
 interface Video {
   id: string;
@@ -109,6 +110,9 @@ export default function VideoReviewScreen() {
       </View>
 
       <View className="px-6 gap-5">
+        {/* Player do vídeo */}
+        <VideoPlayer url={video.storage_url} height={240} />
+
         {/* Info do vídeo */}
         <View className="bg-surface border border-border rounded-2xl p-5">
           <View className="flex-row items-center gap-2 mb-3">
