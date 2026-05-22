@@ -14,13 +14,15 @@
     "preview": {
       "distribution": "internal",
       "env": {
-        "NPM_FLAGS": "--legacy-peer-deps"
+        "NPM_FLAGS": "--legacy-peer-deps",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://aymztftngjojdjnwkgyn.supabase.co"
       }
     },
     "production": {
       "autoIncrement": true,
       "env": {
-        "NPM_FLAGS": "--legacy-peer-deps"
+        "NPM_FLAGS": "--legacy-peer-deps",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://aymztftngjojdjnwkgyn.supabase.co"
       }
     }
   },
