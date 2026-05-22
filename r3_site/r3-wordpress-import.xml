@@ -1,0 +1,1018 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0"
+  xmlns:excerpt="http://wordpress.org/export/1.2/excerpt/"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:wp="http://wordpress.org/export/1.2/">
+<channel>
+  <title>R3 Capital Wealth Planning</title>
+  <link>https://www.r3cap.com.br</link>
+  <description>Site institucional da R3 Capital Wealth Planning Ltda.</description>
+  <pubDate>Wed, 20 May 2026 12:00:00 +0000</pubDate>
+  <language>pt-BR</language>
+  <wp:wxr_version>1.2</wp:wxr_version>
+  <wp:base_site_url>https://www.r3cap.com.br</wp:base_site_url>
+  <wp:base_blog_url>https://www.r3cap.com.br</wp:base_blog_url>
+
+  <wp:author>
+    <wp:author_id>1</wp:author_id>
+    <wp:author_login><![CDATA[r3]]></wp:author_login>
+    <wp:author_email><![CDATA[contato@r3cap.com.br]]></wp:author_email>
+    <wp:author_display_name><![CDATA[R3 Capital]]></wp:author_display_name>
+    <wp:author_first_name><![CDATA[R3]]></wp:author_first_name>
+    <wp:author_last_name><![CDATA[Capital]]></wp:author_last_name>
+  </wp:author>
+
+
+    <item>
+      <title>Início</title>
+      <link>https://www.r3cap.com.br/</link>
+      <pubDate>Wed, 20 May 2026 12:00:00 +0000</pubDate>
+      <dc:creator><![CDATA[r3]]></dc:creator>
+      <guid isPermaLink="false">https://www.r3cap.com.br/?page_id=100</guid>
+      <description></description>
+      <content:encoded><![CDATA[<section class="hero">
+  <div class="container">
+    <span class="eyebrow">Wealth Planning &middot; Consultoria CVM 19</span>
+    <h1>Patrimônio, propósito e tempo. Cuidamos dos três.</h1>
+    <div class="divider-gold"></div>
+    <p class="lead">A R3 é uma consultoria de valores mobiliários dedicada ao planejamento patrimonial integral de famílias, empresas e patrimônios familiares. Atuamos como aliados independentes: o que recomendamos é o que faríamos se o patrimônio fosse nosso.</p>
+    <div class="hero-actions">
+      <a href="/contato/#agendar" class="btn btn-primary">Agendar conversa</a>
+      <a href="/servicos/" class="btn btn-outline">Conhecer os serviços</a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header center">
+      <span class="eyebrow">Como atuamos</span>
+      <h2>Três frentes integradas para um único objetivo: a continuidade do patrimônio</h2>
+      <div class="divider-gold"></div>
+      <p>Não vendemos produto financeiro. Construímos, junto com você, uma estratégia patrimonial que atravessa ciclos econômicos, gerações e mudanças de vida.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="icon">PF</div>
+        <h3>Consultoria para Pessoa Física</h3>
+        <p>Planejamento de investimentos, fluxo de caixa pessoal, previdência, planejamento tributário e sucessório individual, com governança documental que protege a família.</p>
+      </div>
+      <div class="card">
+        <div class="icon">PJ</div>
+        <h3>Consultoria para Pessoa Jurídica</h3>
+        <p>Tesouraria corporativa, gestão de caixa, alocação de reservas, planejamento financeiro estratégico e suporte à governança de empresas familiares e holdings patrimoniais.</p>
+      </div>
+      <div class="card">
+        <div class="icon">GF</div>
+        <h3>Consultoria para Grupos Familiares</h3>
+        <p>Modelo de family office para múltiplos membros da família, com plano de sucessão, governança familiar, alinhamento entre gerações e relatórios consolidados.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="container">
+    <div class="grid-2" style="align-items: center;">
+      <div>
+        <span class="eyebrow">Por que a R3</span>
+        <h2>Independência que se prova no detalhe.</h2>
+        <div class="divider-gold"></div>
+        <p>Atuamos como consultora registrada na CVM, sob a Resolução nº 19/2021. Não administramos discricionariamente, não custodiamos recursos e não recebemos remuneração de plataformas, distribuidoras ou emissores. Trabalhamos apenas com honorário pago diretamente pelo cliente.</p>
+        <p>Esse modelo elimina o conflito mais comum do mercado: o consultor que ganha quando o cliente movimenta. Na R3, o nosso interesse e o seu interesse são o mesmo.</p>
+      </div>
+      <div>
+        <ul class="bullets">
+          <li>Consultora registrada na CVM (RCVM 19/2021), com Compliance Officer estatutário.</li>
+          <li>Modelo fee-based puro: cobrança transparente, sem rebates, sem comissão de distribuidoras.</li>
+          <li>Plano patrimonial documentado, com revisão periódica e governança auditável.</li>
+          <li>Tecnologia VSuit para suitability, PLD e onboarding em conformidade regulatória.</li>
+          <li>Política rigorosa de proteção de dados (LGPD) e segurança da informação.</li>
+          <li>Acesso direto aos sócios — sem camadas comerciais entre você e quem decide.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stats-bar">
+  <div class="container">
+    <div class="stats-grid">
+      <div>
+        <span class="stat-num">1:1</span>
+        <div class="stat-label">Atendimento dos sócios</div>
+      </div>
+      <div>
+        <span class="stat-num">100%</span>
+        <div class="stat-label">Modelo fee-based</div>
+      </div>
+      <div>
+        <span class="stat-num">CVM 19</span>
+        <div class="stat-label">Consultor de Investimentos</div>
+      </div>
+      <div>
+        <span class="stat-num">24 m</span>
+        <div class="stat-label">Atualização periódica do plano</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header center">
+      <span class="eyebrow">Nosso processo</span>
+      <h2>Da primeira conversa ao acompanhamento contínuo</h2>
+      <div class="divider-gold"></div>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="icon">01</div>
+        <h3>Diagnóstico patrimonial</h3>
+        <p>Conhecemos sua história, seus objetivos e o estado atual do patrimônio. Mapeamos investimentos, passivos, fluxo de caixa, estrutura societária e sucessória.</p>
+      </div>
+      <div class="card">
+        <div class="icon">02</div>
+        <h3>Plano de ação</h3>
+        <p>Desenhamos a estratégia: alocação de ativos, tributação, sucessão, seguros, governança. Apresentamos cenários e recomendações fundamentadas por escrito.</p>
+      </div>
+      <div class="card">
+        <div class="icon">03</div>
+        <h3>Acompanhamento</h3>
+        <p>Reuniões periódicas de revisão, relatórios consolidados e ajuste contínuo do plano às mudanças de mercado, regulatórias e familiares.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="container">
+    <h2>Vamos conversar sobre o seu patrimônio?</h2>
+    <p>Uma primeira reunião, sem compromisso, para entendermos o seu cenário e apresentarmos como a R3 pode contribuir.</p>
+    <a href="/contato/#agendar" class="btn btn-primary">Agendar conversa</a>
+  </div>
+</section>]]></content:encoded>
+      <excerpt:encoded><![CDATA[]]></excerpt:encoded>
+      <wp:post_id>100</wp:post_id>
+      <wp:post_date><![CDATA[2026-05-20 12:00:00]]></wp:post_date>
+      <wp:post_date_gmt><![CDATA[2026-05-20 12:00:00]]></wp:post_date_gmt>
+      <wp:comment_status><![CDATA[closed]]></wp:comment_status>
+      <wp:ping_status><![CDATA[closed]]></wp:ping_status>
+      <wp:post_name><![CDATA[inicio]]></wp:post_name>
+      <wp:status><![CDATA[publish]]></wp:status>
+      <wp:post_parent>0</wp:post_parent>
+      <wp:menu_order>1</wp:menu_order>
+      <wp:post_type><![CDATA[page]]></wp:post_type>
+      <wp:post_password><![CDATA[]]></wp:post_password>
+      <wp:is_sticky>0</wp:is_sticky>
+    </item>
+    <item>
+      <title>Sobre</title>
+      <link>https://www.r3cap.com.br/sobre</link>
+      <pubDate>Wed, 20 May 2026 12:00:00 +0000</pubDate>
+      <dc:creator><![CDATA[r3]]></dc:creator>
+      <guid isPermaLink="false">https://www.r3cap.com.br/?page_id=101</guid>
+      <description></description>
+      <content:encoded><![CDATA[<section class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="/home/">Início</a> &rsaquo; Sobre</div>
+    <h1>A R3 Capital Wealth Planning</h1>
+    <p class="subtitle">Uma consultoria independente que une rigor regulatório, planejamento patrimonial integrado e relacionamento de longo prazo com famílias que pensam o patrimônio em décadas, não em trimestres.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container-narrow">
+    <span class="eyebrow">Nossa história</span>
+    <h2>Uma consultoria nascida da convicção</h2>
+    <div class="divider-gold"></div>
+    <p class="lead">A R3 nasceu da constatação de que falta, no mercado brasileiro, uma consultoria patrimonial que combine três coisas ao mesmo tempo: independência genuína, profundidade técnica regulatória e proximidade humana com cada família atendida.</p>
+    <p>Constituída como consultora de valores mobiliários nos termos da Resolução CVM nº 19/2021, a R3 atende famílias, empresas e patrimônios familiares no Paraná e em todo o Brasil, atuando como o ponto único de coordenação do planejamento patrimonial — em diálogo com advogados, contadores, gestores e instituições financeiras escolhidas pelo cliente.</p>
+
+    <h2>Missão</h2>
+    <p>Tornar o patrimônio do nosso cliente uma extensão coerente do projeto de vida da família — protegendo-o contra os principais riscos econômicos, regulatórios, tributários e sucessórios — e mantendo, em todas as decisões, a primazia do interesse do cliente.</p>
+
+    <h2>Visão</h2>
+    <p>Ser referência de consultoria patrimonial independente no Sul do Brasil até 2030, reconhecida pela clareza, pela honestidade técnica e pela qualidade do relacionamento de longo prazo com as famílias atendidas.</p>
+
+    <h2>Valores</h2>
+    <ul class="bullets">
+      <li><strong>Independência:</strong> não recebemos rebates, comissões ou retrocessões de distribuidores, plataformas ou emissores. Cobramos honorário diretamente do cliente.</li>
+      <li><strong>Transparência:</strong> tudo o que recomendamos é explicado por escrito, com fundamentos, riscos e alternativas. Toda remuneração é divulgada antes da contratação.</li>
+      <li><strong>Diligência:</strong> tratamos cada recomendação como uma decisão da própria família. Análise antes da pressa, fundamento antes da opinião.</li>
+      <li><strong>Confidencialidade:</strong> as informações do cliente pertencem ao cliente. Tratamos cada dado com a mesma reserva que o sigilo profissional do advogado.</li>
+      <li><strong>Continuidade:</strong> patrimônio é projeto de décadas. Nossa estrutura, nossos contratos e nossos compromissos com o cliente são desenhados para sustentar relações de longo prazo.</li>
+    </ul>
+
+    <h2>Modelo de atuação</h2>
+    <p>Atuamos exclusivamente sob a modalidade de Consultor de Investimentos. Isso significa que:</p>
+    <ul class="bullets">
+      <li>Não administramos discricionariamente o patrimônio do cliente. Quem decide é sempre o cliente, com base nas recomendações que oferecemos.</li>
+      <li>Não temos custódia de recursos. Os ativos permanecem nas instituições financeiras escolhidas pelo cliente.</li>
+      <li>Não recebemos remuneração de plataformas, distribuidoras ou emissores. Operamos em modelo fee-based puro.</li>
+      <li>Mantemos políticas formais de Suitability, PLD/FT, Conflito de Interesses, LGPD e Compliance, auditáveis e revisadas periodicamente.</li>
+    </ul>
+
+    <h2>Onde estamos</h2>
+    <p>Sede em Maringá, Paraná. Atendimento presencial em todo o Estado e remoto em todo o Brasil. Reuniões realizadas em ambiente do cliente, em escritório próprio ou por videoconferência segura, conforme a preferência da família.</p>
+
+    <div class="policy-toc">
+      <h4>Compliance e transparência</h4>
+      <p>Consulte a qualquer tempo nossas políticas:</p>
+      <ol>
+        <li><a href="/politica-de-privacidade/">Política de Privacidade (LGPD)</a></li>
+        <li><a href="/politica-de-compliance/">Política de Compliance e Prevenção à Lavagem de Dinheiro</a></li>
+        <li><a href="/politica-de-suitability/">Política de Suitability</a></li>
+        <li><a href="/conflito-de-interesses/">Política de Conflito de Interesses</a></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="container">
+    <h2>Conheça nossos sócios e nossa equipe</h2>
+    <p>A R3 é dirigida diretamente pelos sócios. Você conversa com quem decide.</p>
+    <a href="/equipe/" class="btn btn-primary">Ver a equipe</a>
+  </div>
+</section>]]></content:encoded>
+      <excerpt:encoded><![CDATA[]]></excerpt:encoded>
+      <wp:post_id>101</wp:post_id>
+      <wp:post_date><![CDATA[2026-05-20 12:00:00]]></wp:post_date>
+      <wp:post_date_gmt><![CDATA[2026-05-20 12:00:00]]></wp:post_date_gmt>
+      <wp:comment_status><![CDATA[closed]]></wp:comment_status>
+      <wp:ping_status><![CDATA[closed]]></wp:ping_status>
+      <wp:post_name><![CDATA[sobre]]></wp:post_name>
+      <wp:status><![CDATA[publish]]></wp:status>
+      <wp:post_parent>0</wp:post_parent>
+      <wp:menu_order>2</wp:menu_order>
+      <wp:post_type><![CDATA[page]]></wp:post_type>
+      <wp:post_password><![CDATA[]]></wp:post_password>
+      <wp:is_sticky>0</wp:is_sticky>
+    </item>
+    <item>
+      <title>Serviços</title>
+      <link>https://www.r3cap.com.br/servicos</link>
+      <pubDate>Wed, 20 May 2026 12:00:00 +0000</pubDate>
+      <dc:creator><![CDATA[r3]]></dc:creator>
+      <guid isPermaLink="false">https://www.r3cap.com.br/?page_id=102</guid>
+      <description></description>
+      <content:encoded><![CDATA[<section class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="/home/">Início</a> &rsaquo; Serviços</div>
+    <h1>O que entregamos</h1>
+    <p class="subtitle">Três modalidades de atendimento construídas para tipos diferentes de necessidade patrimonial. Em todas, a R3 é a consultora independente que coordena, recomenda e acompanha — preservando autonomia decisória do cliente.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="grid-2" style="align-items: start;">
+      <div>
+        <span class="eyebrow">Pessoa Física</span>
+        <h2>Consultoria patrimonial individual</h2>
+        <div class="divider-gold"></div>
+        <p>Para profissionais liberais, executivos e empreendedores que querem organizar o patrimônio individual com método e estratégia — sem depender de vendedor de produto.</p>
+        <h4>O que está incluído</h4>
+        <ul class="bullets">
+          <li>Diagnóstico patrimonial completo: investimentos, passivos, fluxo, previdência, seguros.</li>
+          <li>Plano de alocação de ativos compatível com perfil de risco apurado (suitability formal).</li>
+          <li>Planejamento tributário pessoal e estruturação de previdência complementar.</li>
+          <li>Estudo sucessório individual e recomendação de instrumentos (testamento, doação, holding).</li>
+          <li>Recomendações por escrito, com fundamentação e revisão periódica programada.</li>
+          <li>Acesso direto ao consultor responsável, sem intermediário comercial.</li>
+        </ul>
+      </div>
+      <div>
+        <span class="eyebrow">Pessoa Jurídica</span>
+        <h2>Tesouraria e consultoria corporativa</h2>
+        <div class="divider-gold"></div>
+        <p>Para empresas de médio e grande porte, holdings patrimoniais e estruturas familiares organizadas em pessoa jurídica que precisam de tesouraria estratégica e governança financeira.</p>
+        <h4>O que está incluído</h4>
+        <ul class="bullets">
+          <li>Política de tesouraria corporativa: alocação de caixa, reserva, capital de giro.</li>
+          <li>Análise de produtos de renda fixa, multimercado e estruturados compatíveis com o caixa da empresa.</li>
+          <li>Coordenação com banco e corretora de relacionamento: a R3 não intermedeia, orienta.</li>
+          <li>Suporte ao Conselho ou à diretoria financeira na governança de investimentos.</li>
+          <li>Relatórios trimestrais consolidados para a empresa e para a controladora, se houver.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="container">
+    <div class="section-header center">
+      <span class="eyebrow">Grupos Familiares</span>
+      <h2>Family office sob modelo de consultoria</h2>
+      <div class="divider-gold"></div>
+      <p>Para famílias com patrimônio relevante e múltiplas gerações envolvidas. A R3 atua como ponto único de coordenação patrimonial, no formato de consultoria — sem custódia, sem gestão discricionária, sem conflito de interesses.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="icon">A</div>
+        <h3>Governança familiar</h3>
+        <p>Apoio na constituição do conselho de família, no protocolo familiar, na definição de regras de entrada e saída de patrimônio e na comunicação intergeracional.</p>
+      </div>
+      <div class="card">
+        <div class="icon">B</div>
+        <h3>Planejamento sucessório</h3>
+        <p>Estruturação de holdings, doação com reserva de usufruto, testamento, fundos exclusivos quando indicados — sempre em diálogo com o jurídico da família.</p>
+      </div>
+      <div class="card">
+        <div class="icon">C</div>
+        <h3>Consolidação patrimonial</h3>
+        <p>Relatórios consolidados multi-membro, multi-instituição, multi-classe de ativo. Visão única do patrimônio da família, atualizada periodicamente.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container-narrow">
+    <h2>Modelo de remuneração</h2>
+    <p>Cobramos honorário diretamente do cliente, em modelo fee-based puro. Os valores são definidos por faixa de patrimônio sob assessoria e formalizados em contrato com transparência integral. A R3 não recebe — e não receberá — rebate, comissão ou remuneração indireta de plataformas, distribuidoras ou emissores. Eventual mudança nesse modelo será comunicada formalmente ao cliente, com direito de rescisão sem multa.</p>
+
+    <h2>O que não fazemos</h2>
+    <ul class="bullets">
+      <li>Não administramos discricionariamente o patrimônio. Quem decide é sempre o cliente.</li>
+      <li>Não custodiamos recursos. Os ativos permanecem nas instituições escolhidas pelo cliente.</li>
+      <li>Não vendemos produto financeiro. Recomendamos, com base no perfil e no plano.</li>
+      <li>Não somos agente autônomo de instituição financeira. Somos consultora independente.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="container">
+    <h2>Qual modalidade conversa com a sua realidade?</h2>
+    <p>Em uma primeira conversa, identificamos qual estrutura faz mais sentido para você ou para sua família.</p>
+    <a href="/contato/#agendar" class="btn btn-primary">Agendar conversa</a>
+  </div>
+</section>]]></content:encoded>
+      <excerpt:encoded><![CDATA[]]></excerpt:encoded>
+      <wp:post_id>102</wp:post_id>
+      <wp:post_date><![CDATA[2026-05-20 12:00:00]]></wp:post_date>
+      <wp:post_date_gmt><![CDATA[2026-05-20 12:00:00]]></wp:post_date_gmt>
+      <wp:comment_status><![CDATA[closed]]></wp:comment_status>
+      <wp:ping_status><![CDATA[closed]]></wp:ping_status>
+      <wp:post_name><![CDATA[servicos]]></wp:post_name>
+      <wp:status><![CDATA[publish]]></wp:status>
+      <wp:post_parent>0</wp:post_parent>
+      <wp:menu_order>3</wp:menu_order>
+      <wp:post_type><![CDATA[page]]></wp:post_type>
+      <wp:post_password><![CDATA[]]></wp:post_password>
+      <wp:is_sticky>0</wp:is_sticky>
+    </item>
+    <item>
+      <title>Equipe</title>
+      <link>https://www.r3cap.com.br/equipe</link>
+      <pubDate>Wed, 20 May 2026 12:00:00 +0000</pubDate>
+      <dc:creator><![CDATA[r3]]></dc:creator>
+      <guid isPermaLink="false">https://www.r3cap.com.br/?page_id=103</guid>
+      <description></description>
+      <content:encoded><![CDATA[<section class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="/home/">Início</a> &rsaquo; Equipe</div>
+    <h1>Quem você encontra na R3</h1>
+    <p class="subtitle">A R3 é uma sociedade gerida diretamente pelos sócios. Você não passa por triagem comercial: quem te atende é quem decide.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container-narrow">
+    <div class="team-card">
+      <div class="team-avatar">EF</div>
+      <div class="team-info">
+        <h3>Eder Fabrilo</h3>
+        <div class="role">Sócio &middot; Compliance Officer estatutário</div>
+        <p>Advogado, sócio do escritório Fabrilo, Rosa, Trovão & Akamine Sociedade de Advogados, com atuação principal em direito imobiliário e empresarial. Diretor da OAB-PR. Na R3, responde como Diretor estatutário por Compliance, PLD/FT, Suitability e LGPD, sendo o ponto formal de interlocução perante a CVM, COAF e ANPD.</p>
+        <p>Atua na coordenação jurídica do planejamento patrimonial das famílias atendidas, em diálogo com o jurídico próprio do cliente e com a estrutura do escritório.</p>
+      </div>
+    </div>
+
+    <div class="team-card mt-2">
+      <div class="team-avatar">SR</div>
+      <div class="team-info">
+        <h3>Sócio Responsável Técnico</h3>
+        <div class="role">Sócio &middot; Direção técnica de investimentos</div>
+        <p><em>(Espaço reservado para apresentação do sócio responsável técnico pelos investimentos, com credenciais técnicas e regulatórias. Substituir por foto e biografia oficiais antes da publicação do site.)</em></p>
+        <p>Responsável pela construção das recomendações de investimentos, monitoramento dos mercados, relacionamento com instituições financeiras parceiras e elaboração dos relatórios técnicos entregues aos clientes.</p>
+      </div>
+    </div>
+
+    <h2 class="mt-3">Governança</h2>
+    <p>A R3 mantém estrutura de governança proporcional à atividade de consultor de valores mobiliários, com:</p>
+    <ul class="bullets">
+      <li>Comitê de Compliance mensal, com ata, presença obrigatória dos sócios e do Compliance Officer.</li>
+      <li>Política de segregação de funções entre quem recomenda e quem audita a recomendação.</li>
+      <li>Política específica para clientes com vínculo institucional (OAB, instituições parceiras), com aprovação dupla.</li>
+      <li>Atualização periódica do perfil de suitability dos clientes (até 24 meses).</li>
+      <li>Revisão de PLD/FT diferenciada por classificação de risco do cliente (anual a quinquenal).</li>
+      <li>Treinamento anual obrigatório de PLD para sócios e colaboradores.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="container">
+    <h2>Prefere conversar antes de fechar?</h2>
+    <p>É o que recomendamos. Marque uma primeira reunião sem compromisso.</p>
+    <a href="/contato/#agendar" class="btn btn-primary">Agendar conversa</a>
+  </div>
+</section>]]></content:encoded>
+      <excerpt:encoded><![CDATA[]]></excerpt:encoded>
+      <wp:post_id>103</wp:post_id>
+      <wp:post_date><![CDATA[2026-05-20 12:00:00]]></wp:post_date>
+      <wp:post_date_gmt><![CDATA[2026-05-20 12:00:00]]></wp:post_date_gmt>
+      <wp:comment_status><![CDATA[closed]]></wp:comment_status>
+      <wp:ping_status><![CDATA[closed]]></wp:ping_status>
+      <wp:post_name><![CDATA[equipe]]></wp:post_name>
+      <wp:status><![CDATA[publish]]></wp:status>
+      <wp:post_parent>0</wp:post_parent>
+      <wp:menu_order>4</wp:menu_order>
+      <wp:post_type><![CDATA[page]]></wp:post_type>
+      <wp:post_password><![CDATA[]]></wp:post_password>
+      <wp:is_sticky>0</wp:is_sticky>
+    </item>
+    <item>
+      <title>Contato</title>
+      <link>https://www.r3cap.com.br/contato</link>
+      <pubDate>Wed, 20 May 2026 12:00:00 +0000</pubDate>
+      <dc:creator><![CDATA[r3]]></dc:creator>
+      <guid isPermaLink="false">https://www.r3cap.com.br/?page_id=104</guid>
+      <description></description>
+      <content:encoded><![CDATA[<section class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="/home/">Início</a> &rsaquo; Contato</div>
+    <h1>Fale com a R3</h1>
+    <p class="subtitle">Atendimento direto, sem intermediário comercial. Use o canal mais conveniente.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h2>Como conversar com a gente</h2>
+        <p>
+          <span class="label">Contato geral</span>
+          <span class="value">contato@r3cap.com.br</span>
+        </p>
+        <p>
+          <span class="label">Compliance e canal LGPD</span>
+          <span class="value">privacidade@r3capital.com.br</span>
+        </p>
+        <p>
+          <span class="label">Sede</span>
+          <span class="value">Maringá &mdash; Paraná, Brasil</span>
+        </p>
+        <p>
+          <span class="label">Atendimento</span>
+          <span class="value">Segunda a sexta, das 9h às 18h. Reuniões agendadas presencialmente ou por videoconferência.</span>
+        </p>
+        <p>
+          <span class="label">Encarregado pelo Tratamento de Dados (DPO)</span>
+          <span class="value">Eder Fabrilo &mdash; privacidade@r3capital.com.br</span>
+        </p>
+      </div>
+
+      <div id="agendar">
+        <h2>Agendar uma conversa</h2>
+        <p>Conte um pouco sobre o seu cenário. Retornamos em até 48h úteis com horários disponíveis.</p>
+        <form method="post" action="mailto:contato@r3cap.com.br" enctype="text/plain">
+          <div class="form-row">
+            <label for="nome">Nome completo</label>
+            <input type="text" id="nome" name="nome" required>
+          </div>
+          <div class="form-row">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-row">
+            <label for="telefone">Telefone</label>
+            <input type="tel" id="telefone" name="telefone">
+          </div>
+          <div class="form-row">
+            <label for="modalidade">Modalidade de interesse</label>
+            <select id="modalidade" name="modalidade">
+              <option value="pf">Consultoria Pessoa Física</option>
+              <option value="pj">Consultoria Pessoa Jurídica</option>
+              <option value="gf">Consultoria para Grupo Familiar</option>
+              <option value="duvida">Ainda não sei — quero entender</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="mensagem">Mensagem</label>
+            <textarea id="mensagem" name="mensagem" placeholder="Conte brevemente sobre o seu cenário e o que você está buscando."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Enviar solicitação</button>
+        </form>
+        <p style="font-size: .85rem; color: var(--gray-500); margin-top: 1rem;">Ao enviar, você concorda com o tratamento dos seus dados conforme a nossa <a href="/politica-de-privacidade/">Política de Privacidade</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>]]></content:encoded>
+      <excerpt:encoded><![CDATA[]]></excerpt:encoded>
+      <wp:post_id>104</wp:post_id>
+      <wp:post_date><![CDATA[2026-05-20 12:00:00]]></wp:post_date>
+      <wp:post_date_gmt><![CDATA[2026-05-20 12:00:00]]></wp:post_date_gmt>
+      <wp:comment_status><![CDATA[closed]]></wp:comment_status>
+      <wp:ping_status><![CDATA[closed]]></wp:ping_status>
+      <wp:post_name><![CDATA[contato]]></wp:post_name>
+      <wp:status><![CDATA[publish]]></wp:status>
+      <wp:post_parent>0</wp:post_parent>
+      <wp:menu_order>5</wp:menu_order>
+      <wp:post_type><![CDATA[page]]></wp:post_type>
+      <wp:post_password><![CDATA[]]></wp:post_password>
+      <wp:is_sticky>0</wp:is_sticky>
+    </item>
+    <item>
+      <title>Política de Privacidade</title>
+      <link>https://www.r3cap.com.br/politica-de-privacidade</link>
+      <pubDate>Wed, 20 May 2026 12:00:00 +0000</pubDate>
+      <dc:creator><![CDATA[r3]]></dc:creator>
+      <guid isPermaLink="false">https://www.r3cap.com.br/?page_id=105</guid>
+      <description></description>
+      <content:encoded><![CDATA[<section class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="/home/">Início</a> &rsaquo; Compliance &rsaquo; Política de Privacidade</div>
+    <h1>Política de Privacidade</h1>
+    <p class="subtitle">Tratamento de dados pessoais pela R3 Capital Wealth Planning Ltda., em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).</p>
+  </div>
+</section>
+
+<section>
+  <div class="container-narrow legal-content">
+
+<div class="meta">
+  <strong>Documento público.</strong> Vigência: a partir de maio de 2026 &middot; Versão 1.0 &middot;
+  Canal de atendimento: <a href="mailto:privacidade@r3capital.com.br">privacidade@r3capital.com.br</a>
+</div>
+
+    <div class="policy-toc">
+      <h4>Sumário</h4>
+      <ol>
+        <li><a href="#priv-1">Quem somos e qual é o objetivo desta política</a></li>
+        <li><a href="#priv-2">Quais dados tratamos</a></li>
+        <li><a href="#priv-3">Bases legais para o tratamento</a></li>
+        <li><a href="#priv-4">Finalidades do tratamento</a></li>
+        <li><a href="#priv-5">Compartilhamento de dados</a></li>
+        <li><a href="#priv-6">Tempo de retenção</a></li>
+        <li><a href="#priv-7">Direitos do titular</a></li>
+        <li><a href="#priv-8">Segurança da informação</a></li>
+        <li><a href="#priv-9">Encarregado pelo tratamento de dados (DPO)</a></li>
+        <li><a href="#priv-10">Atualizações desta política</a></li>
+      </ol>
+    </div>
+
+    <h2 id="priv-1">1. Quem somos e qual é o objetivo desta política</h2>
+    <p>A R3 Capital Wealth Planning Ltda. (&ldquo;R3&rdquo;), inscrita no CNPJ XX.XXX.XXX/0001-XX, com sede em Maringá-PR, é uma consultora de valores mobiliários, devidamente registrada perante a Comissão de Valores Mobiliários (&ldquo;CVM&rdquo;) nos termos da Resolução CVM nº 19/2021.</p>
+    <p>Esta política descreve como a R3 coleta, utiliza, armazena, compartilha e protege os dados pessoais de clientes, prospects, parceiros e visitantes, em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — &ldquo;LGPD&rdquo;).</p>
+
+    <h2 id="priv-2">2. Quais dados tratamos</h2>
+    <p>A R3 trata, conforme a relação estabelecida com cada titular, os seguintes grupos de dados:</p>
+    <h3>2.1. Dados cadastrais</h3>
+    <ul>
+      <li>Nome completo, CPF/CNPJ, RG ou documento equivalente.</li>
+      <li>Data de nascimento, estado civil, profissão, regime de bens, dependentes.</li>
+      <li>Endereço residencial e/ou comercial, telefones, e-mails.</li>
+      <li>Documentos comprobatórios da identidade e do endereço.</li>
+    </ul>
+    <h3>2.2. Dados patrimoniais e financeiros</h3>
+    <ul>
+      <li>Renda mensal e anual, fontes de renda, declaração de imposto de renda.</li>
+      <li>Patrimônio declarado, composição de ativos, passivos, investimentos.</li>
+      <li>Origem dos recursos, histórico de aplicações financeiras, perfil de investidor.</li>
+    </ul>
+    <h3>2.3. Dados sensíveis (quando aplicáveis)</h3>
+    <ul>
+      <li>Eventual condição de pessoa exposta politicamente (PEP).</li>
+      <li>Eventual condição de saúde, nas hipóteses estritamente necessárias ao planejamento sucessório ou previdenciário.</li>
+    </ul>
+    <h3>2.4. Dados de navegação</h3>
+    <ul>
+      <li>Endereço IP, identificadores de dispositivo, cookies e dados de navegação no site <a href="https://www.r3cap.com.br/">https://www.r3cap.com.br/</a>.</li>
+    </ul>
+
+    <h2 id="priv-3">3. Bases legais para o tratamento</h2>
+    <p>A R3 utiliza as seguintes bases legais (art. 7º da LGPD), de forma combinada:</p>
+    <ul>
+      <li><strong>Execução de contrato</strong> ou procedimentos preliminares: para cadastrar, qualificar, atender e contratar serviços de consultoria.</li>
+      <li><strong>Cumprimento de obrigação legal ou regulatória</strong>: para atender às obrigações da Resolução CVM nº 19/2021 (consultor de valores mobiliários), da Resolução CVM nº 30/2021 (suitability), da Resolução CVM nº 50/2021 (PLD/FT) e da Lei nº 9.613/1998 (lavagem de dinheiro).</li>
+      <li><strong>Legítimo interesse</strong>: para prevenção a fraudes, segurança das informações, melhoria dos serviços e gestão administrativa.</li>
+      <li><strong>Consentimento</strong>: para comunicações comerciais e tratamento de dados sensíveis quando não houver outra base legal aplicável.</li>
+    </ul>
+
+    <h2 id="priv-4">4. Finalidades do tratamento</h2>
+    <ul>
+      <li>Identificação do cliente e verificação de adequação ao perfil de suitability.</li>
+      <li>Estudo e formulação das recomendações de investimentos e de planejamento patrimonial.</li>
+      <li>Cumprimento das obrigações regulatórias e de prevenção à lavagem de dinheiro.</li>
+      <li>Atendimento, comunicação contínua e suporte ao cliente.</li>
+      <li>Cobrança de honorários e cumprimento de obrigações tributárias.</li>
+      <li>Defesa de direitos da R3 em processo judicial, administrativo ou arbitral.</li>
+    </ul>
+
+    <h2 id="priv-5">5. Compartilhamento de dados</h2>
+    <p>A R3 não comercializa dados pessoais. Eventual compartilhamento se dá nas hipóteses estritamente necessárias:</p>
+    <ul>
+      <li><strong>Instituições financeiras parceiras (corretora, distribuidora, banco):</strong> quando o cliente expressamente decidir operar com determinada plataforma para execução das ordens e custódia dos ativos.</li>
+      <li><strong>Plataforma tecnológica VSuit:</strong> sistema utilizado para aplicação de suitability, PLD e onboarding regulatório.</li>
+      <li><strong>Autoridades públicas:</strong> quando requisitado por CVM, COAF, Receita Federal, Banco Central, ANPD ou autoridade judicial competente.</li>
+      <li><strong>Prestadores de serviços contratados</strong> sob obrigação de sigilo: contabilidade, jurídico, auditoria, infraestrutura de tecnologia.</li>
+    </ul>
+    <p>Em todos os casos, o compartilhamento observa o princípio da minimização (apenas o necessário para a finalidade) e a obrigação contratual de confidencialidade do destinatário.</p>
+
+    <h2 id="priv-6">6. Tempo de retenção</h2>
+    <p>Os dados são retidos enquanto durar a relação contratual e, após o encerramento, pelo prazo necessário ao cumprimento de obrigação legal ou regulatória — em regra, 5 (cinco) anos contados da rescisão, conforme exigências da Resolução CVM nº 19/2021 e da Resolução CVM nº 50/2021. Após esse período, os dados serão eliminados ou anonimizados, salvo se houver determinação legal específica em sentido diverso.</p>
+
+    <h2 id="priv-7">7. Direitos do titular</h2>
+    <p>Nos termos do art. 18 da LGPD, o titular pode, a qualquer tempo, solicitar:</p>
+    <ul>
+      <li>Confirmação da existência de tratamento.</li>
+      <li>Acesso aos dados.</li>
+      <li>Correção de dados incompletos, inexatos ou desatualizados.</li>
+      <li>Anonimização, bloqueio ou eliminação de dados desnecessários, excessivos ou tratados em desconformidade com a LGPD.</li>
+      <li>Portabilidade dos dados a outro fornecedor de serviço, mediante requisição expressa.</li>
+      <li>Eliminação dos dados tratados com base em consentimento, ressalvadas as hipóteses de guarda obrigatória.</li>
+      <li>Informação sobre as entidades públicas e privadas com as quais houver compartilhamento.</li>
+      <li>Informação sobre a possibilidade de não fornecer consentimento e suas consequências.</li>
+      <li>Revogação do consentimento, quando aplicável.</li>
+    </ul>
+    <p>As solicitações devem ser encaminhadas ao Encarregado pelo Tratamento de Dados, por meio do canal <a href="mailto:privacidade@r3capital.com.br">privacidade@r3capital.com.br</a>. A R3 responderá em até 15 (quinze) dias úteis.</p>
+
+    <h2 id="priv-8">8. Segurança da informação</h2>
+    <p>A R3 adota medidas técnicas e organizacionais de segurança proporcionais aos riscos envolvidos, incluindo controle de acesso por perfil, cifragem de dados em trânsito e em repouso, registros de auditoria, treinamento periódico da equipe e procedimentos de resposta a incidentes. Em caso de incidente de segurança relevante, a R3 comunicará a ANPD e o titular afetado nos prazos legais.</p>
+
+    <h2 id="priv-9">9. Encarregado pelo tratamento de dados (DPO)</h2>
+    <p>O Encarregado pelo Tratamento de Dados da R3, nos termos do art. 41 da LGPD, é o sócio diretor estatutário <strong>Eder Fabrilo</strong>, com canal de comunicação por meio do e-mail <a href="mailto:privacidade@r3capital.com.br">privacidade@r3capital.com.br</a>.</p>
+
+    <h2 id="priv-10">10. Atualizações desta política</h2>
+    <p>Esta política pode ser revisada periodicamente para refletir alterações regulatórias, mudanças tecnológicas ou ajustes operacionais. A versão vigente estará sempre disponível em <a href="https://www.r3cap.com.br/politica-de-privacidade">https://www.r3cap.com.br/politica-de-privacidade</a>. Alterações materiais serão comunicadas previamente aos clientes ativos.</p>
+  </div>
+</section>]]></content:encoded>
+      <excerpt:encoded><![CDATA[]]></excerpt:encoded>
+      <wp:post_id>105</wp:post_id>
+      <wp:post_date><![CDATA[2026-05-20 12:00:00]]></wp:post_date>
+      <wp:post_date_gmt><![CDATA[2026-05-20 12:00:00]]></wp:post_date_gmt>
+      <wp:comment_status><![CDATA[closed]]></wp:comment_status>
+      <wp:ping_status><![CDATA[closed]]></wp:ping_status>
+      <wp:post_name><![CDATA[politica-de-privacidade]]></wp:post_name>
+      <wp:status><![CDATA[publish]]></wp:status>
+      <wp:post_parent>0</wp:post_parent>
+      <wp:menu_order>10</wp:menu_order>
+      <wp:post_type><![CDATA[page]]></wp:post_type>
+      <wp:post_password><![CDATA[]]></wp:post_password>
+      <wp:is_sticky>0</wp:is_sticky>
+    </item>
+    <item>
+      <title>Política de Compliance</title>
+      <link>https://www.r3cap.com.br/politica-de-compliance</link>
+      <pubDate>Wed, 20 May 2026 12:00:00 +0000</pubDate>
+      <dc:creator><![CDATA[r3]]></dc:creator>
+      <guid isPermaLink="false">https://www.r3cap.com.br/?page_id=106</guid>
+      <description></description>
+      <content:encoded><![CDATA[<section class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="/home/">Início</a> &rsaquo; Compliance &rsaquo; Política de Compliance e Prevenção à Lavagem de Dinheiro</div>
+    <h1>Política de Compliance e Prevenção à Lavagem de Dinheiro</h1>
+    <p class="subtitle">Política institucional da R3 Capital Wealth Planning Ltda. em matéria de integridade, prevenção à lavagem de dinheiro e financiamento ao terrorismo (PLD/FT), em conformidade com a Lei nº 9.613/1998 e a Resolução CVM nº 50/2021.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container-narrow legal-content">
+
+<div class="meta">
+  <strong>Documento público.</strong> Vigência: a partir de maio de 2026 &middot; Versão 1.0 &middot;
+  Canal de atendimento: <a href="mailto:privacidade@r3capital.com.br">privacidade@r3capital.com.br</a>
+</div>
+
+    <div class="policy-toc">
+      <h4>Sumário</h4>
+      <ol>
+        <li><a href="#cp-1">Objetivo e abrangência</a></li>
+        <li><a href="#cp-2">Marco regulatório</a></li>
+        <li><a href="#cp-3">Governança e responsabilidades</a></li>
+        <li><a href="#cp-4">Conheça o seu cliente (KYC)</a></li>
+        <li><a href="#cp-5">Avaliação interna de risco</a></li>
+        <li><a href="#cp-6">Pessoas Expostas Politicamente (PEP) e listas restritivas</a></li>
+        <li><a href="#cp-7">Monitoramento e comunicações ao COAF</a></li>
+        <li><a href="#cp-8">Capacitação e treinamento</a></li>
+        <li><a href="#cp-9">Canal de denúncias</a></li>
+        <li><a href="#cp-10">Revisão e atualização</a></li>
+      </ol>
+    </div>
+
+    <h2 id="cp-1">1. Objetivo e abrangência</h2>
+    <p>Esta política estabelece os princípios, diretrizes e procedimentos adotados pela R3 Capital Wealth Planning Ltda. para prevenir o uso indevido de seus serviços para lavagem de dinheiro, financiamento ao terrorismo e demais atos ilícitos, bem como para assegurar a integridade ética e a conformidade regulatória da atividade de consultoria de valores mobiliários.</p>
+    <p>Aplica-se a sócios, diretores, colaboradores, prestadores de serviços e parceiros da R3.</p>
+
+    <h2 id="cp-2">2. Marco regulatório</h2>
+    <ul>
+      <li>Lei nº 9.613, de 03 de março de 1998 (Lei de Lavagem de Dinheiro).</li>
+      <li>Resolução CVM nº 50, de 31 de agosto de 2021 (PLD/FT no mercado de valores mobiliários).</li>
+      <li>Resolução CVM nº 19, de 25 de fevereiro de 2021 (Consultoria de valores mobiliários).</li>
+      <li>Circular BCB nº 3.461/2009 e atos correlatos do COAF.</li>
+      <li>Lei nº 12.846/2013 (Lei Anticorrupção).</li>
+    </ul>
+
+    <h2 id="cp-3">3. Governança e responsabilidades</h2>
+    <h3>3.1. Compliance Officer estatutário</h3>
+    <p>A R3 mantém, na figura de seu sócio diretor <strong>Eder Fabrilo</strong>, a função estatutária de Compliance Officer, com poderes de representação perante a CVM, o COAF e a ANPD. Cabe ao Compliance Officer a supervisão da aplicação desta política, a aprovação de exceções e a coordenação das comunicações às autoridades competentes.</p>
+    <h3>3.2. Comitê de Compliance</h3>
+    <p>Comitê interno, com reuniões mensais ordinárias e extraordinárias quando necessário, composto pelos sócios da R3 e pelo Compliance Officer. Compete-lhe avaliar casos sensíveis, aprovar a abertura de contas de clientes de alto risco e revisar a efetividade dos controles internos.</p>
+    <h3>3.3. Segregação de funções</h3>
+    <p>A R3 segrega documentalmente as atividades de recomendação (frente comercial) e de validação (compliance), preservando registros formais de cada decisão sensível.</p>
+
+    <h2 id="cp-4">4. Conheça o seu cliente (KYC)</h2>
+    <p>Antes da contratação, todo cliente é submetido a procedimento de identificação que contempla:</p>
+    <ul>
+      <li>Coleta e validação de documentos pessoais ou societários, conforme a natureza do cliente.</li>
+      <li>Identificação dos beneficiários finais efetivos, em pessoas jurídicas, fundos e veículos de investimento.</li>
+      <li>Declaração da origem dos recursos e do patrimônio.</li>
+      <li>Verificação em listas restritivas (PEPs, OFAC, ONU, CSNU e outras quando aplicáveis).</li>
+      <li>Aplicação do questionário de suitability previsto na Resolução CVM nº 30/2021.</li>
+    </ul>
+    <p>A atualização cadastral é realizada de forma proporcional à classificação de risco do cliente: clientes de alto risco (incluindo PEPs) são revisados ao menos a cada 12 meses; clientes de médio risco, a cada 24 a 36 meses; clientes de baixo risco, a cada 60 meses.</p>
+
+    <h2 id="cp-5">5. Avaliação interna de risco</h2>
+    <p>A R3 mantém matriz de avaliação interna de risco que considera, sem prejuízo de outros critérios:</p>
+    <ul>
+      <li>Perfil do cliente (atividade econômica, jurisdição de residência fiscal, tipo de patrimônio).</li>
+      <li>Tipos de produtos e operações típicas.</li>
+      <li>Canais de relacionamento e meios de pagamento.</li>
+      <li>Histórico de movimentações e eventuais sinais de alerta.</li>
+    </ul>
+    <p>A matriz é revisada anualmente pelo Comitê de Compliance.</p>
+
+    <h2 id="cp-6">6. Pessoas Expostas Politicamente (PEP) e listas restritivas</h2>
+    <p>Clientes classificados como PEP, parentes próximos e estreitos colaboradores são sujeitos a procedimento de due diligence reforçada, sob aprovação prévia do Compliance Officer. A R3 consulta listas internacionais relevantes (OFAC, ONU, CSNU) em adição ao Portal da Transparência e às bases públicas brasileiras.</p>
+    <p>Em razão da função pública desempenhada pelo sócio Eder Fabrilo na Diretoria da Ordem dos Advogados do Brasil — Seção Paraná, clientes com vínculo institucional com a OAB-PR ou suas subseções são automaticamente classificados em regime de aprovação dupla, com registro em ata, para preservar a independência da consultoria e evitar qualquer percepção de conflito de interesses.</p>
+
+    <h2 id="cp-7">7. Monitoramento e comunicações ao COAF</h2>
+    <p>A R3 monitora as operações que toma conhecimento no exercício da consultoria, especialmente quando indicarem incongruência com o perfil do cliente. Identificada hipótese prevista no art. 11 da Lei nº 9.613/1998 e na Resolução CVM nº 50/2021, a R3 efetua comunicação ao COAF no prazo de até 24 (vinte e quatro) horas, sem dar ciência ao envolvido. A obrigação legal de comunicação prevalece sobre as cláusulas contratuais de confidencialidade.</p>
+
+    <h2 id="cp-8">8. Capacitação e treinamento</h2>
+    <p>Todos os sócios e colaboradores participam de treinamento anual obrigatório de PLD/FT, com registro em ata. Novos integrantes são treinados nos primeiros 30 dias de atividade.</p>
+
+    <h2 id="cp-9">9. Canal de denúncias</h2>
+    <p>Qualquer pessoa (cliente, parceiro, colaborador, terceiro) pode comunicar indício de descumprimento desta política pelo canal <a href="mailto:compliance@r3cap.com.br">compliance@r3cap.com.br</a>. As manifestações são tratadas em sigilo, sem retaliação ao denunciante de boa-fé.</p>
+
+    <h2 id="cp-10">10. Revisão e atualização</h2>
+    <p>Esta política é revisada anualmente, ou extraordinariamente sempre que houver alteração regulatória relevante. A versão vigente fica permanentemente disponível em <a href="https://www.r3cap.com.br/politica-de-compliance">https://www.r3cap.com.br/politica-de-compliance</a>.</p>
+  </div>
+</section>]]></content:encoded>
+      <excerpt:encoded><![CDATA[]]></excerpt:encoded>
+      <wp:post_id>106</wp:post_id>
+      <wp:post_date><![CDATA[2026-05-20 12:00:00]]></wp:post_date>
+      <wp:post_date_gmt><![CDATA[2026-05-20 12:00:00]]></wp:post_date_gmt>
+      <wp:comment_status><![CDATA[closed]]></wp:comment_status>
+      <wp:ping_status><![CDATA[closed]]></wp:ping_status>
+      <wp:post_name><![CDATA[politica-de-compliance]]></wp:post_name>
+      <wp:status><![CDATA[publish]]></wp:status>
+      <wp:post_parent>0</wp:post_parent>
+      <wp:menu_order>11</wp:menu_order>
+      <wp:post_type><![CDATA[page]]></wp:post_type>
+      <wp:post_password><![CDATA[]]></wp:post_password>
+      <wp:is_sticky>0</wp:is_sticky>
+    </item>
+    <item>
+      <title>Política de Suitability</title>
+      <link>https://www.r3cap.com.br/politica-de-suitability</link>
+      <pubDate>Wed, 20 May 2026 12:00:00 +0000</pubDate>
+      <dc:creator><![CDATA[r3]]></dc:creator>
+      <guid isPermaLink="false">https://www.r3cap.com.br/?page_id=107</guid>
+      <description></description>
+      <content:encoded><![CDATA[<section class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="/home/">Início</a> &rsaquo; Compliance &rsaquo; Política de Suitability</div>
+    <h1>Política de Suitability</h1>
+    <p class="subtitle">Política de verificação da adequação de produtos, serviços e operações ao perfil do cliente, em conformidade com a Resolução CVM nº 30/2021.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container-narrow legal-content">
+
+<div class="meta">
+  <strong>Documento público.</strong> Vigência: a partir de maio de 2026 &middot; Versão 1.0 &middot;
+  Canal de atendimento: <a href="mailto:privacidade@r3capital.com.br">privacidade@r3capital.com.br</a>
+</div>
+
+    <div class="policy-toc">
+      <h4>Sumário</h4>
+      <ol>
+        <li><a href="#su-1">Objetivo</a></li>
+        <li><a href="#su-2">Marco regulatório</a></li>
+        <li><a href="#su-3">Coleta de informações do cliente</a></li>
+        <li><a href="#su-4">Definição do perfil do investidor</a></li>
+        <li><a href="#su-5">Classificação dos produtos</a></li>
+        <li><a href="#su-6">Recomendação e adequação</a></li>
+        <li><a href="#su-7">Operações em desenquadramento (Termo de Ciência)</a></li>
+        <li><a href="#su-8">Atualização periódica</a></li>
+        <li><a href="#su-9">Vedações</a></li>
+        <li><a href="#su-10">Governança e revisão</a></li>
+      </ol>
+    </div>
+
+    <h2 id="su-1">1. Objetivo</h2>
+    <p>Esta política estabelece os procedimentos pelos quais a R3 Capital Wealth Planning Ltda. verifica a adequação dos produtos, serviços e operações de investimento ao perfil de cada cliente, observados os requisitos da Resolução CVM nº 30/2021.</p>
+
+    <h2 id="su-2">2. Marco regulatório</h2>
+    <ul>
+      <li>Resolução CVM nº 30, de 11 de maio de 2021 (Suitability).</li>
+      <li>Resolução CVM nº 19, de 25 de fevereiro de 2021 (Consultoria de valores mobiliários).</li>
+      <li>Ofício-Circular Conjunto nº 1/2024/CVM/SMI/SIN.</li>
+    </ul>
+
+    <h2 id="su-3">3. Coleta de informações do cliente</h2>
+    <p>Antes da formulação de qualquer recomendação, o cliente responde ao Questionário de Suitability disponibilizado no sistema VSuit. As informações coletadas abrangem:</p>
+    <ul>
+      <li>Objetivos de investimento (curto, médio e longo prazo).</li>
+      <li>Situação financeira (renda, patrimônio, fluxo de caixa, dívidas).</li>
+      <li>Conhecimento e experiência em produtos do mercado financeiro.</li>
+      <li>Horizonte de investimento e tolerância a perdas.</li>
+      <li>Necessidade futura de liquidez.</li>
+    </ul>
+    <p>O preenchimento do questionário é condição obrigatória para a aplicação da consultoria e para o início da prestação dos serviços.</p>
+
+    <h2 id="su-4">4. Definição do perfil do investidor</h2>
+    <p>A partir das respostas, o cliente é classificado em um dos perfis a seguir:</p>
+    <ul>
+      <li><strong>Conservador:</strong> prioriza preservação do capital, baixíssima tolerância a oscilações, horizonte tipicamente de curto prazo.</li>
+      <li><strong>Moderado:</strong> aceita oscilações moderadas em troca de retorno superior à renda fixa, horizonte de médio prazo.</li>
+      <li><strong>Arrojado:</strong> aceita oscilações expressivas em troca de potencial de retorno superior, horizonte de longo prazo.</li>
+    </ul>
+    <p>O perfil é registrado eletronicamente no sistema VSuit e armazenado nos arquivos da R3 pelo prazo regulatório.</p>
+
+    <h2 id="su-5">5. Classificação dos produtos</h2>
+    <p>Os produtos de investimento são previamente classificados pela R3 conforme:</p>
+    <ul>
+      <li>Risco do emissor (rating, histórico, regime de garantia).</li>
+      <li>Risco de mercado, crédito e liquidez.</li>
+      <li>Complexidade (instrumentos derivativos, estruturados, alavancagem).</li>
+      <li>Horizonte mínimo recomendado.</li>
+    </ul>
+
+    <h2 id="su-6">6. Recomendação e adequação</h2>
+    <p>A R3 somente recomenda produto, serviço ou operação compatível com o perfil vigente do cliente. A análise é registrada por escrito em cada recomendação, com identificação do consultor responsável e dos fundamentos da indicação.</p>
+
+    <h2 id="su-7">7. Operações em desenquadramento (Termo de Ciência)</h2>
+    <p>Quando o cliente expressar interesse em operar instrumento financeiro incompatível com o perfil declarado, ou na ausência de suitability vigente, a R3 aplica procedimento específico:</p>
+    <ul>
+      <li>Esclarecimento prévio dos riscos envolvidos.</li>
+      <li>Assinatura do Termo de Desenquadramento (Anexo C), disponível em ambiente eletrônico do sistema VSuit, no qual o cliente declara expressa ciência da inadequação da operação ao seu perfil.</li>
+      <li>Registro do termo nos arquivos da R3 pelo prazo regulatório.</li>
+    </ul>
+    <p>A R3 reserva-se o direito de não prosseguir com a recomendação ou de suspendê-la nos termos da regulamentação aplicável.</p>
+
+    <h2 id="su-8">8. Atualização periódica</h2>
+    <p>O perfil de suitability é atualizado em prazo não superior a 24 (vinte e quatro) meses. O sistema VSuit emite alertas periódicos. O acompanhamento periódico das atualizações é de responsabilidade do Compliance Officer da R3, que coordena reenvios aos clientes em prazo razoável.</p>
+    <p>Em caso de ausência de resposta do cliente, observa-se a orientação do Ofício-Circular Conjunto nº 1/2024/CVM/SMI/SIN: a R3 mantém atuação conservadora e segue realizando os <em>follow-ups</em> necessários até a efetiva regularização cadastral.</p>
+
+    <h2 id="su-9">9. Vedações</h2>
+    <p>É vedado à R3:</p>
+    <ul>
+      <li>Recomendar produto, serviço ou operação não compatíveis com o perfil vigente do cliente.</li>
+      <li>Recomendar produtos a cliente sem suitability aplicado ou cujo perfil não esteja devidamente atualizado.</li>
+      <li>Atribuir ao cliente perfil incompatível com a metodologia descrita nesta política.</li>
+    </ul>
+
+    <h2 id="su-10">10. Governança e revisão</h2>
+    <p>Esta política é revisada anualmente pelo Comitê de Compliance da R3 ou, extraordinariamente, quando houver alteração regulatória ou metodológica relevante. A versão vigente fica permanentemente disponível em <a href="https://www.r3cap.com.br/politica-de-suitability">https://www.r3cap.com.br/politica-de-suitability</a>.</p>
+  </div>
+</section>]]></content:encoded>
+      <excerpt:encoded><![CDATA[]]></excerpt:encoded>
+      <wp:post_id>107</wp:post_id>
+      <wp:post_date><![CDATA[2026-05-20 12:00:00]]></wp:post_date>
+      <wp:post_date_gmt><![CDATA[2026-05-20 12:00:00]]></wp:post_date_gmt>
+      <wp:comment_status><![CDATA[closed]]></wp:comment_status>
+      <wp:ping_status><![CDATA[closed]]></wp:ping_status>
+      <wp:post_name><![CDATA[politica-de-suitability]]></wp:post_name>
+      <wp:status><![CDATA[publish]]></wp:status>
+      <wp:post_parent>0</wp:post_parent>
+      <wp:menu_order>12</wp:menu_order>
+      <wp:post_type><![CDATA[page]]></wp:post_type>
+      <wp:post_password><![CDATA[]]></wp:post_password>
+      <wp:is_sticky>0</wp:is_sticky>
+    </item>
+    <item>
+      <title>Conflito de Interesses</title>
+      <link>https://www.r3cap.com.br/conflito-de-interesses</link>
+      <pubDate>Wed, 20 May 2026 12:00:00 +0000</pubDate>
+      <dc:creator><![CDATA[r3]]></dc:creator>
+      <guid isPermaLink="false">https://www.r3cap.com.br/?page_id=108</guid>
+      <description></description>
+      <content:encoded><![CDATA[<section class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="/home/">Início</a> &rsaquo; Compliance &rsaquo; Política de Conflito de Interesses</div>
+    <h1>Política de Conflito de Interesses</h1>
+    <p class="subtitle">Identificação, prevenção e tratamento de situações de conflito de interesses na atividade de consultoria de valores mobiliários, em conformidade com a Resolução CVM nº 19/2021.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container-narrow legal-content">
+
+<div class="meta">
+  <strong>Documento público.</strong> Vigência: a partir de maio de 2026 &middot; Versão 1.0 &middot;
+  Canal de atendimento: <a href="mailto:privacidade@r3capital.com.br">privacidade@r3capital.com.br</a>
+</div>
+
+    <div class="policy-toc">
+      <h4>Sumário</h4>
+      <ol>
+        <li><a href="#ci-1">Objetivo</a></li>
+        <li><a href="#ci-2">Marco regulatório</a></li>
+        <li><a href="#ci-3">Princípios orientadores</a></li>
+        <li><a href="#ci-4">Modelo de remuneração da R3</a></li>
+        <li><a href="#ci-5">Estrutura societária e grupo econômico</a></li>
+        <li><a href="#ci-6">Situações potencialmente conflitantes</a></li>
+        <li><a href="#ci-7">Procedimentos de tratamento</a></li>
+        <li><a href="#ci-8">Vínculos institucionais sensíveis</a></li>
+        <li><a href="#ci-9">Direitos do cliente</a></li>
+        <li><a href="#ci-10">Governança e revisão</a></li>
+      </ol>
+    </div>
+
+    <h2 id="ci-1">1. Objetivo</h2>
+    <p>Esta política estabelece os princípios, hipóteses e procedimentos pelos quais a R3 Capital Wealth Planning Ltda. identifica, previne e trata situações de conflito de interesses, real ou potencial, no exercício da consultoria de valores mobiliários.</p>
+
+    <h2 id="ci-2">2. Marco regulatório</h2>
+    <ul>
+      <li>Resolução CVM nº 19, de 25 de fevereiro de 2021 (Consultoria de valores mobiliários), em especial seus arts. 8º e 16.</li>
+      <li>Resolução CVM nº 35, de 26 de maio de 2021 (deveres dos intermediários).</li>
+      <li>Código de Ética da R3.</li>
+    </ul>
+
+    <h2 id="ci-3">3. Princípios orientadores</h2>
+    <ul>
+      <li><strong>Primazia do interesse do cliente:</strong> em qualquer situação de potencial conflito, prevalece o interesse do cliente sobre o interesse da R3, de seus sócios, colaboradores ou parceiros.</li>
+      <li><strong>Transparência:</strong> toda relação econômica relevante mantida pela R3 com terceiros é divulgada ao cliente, antes ou no momento da contratação.</li>
+      <li><strong>Segregação:</strong> as atividades passíveis de gerar conflito são segregadas funcional e documentalmente.</li>
+      <li><strong>Independência:</strong> a R3 não recebe remuneração de plataformas, distribuidoras ou emissores em razão das recomendações que faz aos clientes.</li>
+    </ul>
+
+    <h2 id="ci-4">4. Modelo de remuneração da R3</h2>
+    <p>A R3 atua exclusivamente em modelo <strong>fee-based puro</strong>. Cobramos honorário diretamente do cliente, em valores definidos por faixa de patrimônio sob assessoria e formalizados em contrato.</p>
+    <p>Na presente data, a R3 declara, formalmente, que <strong>não recebe rebates, comissões, retrocessões, taxas de corretagem nem qualquer outra modalidade de remuneração indireta</strong> de instituições financeiras, plataformas, distribuidoras, emissores, gestoras ou parceiros relacionados aos produtos recomendados ao cliente.</p>
+    <p>Caso, no futuro, alguma forma de remuneração de terceiros se torne aplicável, a R3 comunicará formalmente o cliente no prazo de 15 (quinze) dias e facultar-lhe-á a rescisão do contrato sem incidência de multa ou penalidade.</p>
+
+    <h2 id="ci-5">5. Estrutura societária e grupo econômico</h2>
+    <p>A R3 Capital Wealth Planning Ltda. é, na presente data, sociedade autônoma, sem coligadas, controladas, controladoras ou entidades sob controle comum. Eventual ingresso futuro em grupo econômico ou constituição de coligações será comunicado ao cliente, com antecedência mínima de 30 (trinta) dias, sob as regras de segregação e mitigação aqui previstas.</p>
+
+    <h2 id="ci-6">6. Situações potencialmente conflitantes</h2>
+    <p>A R3 identifica, sem caráter exaustivo, as seguintes situações como potencialmente conflitantes:</p>
+    <ul>
+      <li>Existência de relação comercial, societária ou pessoal entre sócio, colaborador ou parceiro da R3 e o emissor, gestor ou distribuidor de produto eventualmente recomendado.</li>
+      <li>Recomendação de produto cuja contraparte seja sociedade integrante de grupo econômico de cliente ou de relacionamento próximo do consultor.</li>
+      <li>Oferecimento, pela R3 ou por seus sócios, de outros serviços ao cliente (jurídico, contábil, imobiliário) por meio de sociedades distintas.</li>
+      <li>Vínculo institucional do sócio com entidade de classe, órgão público ou associação relevante.</li>
+    </ul>
+
+    <h2 id="ci-7">7. Procedimentos de tratamento</h2>
+    <p>Identificado conflito real ou potencial, a R3 adota uma ou mais das seguintes medidas:</p>
+    <ul>
+      <li>Comunicação formal e prévia ao cliente sobre a existência do conflito.</li>
+      <li>Submissão da decisão a aprovação dupla, com registro em ata do Comitê de Compliance.</li>
+      <li>Recusa em fazer a recomendação, indicando ao cliente outra fonte independente.</li>
+      <li>Documentação formal das razões da decisão final e arquivamento no dossiê do cliente.</li>
+    </ul>
+
+    <h2 id="ci-8">8. Vínculos institucionais sensíveis</h2>
+    <p>Em razão da função desempenhada por seu sócio Eder Fabrilo na Diretoria da Ordem dos Advogados do Brasil — Seção Paraná, a R3 adota regra específica de aprovação dupla quando o cliente apresentar vínculo institucional com a OAB-PR ou suas subseções. A medida visa preservar a independência da consultoria e evitar percepção de uso indevido da função pública.</p>
+
+    <h2 id="ci-9">9. Direitos do cliente</h2>
+    <p>O cliente da R3 tem direito a:</p>
+    <ul>
+      <li>Solicitar, a qualquer tempo, informações sobre conflitos identificados e tratados que possam afetar a sua relação com a R3.</li>
+      <li>Rescindir o contrato, sem multa ou penalidade, na hipótese de identificação superveniente de conflito relevante não divulgado tempestivamente.</li>
+      <li>Indicar canal alternativo de comunicação caso o conflito envolva o consultor designado ao seu atendimento.</li>
+    </ul>
+    <p>Consultas devem ser encaminhadas a <a href="mailto:privacidade@r3capital.com.br">privacidade@r3capital.com.br</a>.</p>
+
+    <h2 id="ci-10">10. Governança e revisão</h2>
+    <p>Esta política é revisada anualmente pelo Comitê de Compliance da R3 ou extraordinariamente sempre que houver alteração regulatória ou de estrutura societária. A versão vigente fica permanentemente disponível em <a href="https://www.r3cap.com.br/conflito-de-interesses">https://www.r3cap.com.br/conflito-de-interesses</a>.</p>
+  </div>
+</section>]]></content:encoded>
+      <excerpt:encoded><![CDATA[]]></excerpt:encoded>
+      <wp:post_id>108</wp:post_id>
+      <wp:post_date><![CDATA[2026-05-20 12:00:00]]></wp:post_date>
+      <wp:post_date_gmt><![CDATA[2026-05-20 12:00:00]]></wp:post_date_gmt>
+      <wp:comment_status><![CDATA[closed]]></wp:comment_status>
+      <wp:ping_status><![CDATA[closed]]></wp:ping_status>
+      <wp:post_name><![CDATA[conflito-de-interesses]]></wp:post_name>
+      <wp:status><![CDATA[publish]]></wp:status>
+      <wp:post_parent>0</wp:post_parent>
+      <wp:menu_order>13</wp:menu_order>
+      <wp:post_type><![CDATA[page]]></wp:post_type>
+      <wp:post_password><![CDATA[]]></wp:post_password>
+      <wp:is_sticky>0</wp:is_sticky>
+    </item>
+</channel>
+</rss>
