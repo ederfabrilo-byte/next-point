@@ -1,0 +1,87 @@
+R3 CAPITAL WEALTH PLANNING — SITE INSTITUCIONAL
+=================================================
+
+Pacote entregue:
+
+PASTA r3_site/
+  index.html ............................ Página inicial
+  sobre.html ............................ Sobre a R3
+  servicos.html ......................... Serviços (PF / PJ / Grupo Familiar)
+  equipe.html ........................... Equipe
+  contato.html .......................... Contato e formulário
+  politica-de-privacidade.html .......... Política de Privacidade (LGPD)
+  politica-de-compliance.html ........... Política de Compliance e PLD/FT
+  politica-de-suitability.html .......... Política de Suitability
+  conflito-de-interesses.html ........... Política de Conflito de Interesses
+  css/style.css ......................... Folha de estilos compartilhada
+  r3-wordpress-import.xml ............... Arquivo de importação para WordPress
+
+==========================================
+COMO HOSPEDAR (CAMINHO RÁPIDO — DIAS, NÃO SEMANAS)
+==========================================
+
+OPÇÃO A) Subir como site estático (recomendado para começar)
+  1. Apontar o domínio www.r3cap.com.br para um serviço de hospedagem estática:
+     - Netlify (https://www.netlify.com/) — gratuito, drag-and-drop da pasta
+     - Vercel (https://vercel.com/) — gratuito
+     - GitHub Pages — gratuito
+     - Cloudflare Pages — gratuito
+     - Ou hospedagem tradicional com FTP (Locaweb, KingHost, UOL Host)
+  2. Subir o conteúdo da pasta r3_site/ inteira para a raiz do site.
+  3. Configurar o DNS para apontar para o servidor de hospedagem.
+
+OPÇÃO B) Importar no WordPress (caminho institucional definitivo)
+  1. Instalar WordPress em uma hospedagem com PHP/MySQL (hostgator, UOL Host, etc.)
+  2. Instalar um tema profissional. Sugestões para o visual desenhado:
+     - Astra Pro
+     - GeneratePress
+     - Kadence
+     (qualquer um destes permite controle das cores azul-marinho/dourado)
+  3. Ir em Ferramentas > Importar > WordPress.
+  4. Instalar o plugin "WordPress Importer" se solicitado.
+  5. Carregar o arquivo r3-wordpress-import.xml.
+  6. Atribuir todas as páginas ao usuário administrador.
+  7. As 9 páginas serão criadas automaticamente.
+  8. Ir em Aparência > Menus, criar menu principal com: Início, Sobre, Serviços,
+     Equipe, Contato, e menu de rodapé com as 4 políticas.
+  9. Ir em Configurações > Leitura > Página inicial: definir como "Início".
+
+==========================================
+CHECKLIST DE AJUSTES ANTES DE PUBLICAR
+==========================================
+
+[ ] Confirmar CNPJ da R3 — substituir "XX.XXX.XXX/0001-XX" no rodapé e na
+    Política de Privacidade.
+[ ] Confirmar o endereço completo da sede em Maringá (rua, número, bairro, CEP).
+[ ] Substituir o placeholder da equipe "Sócio Responsável Técnico" pelos dados
+    do sócio (nome, foto, biografia, credenciais técnicas) — equipe.html.
+[ ] Conferir o e-mail "compliance@r3cap.com.br" na Política de Compliance
+    (item 9, canal de denúncias) — confirmar se existe ou criar.
+[ ] Padronização de domínio dos e-mails:
+    - Site:    r3cap.com.br
+    - E-mails: r3cap.com.br ou r3capital.com.br?
+    Recomenda-se padronizar — atualmente o site cita "contato@r3cap.com.br" mas
+    "privacidade@r3capital.com.br" e "compliance@r3cap.com.br". Manter coerência.
+[ ] Formulário de contato: o action="mailto:..." é o caminho mais simples mas
+    abre o cliente de e-mail do visitante. Para um envio profissional, integrar
+    com Formspree, Netlify Forms, WPForms (WordPress) ou serviço similar.
+[ ] Logotipo da R3: substituir o "R3" em texto no header e no footer por imagem
+    do logo, se houver identidade visual estabelecida.
+[ ] Favicon: adicionar arquivo /favicon.ico para a aba do navegador.
+[ ] Google Search Console + Sitemap (gerar sitemap.xml após publicação).
+[ ] Política de Cookies: incluir banner LGPD de aceite de cookies (sugestão:
+    plugin Cookiebot ou Tarteaucitron).
+
+==========================================
+RESPOSTA À VERITAS
+==========================================
+
+Com o site no ar e as 4 políticas acessíveis nas URLs abaixo:
+
+  https://www.r3cap.com.br/politica-de-privacidade
+  https://www.r3cap.com.br/politica-de-compliance
+  https://www.r3cap.com.br/politica-de-suitability
+  https://www.r3cap.com.br/conflito-de-interesses
+
+...todas as cláusulas dos contratos que dependem do link de política poderão ser
+finalizadas pela Veritas. Este é o caminho crítico para fechar o Memorando #2.
