@@ -1,5 +1,8 @@
 # NEXT POINT — Contexto do Projeto para Claude Code
 
+> **Retomando o projeto?** Leia primeiro o `HANDOFF.md` — tem o estado atual exato,
+> o que já está pronto, e os próximos passos. Depois volte aqui para a spec completa.
+
 ## O que é este projeto
 
 App mobile de tênis chamado **Next Point**. Conecta jogadores e professores.
