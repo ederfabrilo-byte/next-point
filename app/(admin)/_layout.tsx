@@ -7,7 +7,7 @@ function icon(name: IconName, focused: boolean) {
   return <Ionicons name={focused ? name : (`${name}-outline` as IconName)} size={22} color={focused ? '#F97316' : '#9CA3AF'} />;
 }
 
-export default function TeacherLayout() {
+export default function AdminLayout() {
   return (
     <Tabs
       screenOptions={{
@@ -19,8 +19,9 @@ export default function TeacherLayout() {
       }}
     >
       <Tabs.Screen name="home" options={{ title: 'Home', tabBarIcon: ({ focused }) => icon('home', focused) }} />
-      <Tabs.Screen name="students" options={{ title: 'Alunos', tabBarIcon: ({ focused }) => icon('people', focused) }} />
-      <Tabs.Screen name="student/[id]" options={{ href: null }} />
+      <Tabs.Screen name="videos" options={{ title: 'Vídeos', tabBarIcon: ({ focused }) => icon('videocam', focused) }} />
+      <Tabs.Screen name="agent" options={{ title: 'Agente', tabBarIcon: ({ focused }) => icon('sparkles', focused) }} />
+      <Tabs.Screen name="video-review/[id]" options={{ href: null }} />
     </Tabs>
   );
 }

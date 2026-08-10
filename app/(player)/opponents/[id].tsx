@@ -1,63 +1,28 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
-import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { supabase } from '../../../lib/supabase';
-import { Opponent, Strategy, MatchResult, AttributeKey, ATTRIBUTE_LABELS } from '../../../lib/types';
+import { Opponent, Strategy, AttributeKey, ATTRIBUTE_LABELS } from '../../../lib/types';
 import AttributeSlider from '../../../components/AttributeSlider';
 
 export default function OpponentDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [opponent, setOpponent] = useState<Opponent | null>(null);
   const [strategies, setStrategies] = useState<Strategy[]>([]);
-  const [matches, setMatches] = useState<MatchResult[]>([]);
-  const [aiFields, setAiFields] = useState<Set<AttributeKey>>(new Set());
   const [loading, setLoading] = useState(true);
-
-  async function loadMatches() {
-    const { data } = await supabase
-      .from('match_results')
-      .select('*')
-      .eq('opponent_id', id)
-      .order('date', { ascending: false });
-    setMatches(data ?? []);
-  }
 
   useEffect(() => {
     async function load() {
-      const [{ data: opp }, { data: strats }, { data: analysis }] = await Promise.all([
+      const [{ data: opp }, { data: strats }] = await Promise.all([
         supabase.from('opponents').select('*').eq('id', id).single(),
         supabase.from('strategies').select('*').eq('opponent_id', id).order('created_at', { ascending: false }),
-        // Última análise de vídeo deste adversário
-        supabase
-          .from('video_analyses')
-          .select('forehand, backhand, serve, volley, movement, mental, video_id, videos!inner(opponent_id, target_type)')
-          .eq('videos.opponent_id', id)
-          .eq('videos.target_type', 'opponent')
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle(),
       ]);
       setOpponent(opp);
       setStrategies(strats ?? []);
-      if (analysis) {
-        const aiSet = new Set<AttributeKey>();
-        (['forehand', 'backhand', 'serve', 'volley', 'movement', 'mental'] as AttributeKey[]).forEach(k => {
-          if ((analysis as any)[k] !== null) aiSet.add(k);
-        });
-        setAiFields(aiSet);
-      }
-      await loadMatches();
       setLoading(false);
     }
     load();
   }, [id]);
-
-  // Reload matches when screen comes back into focus (e.g., after adding a result)
-  useFocusEffect(
-    useCallback(() => {
-      if (!loading) loadMatches();
-    }, [id, loading])
-  );
 
   async function handleDelete() {
     Alert.alert('Excluir adversário?', 'Todas as estratégias também serão removidas.', [
@@ -111,13 +76,7 @@ export default function OpponentDetail() {
       <View className="px-6 mb-6">
         <Text className="text-text-secondary font-inter-semibold text-xs uppercase tracking-wider mb-4">Atributos</Text>
         {(Object.keys(ATTRIBUTE_LABELS) as AttributeKey[]).map((key) => (
-          <AttributeSlider
-            key={key}
-            label={ATTRIBUTE_LABELS[key]}
-            value={opponent[key] ?? null}
-            readonly
-            source={opponent[key] !== null ? (aiFields.has(key) ? 'ai' : 'manual') : null}
-          />
+          <AttributeSlider key={key} label={ATTRIBUTE_LABELS[key]} value={opponent[key] ?? null} readonly />
         ))}
         {opponent.notes ? (
           <View className="bg-surface border border-border rounded-xl p-4 mt-2">
@@ -134,74 +93,6 @@ export default function OpponentDetail() {
         >
           <Text className="text-black font-inter-bold text-base">💡 Gerar estratégia</Text>
         </TouchableOpacity>
-      </View>
-
-      {/* H2H — Histórico de partidas */}
-      <View className="px-6 mb-6">
-        <View className="flex-row items-center justify-between mb-4">
-          <Text className="text-text-secondary font-inter-semibold text-xs uppercase tracking-wider">H2H — Partidas</Text>
-          <TouchableOpacity
-            onPress={() => router.push({ pathname: '/(player)/opponents/match-result', params: { opponentId: id, opponentName: opponent.name } })}
-            className="bg-primary rounded-full px-3 py-1"
-          >
-            <Text className="text-black font-inter-semibold text-xs">+ Registrar</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* W-L summary */}
-        {matches.length > 0 ? (() => {
-          const wins = matches.filter(m => m.player_sets > m.opponent_sets).length;
-          const losses = matches.filter(m => m.player_sets < m.opponent_sets).length;
-          const draws = matches.length - wins - losses;
-          return (
-            <>
-              <View className="bg-surface border border-border rounded-2xl p-4 mb-3 flex-row justify-around">
-                <View className="items-center">
-                  <Text className="text-primary font-inter-bold text-2xl">{wins}</Text>
-                  <Text className="text-text-secondary font-inter text-xs mt-1">Vitórias</Text>
-                </View>
-                <View className="w-px bg-border" />
-                <View className="items-center">
-                  <Text className="text-red-400 font-inter-bold text-2xl">{losses}</Text>
-                  <Text className="text-text-secondary font-inter text-xs mt-1">Derrotas</Text>
-                </View>
-                {draws > 0 && (
-                  <>
-                    <View className="w-px bg-border" />
-                    <View className="items-center">
-                      <Text className="text-text-primary font-inter-bold text-2xl">{draws}</Text>
-                      <Text className="text-text-secondary font-inter text-xs mt-1">Empates</Text>
-                    </View>
-                  </>
-                )}
-              </View>
-              {matches.slice(0, 5).map((m) => {
-                const won = m.player_sets > m.opponent_sets;
-                const lost = m.player_sets < m.opponent_sets;
-                return (
-                  <View key={m.id} className="bg-surface border border-border rounded-xl p-3 mb-2 flex-row items-center justify-between">
-                    <View className="flex-row items-center gap-3">
-                      <View className={`w-2 h-2 rounded-full ${won ? 'bg-green-400' : lost ? 'bg-red-400' : 'bg-gray-400'}`} />
-                      <Text className="text-text-secondary font-inter text-xs">
-                        {new Date(m.date).toLocaleDateString('pt-BR')}
-                      </Text>
-                    </View>
-                    <Text className="text-text-primary font-inter-semibold text-sm">
-                      {m.player_sets} × {m.opponent_sets}
-                    </Text>
-                    <Text className={`font-inter-semibold text-xs ${won ? 'text-green-400' : lost ? 'text-red-400' : 'text-gray-400'}`}>
-                      {won ? 'Vitória' : lost ? 'Derrota' : 'Empate'}
-                    </Text>
-                  </View>
-                );
-              })}
-            </>
-          );
-        })() : (
-          <View className="bg-surface border border-border rounded-2xl p-4 items-center">
-            <Text className="text-text-secondary font-inter text-sm">Nenhuma partida registrada ainda.</Text>
-          </View>
-        )}
       </View>
 
       {/* Histórico de estratégias */}

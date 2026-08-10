@@ -7,23 +7,8 @@ export interface UserRow {
   email: string;
   name: string | null;
   role: Role | null;
+  is_admin: boolean;
   avatar_url: string | null;
-  phone: string | null;
-  instagram: string | null;
-  cpf: string | null;
-  address: string | null;
-  push_token: string | null;
-  created_at: string;
-}
-
-export interface MatchResult {
-  id: string;
-  player_id: string;
-  opponent_id: string;
-  player_sets: number;
-  opponent_sets: number;
-  date: string;
-  notes: string | null;
   created_at: string;
 }
 
@@ -32,8 +17,11 @@ export interface PlayerProfile {
   user_id: string;
   forehand: number | null;
   backhand: number | null;
+  slice: number | null;
   serve: number | null;
   volley: number | null;
+  smash: number | null;
+  dropshot: number | null;
   movement: number | null;
   mental: number | null;
   hand: Hand | null;
@@ -48,8 +36,11 @@ export interface Opponent {
   name: string;
   forehand: number | null;
   backhand: number | null;
+  slice: number | null;
   serve: number | null;
   volley: number | null;
+  smash: number | null;
+  dropshot: number | null;
   movement: number | null;
   mental: number | null;
   hand: Hand | null;
@@ -67,13 +58,25 @@ export interface Strategy {
   opponents?: Pick<Opponent, 'id' | 'name'>;
 }
 
-export type AttributeKey = 'forehand' | 'backhand' | 'serve' | 'volley' | 'movement' | 'mental';
+export type AttributeKey =
+  | 'forehand'
+  | 'backhand'
+  | 'slice'
+  | 'serve'
+  | 'volley'
+  | 'smash'
+  | 'dropshot'
+  | 'movement'
+  | 'mental';
 
 export const ATTRIBUTE_LABELS: Record<AttributeKey, string> = {
   forehand: 'Forehand',
   backhand: 'Backhand',
+  slice: 'Slice',
   serve: 'Saque',
   volley: 'Voleio',
+  smash: 'Smash',
+  dropshot: 'Drop shot',
   movement: 'Movimentação',
   mental: 'Mental',
 };

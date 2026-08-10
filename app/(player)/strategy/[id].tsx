@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Share } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Share, Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import { supabase } from '../../../lib/supabase';
 import { Strategy, Opponent } from '../../../lib/types';
 
@@ -23,6 +25,24 @@ export default function StrategyDetail() {
     load();
   }, [id]);
 
+  function exportText() {
+    const header = opponent ? `Estratégia — vs ${opponent.name}\n\n` : 'Estratégia\n\n';
+    return `${header}${strategy?.content ?? ''}\n\n— Gerado no Next Point`;
+  }
+
+  async function handleCopy() {
+    await Clipboard.setStringAsync(exportText());
+    Alert.alert('Copiado', 'Estratégia copiada para a área de transferência.');
+  }
+
+  async function handleShare() {
+    try {
+      await Share.share({ message: exportText() });
+    } catch {
+      // usuário cancelou — ignora
+    }
+  }
+
   if (loading) {
     return <View className="flex-1 bg-bg items-center justify-center"><ActivityIndicator color="#F97316" /></View>;
   }
@@ -32,12 +52,9 @@ export default function StrategyDetail() {
 
   return (
     <ScrollView className="flex-1 bg-bg" contentContainerStyle={{ paddingBottom: 40 }}>
-      <View className="px-6 pt-16 pb-4 flex-row items-center justify-between">
+      <View className="px-6 pt-16 pb-4">
         <TouchableOpacity onPress={() => router.back()}>
           <Text className="text-primary font-inter text-sm">← Voltar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => Share.share({ message: strategy.content })}>
-          <Text className="text-text-secondary font-inter text-sm">Compartilhar</Text>
         </TouchableOpacity>
       </View>
 
@@ -59,6 +76,25 @@ export default function StrategyDetail() {
 
         <View className="bg-surface border border-border rounded-2xl p-5">
           <Text className="text-text-primary font-inter text-base leading-7">{strategy.content}</Text>
+        </View>
+
+        {/* Exportar */}
+        <Text className="text-text-secondary font-inter text-sm mt-6 mb-2">Exportar</Text>
+        <View className="flex-row gap-3">
+          <TouchableOpacity
+            onPress={handleCopy}
+            className="flex-1 flex-row items-center justify-center gap-2 bg-surface border border-border rounded-xl h-14"
+          >
+            <Ionicons name="copy-outline" size={18} color="#F97316" />
+            <Text className="text-text-primary font-inter-semibold text-base">Copiar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleShare}
+            className="flex-1 flex-row items-center justify-center gap-2 bg-primary rounded-xl h-14"
+          >
+            <Ionicons name="share-outline" size={18} color="#000" />
+            <Text className="text-black font-inter-bold text-base">Compartilhar</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </ScrollView>

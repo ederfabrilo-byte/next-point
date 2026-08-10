@@ -1,12 +1,11 @@
 import { useState, useCallback } from 'react';
-import {
-  View, Text, TouchableOpacity, TextInput, ScrollView,
-  Alert, ActivityIndicator, Image,
-} from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert, ActivityIndicator, Image } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as VideoThumbnails from 'expo-video-thumbnails';
+import * as FileSystem from 'expo-file-system/legacy';
+import { decode } from 'base64-arraybuffer';
 import { supabase } from '../../../lib/supabase';
 import { useAuthStore } from '../../../lib/store';
 import { Opponent } from '../../../lib/types';
@@ -16,13 +15,7 @@ const zecaPhoto = require('../../../assets/zeca-mota.jpg');
 type Purpose = 'profile_analysis' | 'technical_review';
 type TargetType = 'self' | 'opponent';
 
-interface SelectedVideo {
-  uri: string;
-  duration?: number; // ms
-  fileName?: string;
-}
-
-const FRAME_COUNT = 12;
+const NUM_FRAMES = 6;
 
 export default function UploadScreen() {
   const { user } = useAuthStore();
@@ -31,9 +24,10 @@ export default function UploadScreen() {
   const [opponentId, setOpponentId] = useState<string | null>(null);
   const [opponents, setOpponents] = useState<Opponent[]>([]);
   const [description, setDescription] = useState('');
-  const [video, setVideo] = useState<SelectedVideo | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState('');
+  const [videoUri, setVideoUri] = useState<string | null>(null);
+  const [videoDuration, setVideoDuration] = useState<number | null>(null);
+  const [thumb, setThumb] = useState<string | null>(null);
+  const [stage, setStage] = useState<string>(''); // '' = idle, senão está processando
 
   useFocusEffect(useCallback(() => {
     if (!user) return;
@@ -43,66 +37,60 @@ export default function UploadScreen() {
   }, [user]));
 
   async function pickVideo() {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permissão necessária', 'Precisamos de acesso à sua galeria para selecionar o vídeo.');
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) {
+      Alert.alert('Permissão necessária', 'Autorize o acesso à galeria para escolher um vídeo.');
       return;
     }
-
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: 'videos' as const,
-      allowsEditing: false,
+      mediaTypes: 'videos',
       quality: 1,
     });
-
-    if (!result.canceled && result.assets[0]) {
-      const asset = result.assets[0];
-      setVideo({
-        uri: asset.uri,
-        duration: asset.duration ?? undefined,
-        fileName: asset.fileName ?? 'video.mp4',
-      });
-    }
+    if (result.canceled || !result.assets?.[0]) return;
+    const asset = result.assets[0];
+    setVideoUri(asset.uri);
+    setVideoDuration(asset.duration ?? null);
+    // preview: primeiro frame
+    try {
+      const { uri } = await VideoThumbnails.getThumbnailAsync(asset.uri, { time: 500, quality: 0.6 });
+      setThumb(uri);
+    } catch { setThumb(null); }
   }
 
-  async function extractFrames(videoUri: string, duration: number): Promise<string[]> {
-    const frameUris: string[] = [];
-    const step = duration / (FRAME_COUNT + 1);
-
-    for (let i = 1; i <= FRAME_COUNT; i++) {
+  async function extractFrames(uri: string, durationMs: number | null): Promise<string[]> {
+    // distribui os frames ao longo do vídeo (ou usa tempos fixos se duração desconhecida)
+    const dur = durationMs && durationMs > 0 ? durationMs : 6000;
+    const times = Array.from({ length: NUM_FRAMES }, (_, i) =>
+      Math.floor((dur * (i + 1)) / (NUM_FRAMES + 1))
+    );
+    const frames: string[] = [];
+    for (const t of times) {
       try {
-        const timeMs = Math.floor(step * i);
-        const { uri } = await VideoThumbnails.getThumbnailAsync(videoUri, {
-          time: timeMs,
-          quality: 0.7,
-        });
-        frameUris.push(uri);
+        const { uri: frameUri } = await VideoThumbnails.getThumbnailAsync(uri, { time: t, quality: 0.5 });
+        const b64 = await FileSystem.readAsStringAsync(frameUri, { encoding: 'base64' });
+        frames.push(b64);
       } catch {
-        // Frame não extraído nesse ponto — continua
+        // pula frame que falhar
       }
     }
-
-    return frameUris;
+    return frames;
   }
 
-  async function uploadFileToStorage(fileUri: string, storagePath: string, mimeType: string): Promise<string> {
-    const response = await fetch(fileUri);
-    const blob = await response.blob();
-
-    const { error } = await supabase.storage
-      .from('videos')
-      .upload(storagePath, blob, { contentType: mimeType, upsert: true });
-
-    if (error) throw new Error(`Upload falhou: ${error.message}`);
-
-    const { data } = supabase.storage.from('videos').getPublicUrl(storagePath);
-    return data.publicUrl;
+  async function uploadVideo(uri: string, userId: string): Promise<string> {
+    const b64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
+    const path = `${userId}/${Date.now()}.mp4`;
+    const { error } = await supabase.storage.from('videos').upload(path, decode(b64), {
+      contentType: 'video/mp4',
+      upsert: false,
+    });
+    if (error) throw error;
+    return supabase.storage.from('videos').getPublicUrl(path).data.publicUrl;
   }
 
   async function handleSubmit() {
     if (!purpose || !user) return;
-    if (!video) {
-      Alert.alert('Selecione um vídeo', 'Escolha um vídeo da galeria antes de enviar.');
+    if (!videoUri) {
+      Alert.alert('Selecione um vídeo', 'Escolha o vídeo que deseja enviar.');
       return;
     }
     if (targetType === 'opponent' && !opponentId) {
@@ -110,90 +98,72 @@ export default function UploadScreen() {
       return;
     }
 
-    setUploading(true);
-
     try {
-      const videoId = crypto.randomUUID();
-      const basePath = `${user.id}/${videoId}`;
+      setStage('Enviando vídeo...');
+      const storageUrl = await uploadVideo(videoUri, user.id);
 
-      // 1. Upload do vídeo
-      setUploadProgress('Enviando vídeo...');
-      const ext = video.fileName?.split('.').pop() ?? 'mp4';
-      const mimeType = ext === 'mov' ? 'video/quicktime' : 'video/mp4';
-      const videoUrl = await uploadFileToStorage(video.uri, `${basePath}/video.${ext}`, mimeType);
+      setStage('Registrando...');
+      const { data: video, error } = await supabase.from('videos').insert({
+        player_id: user.id,
+        purpose,
+        target_type: targetType,
+        opponent_id: targetType === 'opponent' ? opponentId : null,
+        description: description.trim() || null,
+        status: purpose === 'profile_analysis' ? 'processing' : 'pending_review',
+        storage_url: storageUrl,
+      }).select('id').single();
+      if (error) throw error;
 
-      // 2. Extrai e faz upload dos frames (só para profile_analysis)
-      let framesUploaded = 0;
-      if (purpose === 'profile_analysis' && video.duration && video.duration > 0) {
-        setUploadProgress('Extraindo frames...');
-        const frameUris = await extractFrames(video.uri, video.duration);
+      if (purpose === 'profile_analysis') {
+        setStage('Extraindo frames...');
+        const frames = await extractFrames(videoUri, videoDuration);
+        if (frames.length === 0) throw new Error('Não foi possível extrair frames do vídeo.');
 
-        setUploadProgress(`Enviando frames (0/${frameUris.length})...`);
-        for (let i = 0; i < frameUris.length; i++) {
-          try {
-            await uploadFileToStorage(frameUris[i], `${basePath}/frames/frame_${i}.jpg`, 'image/jpeg');
-            framesUploaded++;
-            setUploadProgress(`Enviando frames (${framesUploaded}/${frameUris.length})...`);
-          } catch {
-            // Frame individual ignorado
-          }
+        setStage('Analisando com IA...');
+        const { error: fnErr } = await supabase.functions.invoke('analyze-video', {
+          body: { video_id: video.id, frames },
+        });
+        if (fnErr) {
+          // corpo do erro da função vem em context
+          const detail = await fnErr.context?.json?.().catch(() => null);
+          throw new Error(detail?.error ?? fnErr.message ?? 'Falha na análise.');
         }
-      }
-
-      // 3. Cria registro no banco
-      setUploadProgress('Registrando...');
-      const { data: videoRecord, error: insertError } = await supabase
-        .from('videos')
-        .insert({
-          id: videoId,
-          player_id: user.id,
-          purpose,
-          target_type: targetType,
-          opponent_id: targetType === 'opponent' ? opponentId : null,
-          description: description.trim() || null,
-          status: purpose === 'profile_analysis' ? 'processing' : 'pending_review',
-          storage_url: videoUrl,
-        })
-        .select()
-        .single();
-
-      if (insertError) throw new Error(insertError.message);
-
-      // 4. Dispara Edge Function de análise (profile_analysis)
-      if (purpose === 'profile_analysis') {
-        setUploadProgress('Iniciando análise IA...');
-        const { error: fnError } = await supabase.functions.invoke('analyze-video', {
-          body: { video_id: videoRecord.id },
-        });
-        // Erro na Edge Function não bloqueia o fluxo — análise pode rodar em background
-        if (fnError) console.warn('analyze-video fn error:', fnError.message);
-      }
-
-      // 5. Navega para tela adequada
-      if (purpose === 'profile_analysis') {
-        router.replace({
-          pathname: '/(player)/videos/analyzing',
-          params: { video_id: videoRecord.id },
-        });
+        setStage('');
+        Alert.alert('Análise concluída', 'Seus atributos foram atualizados a partir do vídeo.', [
+          { text: 'Ver perfil', onPress: () => router.replace('/(player)/profile') },
+          { text: 'OK', onPress: () => router.replace('/(player)/videos') },
+        ]);
       } else {
-        router.replace('/(player)/videos');
+        setStage('');
+        Alert.alert('Enviado!', 'Vídeo enviado para o Prof. Zeca avaliar.', [
+          { text: 'OK', onPress: () => router.replace('/(player)/videos') },
+        ]);
       }
-    } catch (err: any) {
-      Alert.alert('Erro no envio', err.message ?? 'Tente novamente.');
-    } finally {
-      setUploading(false);
-      setUploadProgress('');
+    } catch (e: any) {
+      setStage('');
+      Alert.alert('Erro', e.message ?? 'Não foi possível enviar o vídeo.');
     }
   }
 
-  const durationLabel = video?.duration
-    ? `${Math.round(video.duration / 1000)}s`
-    : null;
+  if (stage) {
+    return (
+      <View className="flex-1 bg-bg items-center justify-center px-6">
+        <View className="bg-ai-bg rounded-full p-6 mb-6">
+          <ActivityIndicator color="#4ade80" size="large" />
+        </View>
+        <Text className="text-text-primary font-inter-bold text-xl text-center mb-2">Processando</Text>
+        <Text className="text-primary font-inter text-sm text-center">{stage}</Text>
+        <Text className="text-text-secondary font-inter text-xs text-center mt-4">
+          Não feche o app. Isso pode levar alguns segundos.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView className="flex-1 bg-bg" contentContainerStyle={{ paddingBottom: 40 }}>
       <View className="px-6 pt-16 pb-6 flex-row items-center gap-3">
-        <TouchableOpacity onPress={() => router.back()} disabled={uploading}>
+        <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
         <View>
@@ -203,34 +173,27 @@ export default function UploadScreen() {
       </View>
 
       <View className="px-6 gap-5">
-
         {/* Seleção de vídeo */}
         <View>
           <Text className="text-text-secondary font-inter text-sm mb-3">Vídeo</Text>
           <TouchableOpacity
             onPress={pickVideo}
-            disabled={uploading}
-            className={`rounded-2xl border-2 border-dashed items-center justify-center py-8 gap-2
-              ${video ? 'border-primary bg-surface' : 'border-border bg-surface'}`}
+            className="bg-surface border border-border rounded-2xl overflow-hidden active:opacity-80"
           >
-            <Ionicons
-              name={video ? 'checkmark-circle' : 'cloud-upload-outline'}
-              size={36}
-              color={video ? '#F97316' : '#9CA3AF'}
-            />
-            {video ? (
-              <>
-                <Text className="text-primary font-inter-bold text-sm">{video.fileName ?? 'Vídeo selecionado'}</Text>
-                {durationLabel && (
-                  <Text className="text-text-secondary font-inter text-xs">Duração: {durationLabel}</Text>
-                )}
-                <Text className="text-text-secondary font-inter text-xs">Toque para trocar</Text>
-              </>
+            {thumb ? (
+              <View>
+                <Image source={{ uri: thumb }} style={{ width: '100%', height: 180 }} resizeMode="cover" />
+                <View className="flex-row items-center justify-center gap-2 py-3">
+                  <Ionicons name="checkmark-circle" size={18} color="#4ade80" />
+                  <Text className="text-text-primary font-inter text-sm">Vídeo selecionado · toque para trocar</Text>
+                </View>
+              </View>
             ) : (
-              <>
-                <Text className="text-text-primary font-inter-bold text-sm">Selecionar da galeria</Text>
-                <Text className="text-text-secondary font-inter text-xs">MP4, MOV até 500 MB</Text>
-              </>
+              <View className="items-center py-10">
+                <Ionicons name="cloud-upload-outline" size={40} color="#F97316" />
+                <Text className="text-text-primary font-inter-bold text-base mt-3">Selecionar vídeo</Text>
+                <Text className="text-text-secondary font-inter text-xs mt-1">Da galeria do aparelho</Text>
+              </View>
             )}
           </TouchableOpacity>
         </View>
@@ -241,7 +204,6 @@ export default function UploadScreen() {
           <View className="gap-3">
             <TouchableOpacity
               onPress={() => setPurpose('profile_analysis')}
-              disabled={uploading}
               className={`rounded-2xl p-4 border ${purpose === 'profile_analysis' ? 'bg-primary border-primary' : 'bg-surface border-border'}`}
             >
               <View className="flex-row items-center gap-3">
@@ -264,7 +226,6 @@ export default function UploadScreen() {
 
             <TouchableOpacity
               onPress={() => setPurpose('technical_review')}
-              disabled={uploading}
               className={`rounded-2xl p-4 border ${purpose === 'technical_review' ? 'bg-primary border-primary' : 'bg-surface border-border'}`}
             >
               <View className="flex-row items-center gap-3">
@@ -291,14 +252,12 @@ export default function UploadScreen() {
           <View className="flex-row gap-3">
             <TouchableOpacity
               onPress={() => { setTargetType('self'); setOpponentId(null); }}
-              disabled={uploading}
               className={`flex-1 rounded-xl p-3 border items-center ${targetType === 'self' ? 'bg-primary border-primary' : 'bg-surface border-border'}`}
             >
               <Text className={`font-inter-bold text-sm ${targetType === 'self' ? 'text-black' : 'text-text-primary'}`}>Meu jogo</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setTargetType('opponent')}
-              disabled={uploading}
               className={`flex-1 rounded-xl p-3 border items-center ${targetType === 'opponent' ? 'bg-primary border-primary' : 'bg-surface border-border'}`}
             >
               <Text className={`font-inter-bold text-sm ${targetType === 'opponent' ? 'text-black' : 'text-text-primary'}`}>Adversário</Text>
@@ -323,7 +282,6 @@ export default function UploadScreen() {
                   <TouchableOpacity
                     key={op.id}
                     onPress={() => setOpponentId(op.id)}
-                    disabled={uploading}
                     className={`rounded-xl p-3 border ${opponentId === op.id ? 'bg-primary border-primary' : 'bg-surface border-border'}`}
                   >
                     <Text className={`font-inter-bold ${opponentId === op.id ? 'text-black' : 'text-text-primary'}`}>{op.name}</Text>
@@ -341,7 +299,6 @@ export default function UploadScreen() {
             className="bg-surface border border-border rounded-xl px-4 py-3 text-text-primary font-inter"
             value={description}
             onChangeText={setDescription}
-            editable={!uploading}
             multiline
             numberOfLines={3}
             placeholder="Contexto do vídeo, aspectos a observar..."
@@ -350,26 +307,14 @@ export default function UploadScreen() {
           />
         </View>
 
-        {/* Progress */}
-        {uploading && uploadProgress ? (
-          <View className="bg-surface border border-border rounded-xl p-4 flex-row items-center gap-3">
-            <ActivityIndicator color="#F97316" />
-            <Text className="text-text-primary font-inter text-sm flex-1">{uploadProgress}</Text>
-          </View>
-        ) : null}
-
         <TouchableOpacity
           onPress={handleSubmit}
-          disabled={!purpose || !video || uploading}
-          className={`rounded-xl h-14 items-center justify-center mt-2
-            ${purpose && video && !uploading ? 'bg-primary' : 'bg-surface'}`}
+          disabled={!purpose || !videoUri}
+          className={`rounded-xl h-14 items-center justify-center mt-2 ${purpose && videoUri ? 'bg-primary' : 'bg-surface'}`}
         >
-          {uploading
-            ? <ActivityIndicator color="#F97316" />
-            : <Text className={`font-inter-bold text-base ${purpose && video ? 'text-black' : 'text-text-secondary'}`}>
-                Confirmar envio
-              </Text>
-          }
+          <Text className={`font-inter-bold text-base ${purpose && videoUri ? 'text-black' : 'text-text-secondary'}`}>
+            Confirmar envio
+          </Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

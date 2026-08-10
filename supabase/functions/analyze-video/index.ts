@@ -1,232 +1,124 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 
-async function sendPushNotification(pushToken: string, title: string, body: string, data?: Record<string, string>) {
-  if (!pushToken.startsWith('ExponentPushToken')) return;
-  await fetch('https://exp.host/--/api/v2/push/send', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ to: pushToken, title, body, data, sound: 'default' }),
-  });
-}
+// Atributos técnicos avaliados (alinhados com lib/types.ts ATTRIBUTE_LABELS)
+const ATTRS = ['forehand', 'backhand', 'slice', 'serve', 'volley', 'smash', 'dropshot', 'movement', 'mental'];
 
-const VISION_PROMPT = `Você é um especialista em análise técnica de tênis. Analise estes frames de vídeo e retorne SOMENTE um objeto JSON válido com os atributos técnicos do jogador principal em cena.
+const BASE_INSTRUCTION = `Você analisa frames de um jogador de tênis e retorna SOMENTE um objeto JSON, sem texto adicional e sem markdown.
+Notas de 1.0 a 5.0 (passo 0.5). Atributos que NÃO forem observáveis nos frames devem vir como null (não invente).
+Formato exato:
+{"forehand":X,"backhand":X,"slice":X,"serve":X,"volley":X,"smash":X,"dropshot":X,"movement":X,"mental":X,"hand":"right"|"left"|null,"style":"aggressive"|"defensive"|"all-around"|null}`;
 
-Regras:
-- Scores de 1.0 a 5.0, incrementos de 0.5
-- Retorne null para atributos não observáveis nos frames
-- Retorne APENAS o JSON, sem texto adicional
+const cors = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, content-type, apikey',
+};
 
-Formato obrigatório:
-{"forehand":X,"backhand":X,"serve":X,"volley":X,"movement":X,"mental":X,"hand":"right|left","style":"aggressive|defensive|all-around"}`;
-
-interface AnalysisResult {
-  forehand: number | null;
-  backhand: number | null;
-  serve: number | null;
-  volley: number | null;
-  movement: number | null;
-  mental: number | null;
-  hand: 'right' | 'left' | null;
-  style: 'aggressive' | 'defensive' | 'all-around' | null;
+function extractJson(text: string): any {
+  const cleaned = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+  const start = cleaned.indexOf('{');
+  const end = cleaned.lastIndexOf('}');
+  if (start === -1 || end === -1) throw new Error('IA não retornou JSON válido');
+  return JSON.parse(cleaned.slice(start, end + 1));
 }
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'authorization, content-type',
-      },
-    });
+    return new Response('ok', { headers: cors });
   }
 
   try {
-    const authHeader = req.headers.get('Authorization');
+    const { video_id, frames } = await req.json();
+    if (!video_id) throw new Error('video_id é obrigatório');
+    if (!Array.isArray(frames) || frames.length === 0) {
+      throw new Error('frames é obrigatório (array de imagens base64 ou URLs)');
+    }
 
-    // Cliente com auth do usuário (para validar permissões)
-    const supabaseUser = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_ANON_KEY')!,
-      { global: { headers: { Authorization: authHeader! } } }
-    );
-
-    // Cliente com service role (para acessar Storage e atualizar tabelas)
-    const supabaseAdmin = createClient(
+    // Service role: função de servidor confiável (lê Agente + vídeo, aplica scores)
+    const admin = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
 
-    const { video_id } = await req.json();
-    if (!video_id) throw new Error('video_id é obrigatório');
+    const [{ data: video, error: vErr }, { data: agent }] = await Promise.all([
+      admin.from('videos').select('*').eq('id', video_id).single(),
+      admin.from('ai_agent_config').select('base_context, video_guidance').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
+    ]);
+    if (vErr || !video) throw new Error('Vídeo não encontrado');
 
-    // 1. Busca o registro do vídeo (valida que pertence ao usuário autenticado)
-    const { data: video, error: videoError } = await supabaseUser
-      .from('videos')
-      .select('id, player_id, target_type, opponent_id, storage_url, status')
-      .eq('id', video_id)
-      .eq('purpose', 'profile_analysis')
-      .single();
+    // System prompt = contexto base do Agente + orientação de vídeo do Zeca + instrução fixa
+    const systemPrompt = [agent?.base_context, agent?.video_guidance, BASE_INSTRUCTION]
+      .filter((s) => s && String(s).trim())
+      .join('\n\n');
 
-    if (videoError || !video) throw new Error('Vídeo não encontrado ou sem permissão');
-    if (video.status === 'analyzed') {
-      return new Response(JSON.stringify({ message: 'Já analisado' }), {
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    // 2. Lista frames no Storage: {user_id}/{video_id}/frames/frame_N.jpg
-    const framesPath = `${video.player_id}/${video_id}/frames`;
-    const { data: frameFiles, error: listError } = await supabaseAdmin.storage
-      .from('videos')
-      .list(framesPath, { sortBy: { column: 'name', order: 'asc' } });
-
-    if (listError) throw new Error(`Erro ao listar frames: ${listError.message}`);
-    if (!frameFiles || frameFiles.length === 0) throw new Error('Nenhum frame encontrado para análise');
-
-    // 3. Baixa os frames e converte para base64
-    const imageContents: Anthropic.ImageBlockParam[] = [];
-
-    for (const file of frameFiles.slice(0, 12)) {
-      const filePath = `${framesPath}/${file.name}`;
-      const { data: fileData, error: downloadError } = await supabaseAdmin.storage
-        .from('videos')
-        .download(filePath);
-
-      if (downloadError || !fileData) continue;
-
-      const buffer = await fileData.arrayBuffer();
-      const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
-
-      imageContents.push({
-        type: 'image',
-        source: {
-          type: 'base64',
-          media_type: 'image/jpeg',
-          data: base64,
-        },
-      });
-    }
-
-    if (imageContents.length === 0) throw new Error('Não foi possível carregar nenhum frame');
-
-    // 4. Chama Claude Vision API
-    const anthropic = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')! });
-
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 256,
-      messages: [
-        {
-          role: 'user',
-          content: [
-            ...imageContents,
-            { type: 'text', text: VISION_PROMPT },
-          ],
-        },
-      ],
+    // Monta o conteúdo com as imagens
+    const imageBlocks = frames.map((f: string) => {
+      if (typeof f === 'string' && f.startsWith('http')) {
+        return { type: 'image', source: { type: 'url', url: f } };
+      }
+      const data = typeof f === 'string' && f.includes(',') ? f.split(',')[1] : f; // remove prefixo data: se houver
+      return { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data } };
     });
 
-    const rawText = message.content
-      .filter((b) => b.type === 'text')
-      .map((b) => (b as Anthropic.TextBlock).text)
-      .join('');
+    const anthropic = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY') });
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1024,
+      system: systemPrompt,
+      messages: [{
+        role: 'user',
+        content: [
+          ...imageBlocks,
+          { type: 'text', text: `Analise estes ${frames.length} frames e retorne o JSON com as notas. ${video.description ? 'Contexto do jogador: ' + video.description : ''}` },
+        ],
+      }],
+    });
 
-    // 5. Extrai e valida o JSON da resposta
-    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error(`Claude não retornou JSON válido: ${rawText}`);
+    const raw = message.content[0].type === 'text' ? message.content[0].text : '';
+    const scores = extractJson(raw);
 
-    const result: AnalysisResult = JSON.parse(jsonMatch[0]);
-
-    // Valida scores dentro do range 1.0–5.0
-    const numericFields = ['forehand', 'backhand', 'serve', 'volley', 'movement', 'mental'] as const;
-    for (const field of numericFields) {
-      if (result[field] !== null && result[field] !== undefined) {
-        const val = Number(result[field]);
-        result[field] = Math.min(5.0, Math.max(1.0, Math.round(val * 2) / 2));
-      }
+    // Só campos numéricos válidos (não-null) entram nos updates
+    const cleanAttrs: Record<string, number> = {};
+    for (const k of ATTRS) {
+      const v = scores[k];
+      if (typeof v === 'number' && !Number.isNaN(v)) cleanAttrs[k] = v;
     }
+    const hand = scores.hand === 'right' || scores.hand === 'left' ? scores.hand : null;
+    const style = ['aggressive', 'defensive', 'all-around'].includes(scores.style) ? scores.style : null;
 
-    // 6. Salva em video_analyses
-    const { error: analysisError } = await supabaseAdmin.from('video_analyses').insert({
+    // Grava a análise (histórico)
+    await admin.from('video_analyses').insert({
       video_id,
-      forehand: result.forehand ?? null,
-      backhand: result.backhand ?? null,
-      serve: result.serve ?? null,
-      volley: result.volley ?? null,
-      movement: result.movement ?? null,
-      mental: result.mental ?? null,
-      hand: result.hand ?? null,
-      style: result.style ?? null,
-      raw_response: { text: rawText, frames_analyzed: imageContents.length },
+      ...cleanAttrs,
+      hand,
+      style,
+      raw_response: scores,
       applied_at: new Date().toISOString(),
     });
 
-    if (analysisError) throw new Error(`Erro ao salvar análise: ${analysisError.message}`);
+    // Aplica os scores no alvo (só campos não-null NÃO sobrescrevem com null)
+    const patch: Record<string, any> = { ...cleanAttrs };
+    if (hand) patch.hand = hand;
+    if (style) patch.style = style;
 
-    // 7. Atualiza player_profiles ou opponents com campos não-null
-    const updates: Record<string, number | string> = {};
-    for (const field of numericFields) {
-      if (result[field] !== null && result[field] !== undefined) {
-        updates[field] = result[field] as number;
-      }
-    }
-    if (result.hand) updates.hand = result.hand;
-    if (result.style) updates.style = result.style;
-
-    if (Object.keys(updates).length > 0) {
+    if (Object.keys(patch).length > 0) {
       if (video.target_type === 'self') {
-        await supabaseAdmin
-          .from('player_profiles')
-          .update(updates)
-          .eq('user_id', video.player_id);
+        patch.updated_at = new Date().toISOString();
+        await admin.from('player_profiles').update(patch).eq('user_id', video.player_id);
       } else if (video.target_type === 'opponent' && video.opponent_id) {
-        await supabaseAdmin
-          .from('opponents')
-          .update(updates)
-          .eq('id', video.opponent_id);
+        await admin.from('opponents').update(patch).eq('id', video.opponent_id);
       }
     }
 
-    // 8. Atualiza status do vídeo para 'analyzed'
-    await supabaseAdmin
-      .from('videos')
-      .update({ status: 'analyzed' })
-      .eq('id', video_id);
+    await admin.from('videos').update({ status: 'analyzed' }).eq('id', video_id);
 
-    // 9. Envia push notification ao jogador
-    const { data: playerUser } = await supabaseAdmin
-      .from('users')
-      .select('push_token')
-      .eq('id', video.player_id)
-      .single();
-
-    if (playerUser?.push_token) {
-      const updatedCount = Object.keys(updates).length;
-      await sendPushNotification(
-        playerUser.push_token,
-        '📹 Análise concluída!',
-        `${updatedCount} atributo${updatedCount !== 1 ? 's' : ''} atualizado${updatedCount !== 1 ? 's' : ''} no seu perfil.`,
-        { screen: '/(player)/videos' }
-      );
-    }
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        frames_analyzed: imageContents.length,
-        attributes_updated: Object.keys(updates),
-        result,
-      }),
-      { headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } }
-    );
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error('analyze-video error:', message);
-
-    return new Response(JSON.stringify({ error: message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+    return new Response(JSON.stringify({ ok: true, scores }), {
+      headers: { ...cors, 'Content-Type': 'application/json' },
+    });
+  } catch (err: any) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 400,
+      headers: { ...cors, 'Content-Type': 'application/json' },
     });
   }
 });

@@ -15,7 +15,7 @@ Desenvolvimento: vibe coding (você, Claude, gerando o código).
 | Frontend | React Native + Expo SDK 51 |
 | Navegação | Expo Router (file-based) |
 | Backend / DB | Supabase (auth + PostgreSQL + Storage) |
-| IA — Estratégias | Claude API `claude-sonnet-4-20250514` |
+| IA — Estratégias | Claude API `claude-sonnet-4-6` |
 | IA — Vídeo | Claude Vision API (mesma versão) |
 | Extração de frames | FFmpeg via Supabase Edge Function |
 | Estilos | NativeWind (Tailwind para React Native) |
@@ -215,7 +215,7 @@ A Edge Function:
 1. Busca `coach_config` mais recente (ORDER BY version DESC LIMIT 1)
 2. Monta user_message com atributos do jogador e adversário
 3. Chama `POST https://api.anthropic.com/v1/messages`:
-   - `model: "claude-sonnet-4-20250514"`
+   - `model: "claude-sonnet-4-6"`
    - `system: coach_config.system_prompt`
    - `messages: [{ role: "user", content: user_message }]`
 4. Salva resultado em `strategies`

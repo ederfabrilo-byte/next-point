@@ -22,20 +22,28 @@ Deno.serve(async (req) => {
     const { player_id, opponent_id } = await req.json();
     if (!player_id || !opponent_id) throw new Error('player_id e opponent_id são obrigatórios');
 
-    // Busca dados do jogador e adversário em paralelo
-    const [{ data: playerProfile }, { data: opponent }, { data: coachConfig }] = await Promise.all([
+    // Cliente com service role só para ler a config do Agente (protege o contexto do Zeca do RLS)
+    const admin = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
+
+    // Busca dados do jogador, adversário e Agente em paralelo
+    const [{ data: playerProfile }, { data: opponent }, { data: agent }] = await Promise.all([
       supabase.from('player_profiles').select('*').eq('user_id', player_id).maybeSingle(),
       supabase.from('opponents').select('*').eq('id', opponent_id).single(),
-      supabase.from('coach_config').select('system_prompt').order('version', { ascending: false }).limit(1).maybeSingle(),
+      admin.from('ai_agent_config').select('base_context, strategy_guidance').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
     ]);
 
     if (!opponent) throw new Error('Adversário não encontrado');
 
-    const systemPrompt = coachConfig?.system_prompt ?? DEFAULT_SYSTEM_PROMPT;
+    const systemPrompt = [agent?.base_context, agent?.strategy_guidance]
+      .filter((s) => s && String(s).trim())
+      .join('\n\n') || DEFAULT_SYSTEM_PROMPT;
 
     const formatAttrs = (obj: Record<string, any>) => {
-      const attrs = ['forehand', 'backhand', 'serve', 'volley', 'movement', 'mental'];
-      const labels: Record<string, string> = { forehand: 'Forehand', backhand: 'Backhand', serve: 'Saque', volley: 'Voleio', movement: 'Movimentação', mental: 'Mental' };
+      const attrs = ['forehand', 'backhand', 'slice', 'serve', 'volley', 'smash', 'dropshot', 'movement', 'mental'];
+      const labels: Record<string, string> = { forehand: 'Forehand', backhand: 'Backhand', slice: 'Slice', serve: 'Saque', volley: 'Voleio', smash: 'Smash', dropshot: 'Drop shot', movement: 'Movimentação', mental: 'Mental' };
       return attrs.map((k) => obj?.[k] != null ? `${labels[k]}: ${obj[k]}/5` : null).filter(Boolean).join(', ') || 'não informado';
     };
 
@@ -57,8 +65,8 @@ Gere uma estratégia de jogo detalhada para enfrentar este adversário.
 
     const anthropic = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY') });
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1024,
+      model: 'claude-sonnet-4-6',
+      max_tokens: 4096,
       system: systemPrompt,
       messages: [{ role: 'user', content: userMessage }],
     });

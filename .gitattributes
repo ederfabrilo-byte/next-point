@@ -1,0 +1,11 @@
+# Normaliza finais de linha para LF no repositório (evita ruído entre Windows e Mac)
+* text=auto eol=lf
+
+# Binários
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.jks binary
+*.p8 binary
+*.p12 binary
+*.mobileprovision binary

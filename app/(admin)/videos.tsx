@@ -15,7 +15,7 @@ interface Video {
   opponents: { name: string } | null;
 }
 
-export default function TeacherVideos() {
+export default function AdminVideos() {
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -63,7 +63,7 @@ export default function TeacherVideos() {
             const target = item.target_type === 'self' ? 'próprio jogo' : `adversário: ${item.opponents?.name ?? '—'}`;
             return (
               <TouchableOpacity
-                onPress={() => router.push(`/(teacher)/video-review/${item.id}`)}
+                onPress={() => router.push(`/(admin)/video-review/${item.id}`)}
                 className="bg-surface border border-border rounded-2xl p-5 active:opacity-75"
               >
                 <View className="flex-row items-center justify-between mb-2">
