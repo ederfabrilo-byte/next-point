@@ -16,8 +16,7 @@ export default function PlayerHome() {
         .from('student_teacher')
         .select('users!teacher_id(name)')
         .eq('student_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
+        .eq('status', 'accepted')
         .maybeSingle(),
       supabase.from('opponents').select('id', { count: 'exact', head: true }).eq('owner_id', user.id),
       supabase.from('strategies').select('id', { count: 'exact', head: true }).eq('player_id', user.id),

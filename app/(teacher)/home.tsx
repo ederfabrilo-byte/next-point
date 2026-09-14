@@ -16,7 +16,7 @@ export default function TeacherHome() {
   useFocusEffect(useCallback(() => {
     if (!user) return;
     Promise.all([
-      supabase.from('student_teacher').select('student_id', { count: 'exact', head: true }).eq('teacher_id', user.id),
+      supabase.from('student_teacher').select('student_id', { count: 'exact', head: true }).eq('teacher_id', user.id).eq('status', 'accepted'),
       supabase.from('users').select('avatar_url, name').eq('id', user.id).single(),
     ]).then(([students, userRes]) => {
       setStudentCount(students.count ?? 0);
