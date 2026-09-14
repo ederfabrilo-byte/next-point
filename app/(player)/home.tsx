@@ -7,20 +7,30 @@ import { supabase } from '../../lib/supabase';
 export default function PlayerHome() {
   const { user, reset, setRole } = useAuthStore();
   const [teacherName, setTeacherName] = useState<string | null>(null);
+  const [stats, setStats] = useState({ opponents: 0, strategies: 0, videos: 0 });
 
   useFocusEffect(useCallback(() => {
     if (!user) return;
-    supabase
-      .from('student_teacher')
-      .select('users!teacher_id(name)')
-      .eq('student_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
-      .then(({ data }) => {
-        const t = data?.users as unknown as { name: string | null } | null;
-        setTeacherName(t?.name?.trim() || (t ? 'Professor' : null));
+    Promise.all([
+      supabase
+        .from('student_teacher')
+        .select('users!teacher_id(name)')
+        .eq('student_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabase.from('opponents').select('id', { count: 'exact', head: true }).eq('owner_id', user.id),
+      supabase.from('strategies').select('id', { count: 'exact', head: true }).eq('player_id', user.id),
+      supabase.from('videos').select('id', { count: 'exact', head: true }).eq('player_id', user.id),
+    ]).then(([link, opponents, strategies, videos]) => {
+      const t = link.data?.users as unknown as { name: string | null } | null;
+      setTeacherName(t?.name?.trim() || (t ? 'Professor' : null));
+      setStats({
+        opponents: opponents.count ?? 0,
+        strategies: strategies.count ?? 0,
+        videos: videos.count ?? 0,
       });
+    });
   }, [user]));
 
   async function handleSignOut() {
@@ -53,6 +63,24 @@ export default function PlayerHome() {
             </TouchableOpacity>
           </View>
         </View>
+      </View>
+
+      {/* Stats */}
+      <View className="px-6 flex-row gap-3 mb-4">
+        {([
+          { label: 'Adversários', value: stats.opponents, route: '/(player)/opponents' },
+          { label: 'Estratégias', value: stats.strategies, route: '/(player)/strategy' },
+          { label: 'Vídeos', value: stats.videos, route: '/(player)/videos' },
+        ] as const).map((s) => (
+          <TouchableOpacity
+            key={s.label}
+            onPress={() => router.push(s.route)}
+            className="flex-1 bg-surface border border-border rounded-2xl p-4 items-center active:opacity-75"
+          >
+            <Text className="text-primary font-inter-bold text-3xl">{s.value}</Text>
+            <Text className="text-text-secondary font-inter text-xs mt-1">{s.label}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
       <View className="px-6 gap-3">

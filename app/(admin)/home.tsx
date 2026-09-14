@@ -4,6 +4,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useAuthStore } from '../../lib/store';
 import { supabase } from '../../lib/supabase';
 import AvatarPicker from '../../components/AvatarPicker';
+import IdentityCard from '../../components/IdentityCard';
 
 export default function AdminHome() {
   const { user, reset } = useAuthStore();
@@ -64,6 +65,16 @@ export default function AdminHome() {
           </TouchableOpacity>
         </View>
 
+        <View className="mb-6">
+          {user && (
+            <IdentityCard
+              userId={user.id}
+              hint="Seus alunos digitam o @ para te encontrar."
+              onChange={({ name: n }) => setName(n)}
+            />
+          )}
+        </View>
+
         {/* Stats */}
         {loading ? (
           <ActivityIndicator color="#F97316" />
@@ -100,6 +111,14 @@ export default function AdminHome() {
                 </View>
               )}
             </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => router.push('/(admin)/students')}
+            className="bg-surface border border-border rounded-2xl p-5 active:opacity-75"
+          >
+            <Text className="text-text-primary font-inter-bold text-lg">👥 Meus Alunos</Text>
+            <Text className="text-text-secondary font-inter text-sm mt-1">Turma e registro de treinos</Text>
           </TouchableOpacity>
 
           <TouchableOpacity

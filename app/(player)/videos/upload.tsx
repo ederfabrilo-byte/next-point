@@ -99,6 +99,8 @@ export default function UploadScreen() {
       return;
     }
 
+    let videoId: string | null = null;
+
     try {
       setStage('Enviando vídeo...');
       const storagePath = await uploadVideo(videoUri, user.id);
@@ -114,6 +116,7 @@ export default function UploadScreen() {
         storage_url: storagePath,
       }).select('id').single();
       if (error) throw error;
+      videoId = video.id;
 
       if (purpose === 'profile_analysis') {
         setStage('Extraindo frames...');
@@ -142,6 +145,11 @@ export default function UploadScreen() {
       }
     } catch (e: any) {
       setStage('');
+      // A linha já pode ter sido criada como 'processing'. Sem marcar a falha,
+      // ela ficava "Analisando..." para sempre na lista do jogador.
+      if (videoId) {
+        await supabase.from('videos').update({ status: 'failed' }).eq('id', videoId);
+      }
       Alert.alert('Erro', e.message ?? 'Não foi possível enviar o vídeo.');
     }
   }

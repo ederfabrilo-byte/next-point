@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, TextInput } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { useAuthStore } from '../../lib/store';
+import { aiTouchedAttributes } from '../../lib/analyses';
 import { PlayerProfile, AttributeKey, ATTRIBUTE_LABELS } from '../../lib/types';
 import AttributeSlider from '../../components/AttributeSlider';
 import { HandPicker, StylePicker } from '../../components/HandStylePicker';
@@ -14,18 +16,24 @@ export default function ProfileScreen() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [aiAttrs, setAiAttrs] = useState<Set<AttributeKey>>(new Set());
 
-  useEffect(() => {
+  // useFocusEffect e não useEffect: a análise de vídeo reescreve player_profiles
+  // por fora desta tela. Com useEffect, voltar para a aba mostrava as notas
+  // antigas — e salvar nesse estado gravava por cima do que a IA acabara de pôr.
+  useFocusEffect(useCallback(() => {
     if (!user) return;
     Promise.all([
       supabase.from('player_profiles').select('*').eq('user_id', user.id).maybeSingle(),
       supabase.from('users').select('avatar_url').eq('id', user.id).single(),
-    ]).then(([profileRes, userRes]) => {
+      aiTouchedAttributes({ playerId: user.id }),
+    ]).then(([profileRes, userRes, touched]) => {
       if (profileRes.data) setProfile(profileRes.data);
       if (userRes.data?.avatar_url) setAvatarUrl(userRes.data.avatar_url);
+      setAiAttrs(touched);
       setLoading(false);
     });
-  }, [user]);
+  }, [user]));
 
   async function handleSave() {
     if (!user) return;
@@ -74,6 +82,7 @@ export default function ProfileScreen() {
             key={key}
             label={ATTRIBUTE_LABELS[key]}
             value={profile[key] ?? null}
+            source={aiAttrs.has(key) ? 'ai' : 'manual'}
             onChange={(v) => setProfile((p) => ({ ...p, [key]: v }))}
           />
         ))}

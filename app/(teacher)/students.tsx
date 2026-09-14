@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
-import { router, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, useSegments } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
 import { useAuthStore } from '../../lib/store';
@@ -18,6 +18,9 @@ interface FoundPlayer {
 
 export default function TeacherStudents() {
   const { user } = useAuthStore();
+  // Esta tela também é servida em (admin)/students. Derivar o grupo da rota
+  // atual evita empurrar o Zeca para dentro da área de professor comum.
+  const group = useSegments()[0] ?? '(teacher)';
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
@@ -200,7 +203,7 @@ export default function TeacherStudents() {
             const name = item.users?.name?.trim() || item.users?.username || 'Jogador';
             return (
               <TouchableOpacity
-                onPress={() => router.push(`/(teacher)/student/${item.student_id}`)}
+                onPress={() => router.push(`/${group}/student/${item.student_id}`)}
                 onLongPress={() => handleRemove(item, name)}
                 className="bg-surface border border-border rounded-2xl p-5 active:opacity-75 flex-row items-center justify-between"
               >

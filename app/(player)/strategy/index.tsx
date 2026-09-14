@@ -3,20 +3,33 @@ import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert } from
 import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { supabase } from '../../../lib/supabase';
 import { useAuthStore } from '../../../lib/store';
-import { Opponent } from '../../../lib/types';
+import { Opponent, Strategy } from '../../../lib/types';
 
 export default function StrategyScreen() {
   const { user } = useAuthStore();
   const { opponentId } = useLocalSearchParams<{ opponentId?: string }>();
   const [opponents, setOpponents] = useState<Opponent[]>([]);
+  const [recent, setRecent] = useState<Strategy[]>([]);
   const [selected, setSelected] = useState<string | null>(opponentId ?? null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
 
   useFocusEffect(useCallback(() => {
     if (!user) return;
-    supabase.from('opponents').select('*').eq('owner_id', user.id).order('created_at', { ascending: false })
-      .then(({ data }) => { setOpponents(data ?? []); setLoading(false); });
+    Promise.all([
+      supabase.from('opponents').select('*').eq('owner_id', user.id).order('created_at', { ascending: false }),
+      // Antes, estratégia só era alcançável entrando no adversário que a gerou.
+      supabase
+        .from('strategies')
+        .select('*, opponents(id, name)')
+        .eq('player_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(5),
+    ]).then(([opps, strats]) => {
+      setOpponents(opps.data ?? []);
+      setRecent((strats.data as Strategy[]) ?? []);
+      setLoading(false);
+    });
   }, [user]));
 
   async function handleGenerate() {
@@ -61,6 +74,37 @@ export default function StrategyScreen() {
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 120 }}
             ItemSeparatorComponent={() => <View className="h-3" />}
+            ListHeaderComponent={
+              recent.length > 0 ? (
+                <View className="mb-6">
+                  <Text className="text-text-secondary font-inter-semibold text-xs uppercase tracking-wider mb-3">
+                    Estratégias recentes
+                  </Text>
+                  <View className="gap-2">
+                    {recent.map((s) => (
+                      <TouchableOpacity
+                        key={s.id}
+                        onPress={() => router.push(`/(player)/strategy/${s.id}`)}
+                        className="bg-surface border border-border rounded-xl p-3 flex-row items-center justify-between active:opacity-75"
+                      >
+                        <View className="flex-1">
+                          <Text className="text-text-primary font-inter-semibold text-sm">
+                            vs {s.opponents?.name ?? 'adversário removido'}
+                          </Text>
+                          <Text className="text-text-secondary font-inter text-xs mt-0.5">
+                            {new Date(s.created_at).toLocaleDateString('pt-BR')}
+                          </Text>
+                        </View>
+                        <Text className="text-primary font-inter text-xs">Abrir</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                  <Text className="text-text-secondary font-inter-semibold text-xs uppercase tracking-wider mt-6">
+                    Gerar nova
+                  </Text>
+                </View>
+              ) : null
+            }
             renderItem={({ item }) => {
               const isSelected = selected === item.id;
               return (

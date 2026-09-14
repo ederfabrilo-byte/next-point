@@ -66,7 +66,9 @@ export default function StudentDetailScreen() {
   }
 
   const name = student?.name ?? student?.email?.split('@')[0] ?? 'Jogador';
-  const ATTRS: AttributeKey[] = ['forehand', 'backhand', 'serve', 'volley', 'movement', 'mental'];
+  // Iterar ATTRIBUTE_LABELS em vez de uma lista fixa: uma lista hardcoded aqui
+  // já tinha ficado 3 atributos atrás (slice, smash, dropshot).
+  const ATTRS = Object.keys(ATTRIBUTE_LABELS) as AttributeKey[];
 
   return (
     <ScrollView className="flex-1 bg-bg" contentContainerStyle={{ paddingBottom: 40 }}>

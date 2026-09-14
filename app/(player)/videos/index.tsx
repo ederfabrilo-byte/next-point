@@ -1,35 +1,49 @@
-import { useEffect, useState, useCallback } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { useState, useCallback } from 'react';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, Image } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../../lib/supabase';
+import { toVideoPath } from '../../../lib/storage';
 import { useAuthStore } from '../../../lib/store';
+import { AttributeKey, ATTRIBUTE_LABELS } from '../../../lib/types';
 
 const zecaPhoto = require('../../../assets/zeca-mota.jpg');
+
+type Status = 'processing' | 'analyzed' | 'pending_review' | 'reviewed' | 'failed';
+
+interface Analysis {
+  id: string;
+  created_at: string;
+  [key: string]: unknown;
+}
 
 interface Video {
   id: string;
   purpose: 'profile_analysis' | 'technical_review';
   target_type: 'self' | 'opponent';
-  status: 'processing' | 'analyzed' | 'pending_review' | 'reviewed';
+  status: Status;
   description: string | null;
   feedback: string | null;
+  storage_url: string | null;
   created_at: string;
   opponents?: { name: string } | null;
+  video_analyses?: Analysis[] | null;
 }
 
-const STATUS_LABEL: Record<Video['status'], string> = {
+const STATUS_LABEL: Record<Status, string> = {
   processing: 'Analisando...',
   analyzed: 'Analisado',
   pending_review: 'Aguardando Prof.',
   reviewed: 'Avaliado',
+  failed: 'Falhou',
 };
 
-const STATUS_COLOR: Record<Video['status'], string> = {
+const STATUS_COLOR: Record<Status, string> = {
   processing: '#F97316',
   analyzed: '#4ade80',
   pending_review: '#facc15',
   reviewed: '#4ade80',
+  failed: '#f87171',
 };
 
 export default function VideosScreen() {
@@ -37,18 +51,38 @@ export default function VideosScreen() {
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useFocusEffect(useCallback(() => {
+  const load = useCallback(async () => {
     if (!user) return;
-    supabase
+    const { data } = await supabase
       .from('videos')
-      .select('*, opponents(name)')
+      .select('*, opponents(name), video_analyses(*)')
       .eq('player_id', user.id)
-      .order('created_at', { ascending: false })
-      .then(({ data }) => {
-        setVideos((data as Video[]) ?? []);
-        setLoading(false);
-      });
-  }, [user]));
+      .order('created_at', { ascending: false });
+    setVideos((data as Video[]) ?? []);
+    setLoading(false);
+  }, [user]);
+
+  useFocusEffect(useCallback(() => { load(); }, [load]));
+
+  function handleDelete(video: Video) {
+    Alert.alert('Excluir vídeo?', 'O arquivo e a análise vinculada são removidos.', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Excluir',
+        style: 'destructive',
+        onPress: async () => {
+          // Storage primeiro: se a linha sumir antes, o path se perde e o
+          // arquivo fica órfão no bucket.
+          if (video.storage_url) {
+            await supabase.storage.from('videos').remove([toVideoPath(video.storage_url)]);
+          }
+          const { error } = await supabase.from('videos').delete().eq('id', video.id);
+          if (error) { Alert.alert('Erro', error.message); return; }
+          await load();
+        },
+      },
+    ]);
+  }
 
   if (loading) {
     return <View className="flex-1 bg-bg items-center justify-center"><ActivityIndicator color="#F97316" /></View>;
@@ -90,62 +124,99 @@ export default function VideosScreen() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
           ItemSeparatorComponent={() => <View className="h-3" />}
-          renderItem={({ item }) => (
-            <View className="bg-surface border border-border rounded-2xl p-4">
-              <View className="flex-row items-center justify-between mb-2">
-                <View className="flex-row items-center gap-2">
-                  <Ionicons
-                    name={item.purpose === 'profile_analysis' ? 'analytics-outline' : 'school-outline'}
-                    size={18}
-                    color="#F97316"
-                  />
-                  <Text className="text-text-primary font-inter-bold text-sm">
-                    {item.purpose === 'profile_analysis' ? 'Análise de Perfil' : 'Avaliação Técnica'}
-                  </Text>
-                </View>
-                <View style={{ backgroundColor: STATUS_COLOR[item.status] + '22' }} className="px-2 py-0.5 rounded-full">
-                  <Text style={{ color: STATUS_COLOR[item.status] }} className="font-inter text-xs">
-                    {STATUS_LABEL[item.status]}
-                  </Text>
-                </View>
-              </View>
+          renderItem={({ item }) => {
+            const analysis = item.video_analyses?.[0];
+            const scored = analysis
+              ? (Object.keys(ATTRIBUTE_LABELS) as AttributeKey[])
+                  .filter((k) => analysis[k] != null)
+                  .map((k) => `${ATTRIBUTE_LABELS[k]} ${Number(analysis[k]).toFixed(1)}`)
+              : [];
 
-              <Text className="text-text-secondary font-inter text-xs">
-                {item.target_type === 'self' ? 'Meu jogo' : `Adversário: ${item.opponents?.name ?? '—'}`}
-              </Text>
-              {item.description ? (
-                <Text className="text-text-secondary font-inter text-xs mt-1" numberOfLines={2}>{item.description}</Text>
-              ) : null}
-              <Text className="text-text-secondary font-inter text-xs mt-2">
-                {new Date(item.created_at).toLocaleDateString('pt-BR')}
-              </Text>
+            return (
+              <View className="bg-surface border border-border rounded-2xl p-4">
+                <View className="flex-row items-center justify-between mb-2">
+                  <View className="flex-row items-center gap-2 flex-1">
+                    <Ionicons
+                      name={item.purpose === 'profile_analysis' ? 'analytics-outline' : 'school-outline'}
+                      size={18}
+                      color="#F97316"
+                    />
+                    <Text className="text-text-primary font-inter-bold text-sm">
+                      {item.purpose === 'profile_analysis' ? 'Análise de Perfil' : 'Avaliação Técnica'}
+                    </Text>
+                  </View>
+                  <View className="flex-row items-center gap-2">
+                    <View style={{ backgroundColor: STATUS_COLOR[item.status] + '22' }} className="px-2 py-0.5 rounded-full">
+                      <Text style={{ color: STATUS_COLOR[item.status] }} className="font-inter text-xs">
+                        {STATUS_LABEL[item.status]}
+                      </Text>
+                    </View>
+                    <TouchableOpacity onPress={() => handleDelete(item)} hitSlop={10}>
+                      <Ionicons name="trash-outline" size={16} color="#9CA3AF" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
 
-              {/* Feedback do Prof. Zeca */}
-              {item.purpose === 'technical_review' && item.status === 'reviewed' && item.feedback && (
-                <View className="mt-3 pt-3 border-t border-border">
-                  <View className="flex-row items-center gap-2 mb-2">
+                <Text className="text-text-secondary font-inter text-xs">
+                  {item.target_type === 'self' ? 'Meu jogo' : `Adversário: ${item.opponents?.name ?? '—'}`}
+                </Text>
+                {item.description ? (
+                  <Text className="text-text-secondary font-inter text-xs mt-1" numberOfLines={2}>{item.description}</Text>
+                ) : null}
+                <Text className="text-text-secondary font-inter text-xs mt-2">
+                  {new Date(item.created_at).toLocaleDateString('pt-BR')}
+                </Text>
+
+                {/* Falha na análise */}
+                {item.status === 'failed' && (
+                  <View className="mt-3 pt-3 border-t border-border flex-row items-start gap-2">
+                    <Ionicons name="alert-circle-outline" size={16} color="#f87171" />
+                    <Text className="text-text-secondary font-inter text-xs flex-1">
+                      A análise não foi concluída. Exclua este envio e tente de novo com um clipe mais curto.
+                    </Text>
+                  </View>
+                )}
+
+                {/* Notas que a IA aplicou */}
+                {scored.length > 0 && (
+                  <View className="mt-3 pt-3 border-t border-border">
+                    <View className="flex-row items-center gap-2 mb-2">
+                      <View className="bg-ai-bg px-2 py-0.5 rounded-full">
+                        <Text className="text-ai-text font-inter text-xs">IA</Text>
+                      </View>
+                      <Text className="text-text-secondary font-inter text-xs">Notas aplicadas ao perfil</Text>
+                    </View>
+                    <Text className="text-text-primary font-inter text-xs leading-5">{scored.join(' · ')}</Text>
+                  </View>
+                )}
+
+                {/* Feedback do Prof. Zeca */}
+                {item.purpose === 'technical_review' && item.status === 'reviewed' && item.feedback && (
+                  <View className="mt-3 pt-3 border-t border-border">
+                    <View className="flex-row items-center gap-2 mb-2">
+                      <Image
+                        source={zecaPhoto}
+                        style={{ width: 28, height: 28, borderRadius: 14, borderWidth: 1.5, borderColor: '#F97316' }}
+                      />
+                      <Text className="text-primary font-inter-semibold text-xs">Feedback — Prof. Zeca Mota</Text>
+                    </View>
+                    <Text className="text-text-primary font-inter text-sm leading-5">{item.feedback}</Text>
+                  </View>
+                )}
+
+                {/* Aguardando avaliação */}
+                {item.purpose === 'technical_review' && item.status === 'pending_review' && (
+                  <View className="mt-3 pt-3 border-t border-border flex-row items-center gap-2">
                     <Image
                       source={zecaPhoto}
-                      style={{ width: 28, height: 28, borderRadius: 14, borderWidth: 1.5, borderColor: '#F97316' }}
+                      style={{ width: 24, height: 24, borderRadius: 12, opacity: 0.6 }}
                     />
-                    <Text className="text-primary font-inter-semibold text-xs">Feedback — Prof. Zeca Mota</Text>
+                    <Text className="text-text-secondary font-inter text-xs">Aguardando avaliação do Prof. Zeca</Text>
                   </View>
-                  <Text className="text-text-primary font-inter text-sm leading-5">{item.feedback}</Text>
-                </View>
-              )}
-
-              {/* Aguardando avaliação */}
-              {item.purpose === 'technical_review' && item.status === 'pending_review' && (
-                <View className="mt-3 pt-3 border-t border-border flex-row items-center gap-2">
-                  <Image
-                    source={zecaPhoto}
-                    style={{ width: 24, height: 24, borderRadius: 12, opacity: 0.6 }}
-                  />
-                  <Text className="text-text-secondary font-inter text-xs">Aguardando avaliação do Prof. Zeca</Text>
-                </View>
-              )}
-            </View>
-          )}
+                )}
+              </View>
+            );
+          }}
         />
       )}
     </View>

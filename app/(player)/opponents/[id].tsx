@@ -1,30 +1,57 @@
-import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useCallback, useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, TextInput } from 'react-native';
+import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { supabase } from '../../../lib/supabase';
+import { aiTouchedAttributes } from '../../../lib/analyses';
 import { Opponent, Strategy, AttributeKey, ATTRIBUTE_LABELS } from '../../../lib/types';
 import AttributeSlider from '../../../components/AttributeSlider';
+import { HandPicker, StylePicker } from '../../../components/HandStylePicker';
 
 export default function OpponentDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [opponent, setOpponent] = useState<Opponent | null>(null);
   const [strategies, setStrategies] = useState<Strategy[]>([]);
+  const [aiAttrs, setAiAttrs] = useState<Set<AttributeKey>>(new Set());
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function load() {
-      const [{ data: opp }, { data: strats }] = await Promise.all([
-        supabase.from('opponents').select('*').eq('id', id).single(),
-        supabase.from('strategies').select('*').eq('opponent_id', id).order('created_at', { ascending: false }),
-      ]);
-      setOpponent(opp);
-      setStrategies(strats ?? []);
-      setLoading(false);
-    }
-    load();
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<Partial<Opponent>>({});
+  const [saving, setSaving] = useState(false);
+
+  const load = useCallback(async () => {
+    const [{ data: opp }, { data: strats }, touched] = await Promise.all([
+      supabase.from('opponents').select('*').eq('id', id).single(),
+      supabase.from('strategies').select('*').eq('opponent_id', id).order('created_at', { ascending: false }),
+      aiTouchedAttributes({ opponentId: id }),
+    ]);
+    setOpponent(opp);
+    setStrategies(strats ?? []);
+    setAiAttrs(touched);
+    setLoading(false);
   }, [id]);
 
-  async function handleDelete() {
+  // Recarrega ao focar: a análise de vídeo reescreve os atributos do adversário
+  // por fora desta tela.
+  useFocusEffect(useCallback(() => { if (!editing) load(); }, [load, editing]));
+
+  function startEdit() {
+    if (!opponent) return;
+    setDraft(opponent);
+    setEditing(true);
+  }
+
+  async function handleSave() {
+    if (!draft.name?.trim()) { Alert.alert('Nome obrigatório'); return; }
+    setSaving(true);
+    const { id: _id, owner_id: _owner, created_at: _created, ...patch } = draft as Opponent;
+    const { error } = await supabase.from('opponents').update(patch).eq('id', id);
+    setSaving(false);
+    if (error) { Alert.alert('Erro', error.message); return; }
+    setEditing(false);
+    await load();
+  }
+
+  function handleDelete() {
     Alert.alert('Excluir adversário?', 'Todas as estratégias também serão removidas.', [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -44,16 +71,88 @@ export default function OpponentDetail() {
     return <View className="flex-1 bg-bg items-center justify-center"><Text className="text-text-secondary">Adversário não encontrado.</Text></View>;
   }
 
+  const attrs = Object.keys(ATTRIBUTE_LABELS) as AttributeKey[];
+
+  // ── Modo edição ───────────────────────────────────────────────────────────
+  if (editing) {
+    return (
+      <ScrollView className="flex-1 bg-bg" contentContainerStyle={{ paddingBottom: 40 }}>
+        <View className="px-6 pt-16 pb-6 flex-row items-center justify-between">
+          <Text className="text-text-primary font-inter-bold text-2xl">Editar</Text>
+          <TouchableOpacity onPress={() => setEditing(false)}>
+            <Text className="text-text-secondary font-inter text-sm">Cancelar</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View className="px-6">
+          <View className="mb-5">
+            <Text className="text-text-secondary font-inter text-sm mb-2">Nome *</Text>
+            <TextInput
+              className="bg-surface border border-border rounded-xl px-4 h-14 text-text-primary font-inter"
+              value={draft.name ?? ''}
+              onChangeText={(v) => setDraft((p) => ({ ...p, name: v }))}
+              placeholder="Nome do adversário"
+              placeholderTextColor="#9CA3AF"
+            />
+          </View>
+
+          {attrs.map((key) => (
+            <AttributeSlider
+              key={key}
+              label={ATTRIBUTE_LABELS[key]}
+              value={draft[key] ?? null}
+              source={aiAttrs.has(key) ? 'ai' : 'manual'}
+              onChange={(v) => setDraft((p) => ({ ...p, [key]: v }))}
+            />
+          ))}
+
+          <HandPicker value={draft.hand ?? null} onChange={(v) => setDraft((p) => ({ ...p, hand: v }))} />
+          <StylePicker value={draft.style ?? null} onChange={(v) => setDraft((p) => ({ ...p, style: v }))} />
+
+          <View className="mb-4">
+            <Text className="text-text-secondary font-inter text-sm mb-2">Observações</Text>
+            <TextInput
+              className="bg-surface border border-border rounded-xl px-4 py-3 text-text-primary font-inter"
+              value={draft.notes ?? ''}
+              onChangeText={(v) => setDraft((p) => ({ ...p, notes: v }))}
+              multiline
+              numberOfLines={3}
+              placeholder="Pontos fortes, fracos, padrões de jogo..."
+              placeholderTextColor="#9CA3AF"
+              textAlignVertical="top"
+            />
+          </View>
+
+          <TouchableOpacity
+            onPress={handleSave}
+            disabled={saving}
+            className="bg-primary rounded-xl h-14 items-center justify-center mt-2"
+          >
+            {saving
+              ? <ActivityIndicator color="#000" />
+              : <Text className="text-black font-inter-bold text-base">Salvar alterações</Text>
+            }
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    );
+  }
+
+  // ── Modo leitura ──────────────────────────────────────────────────────────
   return (
     <ScrollView className="flex-1 bg-bg" contentContainerStyle={{ paddingBottom: 40 }}>
-      {/* Header */}
       <View className="px-6 pt-16 pb-4 flex-row items-center justify-between">
         <TouchableOpacity onPress={() => router.back()}>
           <Text className="text-primary font-inter text-sm">← Voltar</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleDelete}>
-          <Text className="text-red-400 font-inter text-sm">Excluir</Text>
-        </TouchableOpacity>
+        <View className="flex-row gap-4">
+          <TouchableOpacity onPress={startEdit}>
+            <Text className="text-primary font-inter text-sm">Editar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleDelete}>
+            <Text className="text-red-400 font-inter text-sm">Excluir</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View className="px-6 pb-6">
@@ -75,8 +174,14 @@ export default function OpponentDetail() {
       {/* Atributos */}
       <View className="px-6 mb-6">
         <Text className="text-text-secondary font-inter-semibold text-xs uppercase tracking-wider mb-4">Atributos</Text>
-        {(Object.keys(ATTRIBUTE_LABELS) as AttributeKey[]).map((key) => (
-          <AttributeSlider key={key} label={ATTRIBUTE_LABELS[key]} value={opponent[key] ?? null} readonly />
+        {attrs.map((key) => (
+          <AttributeSlider
+            key={key}
+            label={ATTRIBUTE_LABELS[key]}
+            value={opponent[key] ?? null}
+            source={aiAttrs.has(key) ? 'ai' : 'manual'}
+            readonly
+          />
         ))}
         {opponent.notes ? (
           <View className="bg-surface border border-border rounded-xl p-4 mt-2">

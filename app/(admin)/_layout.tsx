@@ -19,9 +19,11 @@ export default function AdminLayout() {
       }}
     >
       <Tabs.Screen name="home" options={{ title: 'Home', tabBarIcon: ({ focused }) => icon('home', focused) }} />
+      <Tabs.Screen name="students" options={{ title: 'Alunos', tabBarIcon: ({ focused }) => icon('people', focused) }} />
       <Tabs.Screen name="videos" options={{ title: 'Vídeos', tabBarIcon: ({ focused }) => icon('videocam', focused) }} />
       <Tabs.Screen name="agent" options={{ title: 'Agente', tabBarIcon: ({ focused }) => icon('sparkles', focused) }} />
       <Tabs.Screen name="video-review/[id]" options={{ href: null }} />
+      <Tabs.Screen name="student/[id]" options={{ href: null }} />
     </Tabs>
   );
 }
