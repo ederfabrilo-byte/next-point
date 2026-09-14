@@ -1,10 +1,27 @@
+import { useCallback, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useAuthStore } from '../../lib/store';
 import { supabase } from '../../lib/supabase';
 
 export default function PlayerHome() {
   const { user, reset, setRole } = useAuthStore();
+  const [teacherName, setTeacherName] = useState<string | null>(null);
+
+  useFocusEffect(useCallback(() => {
+    if (!user) return;
+    supabase
+      .from('student_teacher')
+      .select('users!teacher_id(name)')
+      .eq('student_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        const t = data?.users as unknown as { name: string | null } | null;
+        setTeacherName(t?.name?.trim() || (t ? 'Professor' : null));
+      });
+  }, [user]));
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -57,6 +74,13 @@ export default function PlayerHome() {
             </View>
           </View>
           <Text className="text-text-secondary font-inter text-sm">Geradas por inteligência artificial</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => router.push('/(player)/teacher')} className="bg-surface border border-border rounded-2xl p-5 active:opacity-75">
+          <Text className="text-text-primary font-inter-bold text-lg">🏫 Meu Professor</Text>
+          <Text className="text-text-secondary font-inter text-sm mt-1">
+            {teacherName ? teacherName : 'Escolha quem acompanha seu jogo'}
+          </Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

@@ -23,6 +23,7 @@ export default function PlayerLayout() {
       <Tabs.Screen name="opponents" options={{ title: 'Adversários', tabBarIcon: ({ focused }) => icon('people', focused) }} />
       <Tabs.Screen name="strategy" options={{ title: 'Estratégia', tabBarIcon: ({ focused }) => icon('bulb', focused) }} />
       <Tabs.Screen name="videos" options={{ title: 'Vídeos', tabBarIcon: ({ focused }) => icon('videocam', focused) }} />
+      <Tabs.Screen name="teacher" options={{ href: null }} />
     </Tabs>
   );
 }
