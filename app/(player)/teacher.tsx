@@ -92,7 +92,17 @@ export default function MyTeacherScreen() {
       .from('student_teacher')
       .insert({ teacher_id: t.id, student_id: user.id });
     setBusy(false);
-    if (error) { Alert.alert('Erro', error.message); return; }
+    if (error) {
+      // 23505 = student_teacher_one_per_student: um professor adicionou você
+      // enquanto esta tela estava aberta.
+      if (error.code === '23505') {
+        Alert.alert('Você já tem um professor', 'Um professor te adicionou enquanto esta tela estava aberta.');
+        await load();
+      } else {
+        Alert.alert('Não foi possível vincular', error.message);
+      }
+      return;
+    }
     setQuery('');
     setFound(null);
     await load();

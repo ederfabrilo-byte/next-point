@@ -62,7 +62,16 @@ export default function TeacherStudents() {
     const { error } = await supabase
       .from('student_teacher')
       .insert({ teacher_id: user.id, student_id: player.id });
-    if (error) { Alert.alert('Erro', error.message); return; }
+    if (error) {
+      // 23505 = student_teacher_one_per_student: o aluno já tem professor
+      Alert.alert(
+        'Não foi possível adicionar',
+        error.code === '23505'
+          ? `@${player.username} já tem professor. Ele precisa desvincular em Meu Professor antes de entrar na sua turma.`
+          : error.message
+      );
+      return;
+    }
     setQuery('');
     setFound(null);
     setAdding(false);

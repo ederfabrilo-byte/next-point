@@ -4,7 +4,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useAuthStore } from '../../lib/store';
 import { supabase } from '../../lib/supabase';
 import AvatarPicker from '../../components/AvatarPicker';
-import UsernameCard from '../../components/UsernameCard';
+import IdentityCard from '../../components/IdentityCard';
 
 export default function TeacherHome() {
   const { user, reset, setRole } = useAuthStore();
@@ -69,7 +69,13 @@ export default function TeacherHome() {
         </View>
 
         <View className="mb-6">
-          {user && <UsernameCard userId={user.id} hint="Seus alunos digitam este nome para te encontrar." />}
+          {user && (
+            <IdentityCard
+              userId={user.id}
+              hint="Seus alunos digitam o @ para te encontrar."
+              onChange={({ name: n }) => setName(n)}
+            />
+          )}
         </View>
 
         {/* Stats */}

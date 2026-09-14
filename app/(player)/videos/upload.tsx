@@ -76,6 +76,7 @@ export default function UploadScreen() {
     return frames;
   }
 
+  /** Devolve o PATH do objeto — o bucket é privado, exibir exige signed URL. */
   async function uploadVideo(uri: string, userId: string): Promise<string> {
     const b64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
     const path = `${userId}/${Date.now()}.mp4`;
@@ -84,7 +85,7 @@ export default function UploadScreen() {
       upsert: false,
     });
     if (error) throw error;
-    return supabase.storage.from('videos').getPublicUrl(path).data.publicUrl;
+    return path;
   }
 
   async function handleSubmit() {
@@ -100,7 +101,7 @@ export default function UploadScreen() {
 
     try {
       setStage('Enviando vídeo...');
-      const storageUrl = await uploadVideo(videoUri, user.id);
+      const storagePath = await uploadVideo(videoUri, user.id);
 
       setStage('Registrando...');
       const { data: video, error } = await supabase.from('videos').insert({
@@ -110,7 +111,7 @@ export default function UploadScreen() {
         opponent_id: targetType === 'opponent' ? opponentId : null,
         description: description.trim() || null,
         status: purpose === 'profile_analysis' ? 'processing' : 'pending_review',
-        storage_url: storageUrl,
+        storage_url: storagePath,
       }).select('id').single();
       if (error) throw error;
 

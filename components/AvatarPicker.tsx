@@ -32,7 +32,8 @@ export default function AvatarPicker({ userId, avatarUrl, size = 80, onUpdate }:
 
     const asset = result.assets[0];
     const ext = asset.uri.split('.').pop()?.toLowerCase() ?? 'jpg';
-    const path = `avatars/${userId}.${ext}`;
+    // Primeira pasta = uid: é o que a policy do bucket exige.
+    const path = `${userId}/avatar.${ext}`;
 
     setUploading(true);
     try {
