@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, Image, ScrollView } from 'react-native';
+import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator, Alert, Image, ScrollView } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
@@ -7,6 +7,7 @@ import { useAuthStore } from '../../lib/store';
 
 interface Teacher {
   id: string;
+  username: string | null;
   name: string | null;
   avatar_url: string | null;
 }
@@ -29,6 +30,10 @@ export default function MyTeacherScreen() {
   const [directory, setDirectory] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [query, setQuery] = useState('');
+  const [searching, setSearching] = useState(false);
+  const [found, setFound] = useState<Teacher | null>(null);
+  const [searchError, setSearchError] = useState('');
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -63,6 +68,23 @@ export default function MyTeacherScreen() {
 
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
+  async function handleSearch() {
+    const value = query.trim().replace(/^@/, '');
+    if (!value) return;
+    setSearching(true);
+    setSearchError('');
+    setFound(null);
+    const { data, error } = await supabase.rpc('find_user_by_username', {
+      p_username: value,
+      p_role: 'teacher',
+    });
+    setSearching(false);
+    if (error) { setSearchError(error.message); return; }
+    const hit = (data as Teacher[])?.[0] ?? null;
+    if (!hit) { setSearchError(`Nenhum professor com @${value}.`); return; }
+    setFound(hit);
+  }
+
   async function handleLink(t: Teacher) {
     if (!user || busy) return;
     setBusy(true);
@@ -71,6 +93,8 @@ export default function MyTeacherScreen() {
       .insert({ teacher_id: t.id, student_id: user.id });
     setBusy(false);
     if (error) { Alert.alert('Erro', error.message); return; }
+    setQuery('');
+    setFound(null);
     await load();
   }
 
@@ -118,55 +142,121 @@ export default function MyTeacherScreen() {
           </View>
         </View>
 
-        {directory.length === 0 ? (
-          <View className="flex-1 items-center justify-center px-6">
-            <Ionicons name="school-outline" size={48} color="#9CA3AF" />
-            <Text className="text-text-primary font-inter-bold text-lg text-center mt-4">
-              Nenhum professor disponível
-            </Text>
-            <Text className="text-text-secondary font-inter text-sm text-center mt-2">
-              Ainda não há professores cadastrados no Next Point.
-            </Text>
-          </View>
-        ) : (
-          <FlatList
-            data={directory}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
-            ItemSeparatorComponent={() => <View className="h-3" />}
-            ListHeaderComponent={
-              <Text className="text-text-secondary font-inter text-sm mb-4">
-                Ao escolher um professor, ele passa a ver seus atributos técnicos e pode registrar
-                seus treinos. Você pode desvincular quando quiser.
+        <FlatList
+          data={directory}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
+          ItemSeparatorComponent={() => <View className="h-3" />}
+          ListHeaderComponent={
+            <View className="mb-5">
+              {/* Busca por @username */}
+              <Text className="text-text-secondary font-inter text-sm mb-2">
+                Digite o nome de usuário do seu professor
               </Text>
-            }
-            renderItem={({ item }) => {
-              const name = displayName(item);
-              return (
+              <View className="flex-row gap-2">
+                <View className="flex-1 flex-row items-center bg-surface border border-border rounded-xl px-4 h-14">
+                  <Text className="text-text-secondary font-inter-bold text-base">@</Text>
+                  <TextInput
+                    className="flex-1 text-text-primary font-inter ml-1"
+                    value={query}
+                    onChangeText={(v) => { setQuery(v); setSearchError(''); setFound(null); }}
+                    onSubmitEditing={handleSearch}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    returnKeyType="search"
+                    placeholder="professor"
+                    placeholderTextColor="#9CA3AF"
+                  />
+                </View>
                 <TouchableOpacity
-                  onPress={() => handleLink(item)}
-                  disabled={busy}
-                  className="bg-surface border border-border rounded-2xl p-5 active:opacity-75 flex-row items-center justify-between"
+                  onPress={handleSearch}
+                  disabled={searching || !query.trim()}
+                  className={`rounded-xl h-14 w-14 items-center justify-center ${query.trim() ? 'bg-primary' : 'bg-surface border border-border'}`}
                 >
+                  {searching
+                    ? <ActivityIndicator color="#000" />
+                    : <Ionicons name="search" size={20} color={query.trim() ? '#000' : '#9CA3AF'} />
+                  }
+                </TouchableOpacity>
+              </View>
+              {searchError ? (
+                <Text className="text-red-400 font-inter text-xs mt-2">{searchError}</Text>
+              ) : null}
+
+              {found && (
+                <View className="bg-surface border border-primary rounded-2xl p-5 mt-3 flex-row items-center justify-between">
                   <View className="flex-row items-center gap-3 flex-1">
-                    {item.avatar_url ? (
-                      <Image
-                        source={{ uri: item.avatar_url }}
-                        style={{ width: 44, height: 44, borderRadius: 22 }}
-                      />
+                    {found.avatar_url ? (
+                      <Image source={{ uri: found.avatar_url }} style={{ width: 44, height: 44, borderRadius: 22 }} />
                     ) : (
                       <View className="bg-primary/20 rounded-full w-11 h-11 items-center justify-center">
-                        <Text className="text-primary font-inter-bold text-base">{name[0].toUpperCase()}</Text>
+                        <Text className="text-primary font-inter-bold text-base">
+                          {displayName(found)[0].toUpperCase()}
+                        </Text>
                       </View>
                     )}
-                    <Text className="text-text-primary font-inter-bold text-base flex-1">{name}</Text>
+                    <View className="flex-1">
+                      <Text className="text-text-primary font-inter-bold text-base">{displayName(found)}</Text>
+                      <Text className="text-text-secondary font-inter text-xs">@{found.username}</Text>
+                    </View>
                   </View>
-                  <Text className="text-primary font-inter-semibold text-sm">Escolher</Text>
-                </TouchableOpacity>
-              );
-            }}
-          />
-        )}
+                  <TouchableOpacity
+                    onPress={() => handleLink(found)}
+                    disabled={busy}
+                    className="bg-primary rounded-xl px-4 py-2"
+                  >
+                    <Text className="text-black font-inter-bold text-sm">Vincular</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {directory.length > 0 && (
+                <Text className="text-text-secondary font-inter-semibold text-xs uppercase tracking-wider mt-6">
+                  Ou escolha da lista
+                </Text>
+              )}
+            </View>
+          }
+          ListEmptyComponent={
+            <View className="items-center px-2 py-8">
+              <Ionicons name="school-outline" size={40} color="#9CA3AF" />
+              <Text className="text-text-secondary font-inter text-sm text-center mt-3">
+                Nenhum professor cadastrado ainda. Se o seu já usa o Next Point, peça o nome de
+                usuário dele e busque acima.
+              </Text>
+            </View>
+          }
+          renderItem={({ item }) => {
+            const name = displayName(item);
+            return (
+              <TouchableOpacity
+                onPress={() => handleLink(item)}
+                disabled={busy}
+                className="bg-surface border border-border rounded-2xl p-5 active:opacity-75 flex-row items-center justify-between"
+              >
+                <View className="flex-row items-center gap-3 flex-1">
+                  {item.avatar_url ? (
+                    <Image
+                      source={{ uri: item.avatar_url }}
+                      style={{ width: 44, height: 44, borderRadius: 22 }}
+                    />
+                  ) : (
+                    <View className="bg-primary/20 rounded-full w-11 h-11 items-center justify-center">
+                      <Text className="text-primary font-inter-bold text-base">{name[0].toUpperCase()}</Text>
+                    </View>
+                  )}
+                  <View className="flex-1">
+                    <Text className="text-text-primary font-inter-bold text-base">{name}</Text>
+                    {item.username ? (
+                      <Text className="text-text-secondary font-inter text-xs">@{item.username}</Text>
+                    ) : null}
+                  </View>
+                </View>
+                <Text className="text-primary font-inter-semibold text-sm">Escolher</Text>
+              </TouchableOpacity>
+            );
+          }}
+        />
       </View>
     );
   }

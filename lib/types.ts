@@ -5,6 +5,7 @@ export type Style = 'aggressive' | 'defensive' | 'all-around';
 export interface UserRow {
   id: string;
   email: string;
+  username: string | null;
   name: string | null;
   role: Role | null;
   is_admin: boolean;

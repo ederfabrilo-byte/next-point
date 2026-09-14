@@ -6,6 +6,7 @@ import { PlayerProfile, AttributeKey, ATTRIBUTE_LABELS } from '../../lib/types';
 import AttributeSlider from '../../components/AttributeSlider';
 import { HandPicker, StylePicker } from '../../components/HandStylePicker';
 import AvatarPicker from '../../components/AvatarPicker';
+import UsernameCard from '../../components/UsernameCard';
 
 export default function ProfileScreen() {
   const { user } = useAuthStore();
@@ -61,6 +62,10 @@ export default function ProfileScreen() {
         </View>
         <Text className="text-text-primary font-inter-bold text-2xl">Meu Perfil</Text>
         <Text className="text-text-secondary font-inter text-sm mt-1">Avalie seus atributos técnicos</Text>
+      </View>
+
+      <View className="px-6 mb-6">
+        {user && <UsernameCard userId={user.id} hint="É por ele que seu professor te adiciona." />}
       </View>
 
       <View className="px-6">
