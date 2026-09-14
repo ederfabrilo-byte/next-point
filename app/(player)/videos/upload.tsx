@@ -162,7 +162,7 @@ export default function UploadScreen() {
           userId: user.id,
           type: 'video_analyzed',
           title: 'Análise concluída',
-          body: 'O Zeca (IA) avaliou seu vídeo e atualizou seus atributos.',
+          body: 'O Prof. Zeca Mota (IA) avaliou seu vídeo e atualizou seus atributos.',
           data: { video_id: video.id },
         });
         Alert.alert('Análise concluída', 'Seus atributos foram atualizados a partir do vídeo.', [
@@ -264,14 +264,14 @@ export default function UploadScreen() {
                 <View className="flex-1">
                   <View className="flex-row items-center gap-2">
                     <Text className={`font-inter-bold text-base ${purpose === 'profile_analysis' ? 'text-black' : 'text-text-primary'}`}>
-                      Avaliação do Zeca
+                      Avaliação pelo Professor Zeca Mota
                     </Text>
                     <View className="bg-ai-bg px-2 py-0.5 rounded-full">
                       <Text className="text-ai-text font-inter text-xs">IA</Text>
                     </View>
                   </View>
                   <Text className={`font-inter text-xs mt-0.5 ${purpose === 'profile_analysis' ? 'text-black' : 'text-text-secondary'}`}>
-                    Análise automática com o método e os critérios do Prof. Zeca Mota
+                    Resultado na hora, com o método e os critérios do Prof. Zeca Mota
                   </Text>
                 </View>
               </View>

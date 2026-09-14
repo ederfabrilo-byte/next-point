@@ -140,7 +140,7 @@ export default function VideosScreen() {
                       color="#F97316"
                     />
                     <Text className="text-text-primary font-inter-bold text-sm">
-                      {item.purpose === 'profile_analysis' ? 'Avaliação do Zeca (IA)' : 'Avaliação do Professor'}
+                      {item.purpose === 'profile_analysis' ? 'Prof. Zeca Mota (IA)' : 'Avaliação do Professor'}
                     </Text>
                   </View>
                   <View className="flex-row items-center gap-2">
