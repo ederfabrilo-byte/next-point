@@ -26,7 +26,8 @@ interface FoundPlayer {
 }
 
 export default function TeacherStudents() {
-  const { user } = useAuthStore();
+  const { user, profile } = useAuthStore();
+  const myName = profile?.name?.trim() || (profile?.username ? `@${profile.username}` : 'Um professor');
   // Esta tela também é servida em (admin)/students. Derivar o grupo da rota
   // atual evita empurrar o Zeca para dentro da área de professor comum.
   const group = useSegments()[0] ?? '(teacher)';
@@ -85,7 +86,7 @@ export default function TeacherStudents() {
     const who = player.name?.trim() || `@${player.username}`;
     setBusy(true);
     try {
-      await requestLink({ teacherId: user.id, studentId: player.id, requestedBy: user.id });
+      await requestLink({ teacherId: user.id, studentId: player.id, requestedBy: user.id, fromName: myName });
       setQuery('');
       setFound(null);
       setAdding(false);
@@ -99,9 +100,15 @@ export default function TeacherStudents() {
   }
 
   async function handleAccept(link: PendingLink) {
+    if (!user) return;
     setBusy(true);
     try {
-      await acceptLink(link.teacher_id, link.student_id);
+      await acceptLink({
+        teacherId: link.teacher_id,
+        studentId: link.student_id,
+        acceptedBy: user.id,
+        acceptedByName: myName,
+      });
       await load();
     } catch (e: any) {
       Alert.alert('Erro', e.message);
@@ -121,9 +128,16 @@ export default function TeacherStudents() {
           text: mine ? 'Cancelar convite' : 'Recusar',
           style: 'destructive',
           onPress: async () => {
+            if (!user) return;
             setBusy(true);
             try {
-              await removeLink(link.teacher_id, link.student_id);
+              await removeLink({
+                teacherId: link.teacher_id,
+                studentId: link.student_id,
+                removedBy: user.id,
+                removedByName: myName,
+                wasPending: true,
+              });
               await load();
             } catch (e: any) {
               Alert.alert('Erro', e.message);
@@ -148,7 +162,13 @@ export default function TeacherStudents() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await removeLink(user.id, student.student_id);
+              await removeLink({
+                teacherId: user.id,
+                studentId: student.student_id,
+                removedBy: user.id,
+                removedByName: myName,
+                wasPending: false,
+              });
               await load();
             } catch (e: any) {
               Alert.alert('Erro', e.message);

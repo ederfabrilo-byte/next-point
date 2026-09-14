@@ -1,13 +1,11 @@
 import { useState, useCallback } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, Image } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../../lib/supabase';
 import { toVideoPath } from '../../../lib/storage';
 import { useAuthStore } from '../../../lib/store';
 import { AttributeKey, ATTRIBUTE_LABELS } from '../../../lib/types';
-
-const zecaPhoto = require('../../../assets/zeca-mota.jpg');
 
 type Status = 'processing' | 'analyzed' | 'pending_review' | 'reviewed' | 'failed';
 
@@ -142,7 +140,7 @@ export default function VideosScreen() {
                       color="#F97316"
                     />
                     <Text className="text-text-primary font-inter-bold text-sm">
-                      {item.purpose === 'profile_analysis' ? 'Análise de Perfil' : 'Avaliação Técnica'}
+                      {item.purpose === 'profile_analysis' ? 'Avaliação do Zeca (IA)' : 'Avaliação do Professor'}
                     </Text>
                   </View>
                   <View className="flex-row items-center gap-2">
@@ -190,15 +188,12 @@ export default function VideosScreen() {
                   </View>
                 )}
 
-                {/* Feedback do Prof. Zeca */}
+                {/* Feedback do professor */}
                 {item.purpose === 'technical_review' && item.status === 'reviewed' && item.feedback && (
                   <View className="mt-3 pt-3 border-t border-border">
                     <View className="flex-row items-center gap-2 mb-2">
-                      <Image
-                        source={zecaPhoto}
-                        style={{ width: 28, height: 28, borderRadius: 14, borderWidth: 1.5, borderColor: '#F97316' }}
-                      />
-                      <Text className="text-primary font-inter-semibold text-xs">Feedback — Prof. Zeca Mota</Text>
+                      <Ionicons name="chatbubble-ellipses" size={16} color="#F97316" />
+                      <Text className="text-primary font-inter-semibold text-xs">Feedback do professor</Text>
                     </View>
                     <Text className="text-text-primary font-inter text-sm leading-5">{item.feedback}</Text>
                   </View>
@@ -207,11 +202,8 @@ export default function VideosScreen() {
                 {/* Aguardando avaliação */}
                 {item.purpose === 'technical_review' && item.status === 'pending_review' && (
                   <View className="mt-3 pt-3 border-t border-border flex-row items-center gap-2">
-                    <Image
-                      source={zecaPhoto}
-                      style={{ width: 24, height: 24, borderRadius: 12, opacity: 0.6 }}
-                    />
-                    <Text className="text-text-secondary font-inter text-xs">Aguardando avaliação do Prof. Zeca</Text>
+                    <Ionicons name="hourglass-outline" size={16} color="#9CA3AF" />
+                    <Text className="text-text-secondary font-inter text-xs">Aguardando avaliação do seu professor</Text>
                   </View>
                 )}
               </View>

@@ -14,7 +14,7 @@ import { useAuthStore } from '../lib/store';
 import { Role } from '../lib/types';
 
 export default function RootLayout() {
-  const { session, role, isAdmin, setSession, setRole, setIsAdmin, setLoading } = useAuthStore();
+  const { session, role, isAdmin, setSession, setRole, setIsAdmin, setProfile, setLoading } = useAuthStore();
 
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -30,11 +30,12 @@ export default function RootLayout() {
       if (session?.user) {
         const { data } = await supabase
           .from('users')
-          .select('role, is_admin')
+          .select('role, is_admin, name, username')
           .eq('id', session.user.id)
           .maybeSingle();
         if (data?.role) setRole(data.role as Role);
         setIsAdmin(data?.is_admin ?? false);
+        setProfile(data ? { name: data.name, username: data.username } : null);
       }
       setLoading(false);
     }
@@ -45,11 +46,12 @@ export default function RootLayout() {
       if (session?.user) {
         const { data } = await supabase
           .from('users')
-          .select('role, is_admin')
+          .select('role, is_admin, name, username')
           .eq('id', session.user.id)
           .maybeSingle();
         if (data?.role) setRole(data.role as Role);
         setIsAdmin(data?.is_admin ?? false);
+        setProfile(data ? { name: data.name, username: data.username } : null);
       }
     });
 

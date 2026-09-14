@@ -17,7 +17,10 @@ export default function AdminHome() {
   useFocusEffect(useCallback(() => {
     if (!user) return;
     Promise.all([
-      supabase.from('videos').select('id', { count: 'exact', head: true }).eq('status', 'pending_review'),
+      // O Zeca vê apenas os vídeos dos alunos vinculados a ele como professor —
+      // a IA é a participação dele; assistir a vídeo de aluno alheio, não.
+      supabase.from('videos').select('id', { count: 'exact', head: true })
+        .eq('purpose', 'technical_review').eq('reviewer', 'teacher').eq('status', 'pending_review'),
       supabase.from('users').select('id', { count: 'exact', head: true }),
       supabase.from('users').select('avatar_url, name').eq('id', user.id).single(),
     ]).then(([videos, users, userRes]) => {

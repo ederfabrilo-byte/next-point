@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useUnreadCount } from '../../lib/notifications';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -8,6 +9,8 @@ function icon(name: IconName, focused: boolean) {
 }
 
 export default function PlayerLayout() {
+  const { count } = useUnreadCount();
+
   return (
     <Tabs
       screenOptions={{
@@ -16,6 +19,7 @@ export default function PlayerLayout() {
         tabBarActiveTintColor: '#F97316',
         tabBarInactiveTintColor: '#9CA3AF',
         tabBarLabelStyle: { fontFamily: 'Inter_500Medium', fontSize: 10 },
+        tabBarBadgeStyle: { backgroundColor: '#F97316', color: '#000', fontSize: 10, fontFamily: 'Inter_700Bold' },
       }}
     >
       <Tabs.Screen name="home" options={{ title: 'Home', tabBarIcon: ({ focused }) => icon('home', focused) }} />
@@ -23,6 +27,14 @@ export default function PlayerLayout() {
       <Tabs.Screen name="opponents" options={{ title: 'Adversários', tabBarIcon: ({ focused }) => icon('people', focused) }} />
       <Tabs.Screen name="strategy" options={{ title: 'Estratégia', tabBarIcon: ({ focused }) => icon('bulb', focused) }} />
       <Tabs.Screen name="videos" options={{ title: 'Vídeos', tabBarIcon: ({ focused }) => icon('videocam', focused) }} />
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          title: 'Avisos',
+          tabBarIcon: ({ focused }) => icon('notifications', focused),
+          tabBarBadge: count > 0 ? (count > 99 ? '99+' : count) : undefined,
+        }}
+      />
       <Tabs.Screen name="teacher" options={{ href: null }} />
     </Tabs>
   );

@@ -8,6 +8,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { decode } from 'base64-arraybuffer';
 import { supabase } from '../../../lib/supabase';
 import { useAuthStore } from '../../../lib/store';
+import { notify } from '../../../lib/notifications';
 import { Opponent } from '../../../lib/types';
 
 const zecaPhoto = require('../../../assets/zeca-mota.jpg');
@@ -17,12 +18,19 @@ type TargetType = 'self' | 'opponent';
 
 const NUM_FRAMES = 6;
 
+interface LinkedTeacher {
+  id: string;
+  name: string | null;
+  username: string | null;
+}
+
 export default function UploadScreen() {
-  const { user } = useAuthStore();
+  const { user, profile } = useAuthStore();
   const [purpose, setPurpose] = useState<Purpose | null>(null);
   const [targetType, setTargetType] = useState<TargetType>('self');
   const [opponentId, setOpponentId] = useState<string | null>(null);
   const [opponents, setOpponents] = useState<Opponent[]>([]);
+  const [teacher, setTeacher] = useState<LinkedTeacher | null>(null);
   const [description, setDescription] = useState('');
   const [videoUri, setVideoUri] = useState<string | null>(null);
   const [videoDuration, setVideoDuration] = useState<number | null>(null);
@@ -31,8 +39,21 @@ export default function UploadScreen() {
 
   useFocusEffect(useCallback(() => {
     if (!user) return;
-    supabase.from('opponents').select('*').eq('owner_id', user.id).order('name').then(({ data }) => {
-      setOpponents(data ?? []);
+    Promise.all([
+      supabase.from('opponents').select('*').eq('owner_id', user.id).order('name'),
+      // Avaliação por professor só existe como opção se houver vínculo ACEITO.
+      supabase
+        .from('student_teacher')
+        .select('users!teacher_id(id, name, username)')
+        .eq('student_id', user.id)
+        .eq('status', 'accepted')
+        .maybeSingle(),
+    ]).then(([opps, link]) => {
+      setOpponents(opps.data ?? []);
+      const t = (link.data?.users as unknown as LinkedTeacher) ?? null;
+      setTeacher(t);
+      // Se o vínculo caiu enquanto a tela estava aberta, a opção some junto.
+      if (!t) setPurpose((p) => (p === 'technical_review' ? null : p));
     });
   }, [user]));
 
@@ -88,6 +109,8 @@ export default function UploadScreen() {
     return path;
   }
 
+  const teacherLabel = teacher?.name?.trim() || (teacher?.username ? `@${teacher.username}` : 'seu professor');
+
   async function handleSubmit() {
     if (!purpose || !user) return;
     if (!videoUri) {
@@ -109,6 +132,8 @@ export default function UploadScreen() {
       const { data: video, error } = await supabase.from('videos').insert({
         player_id: user.id,
         purpose,
+        // 'ai_zeca' = IA rodando com o contexto do Zeca; 'teacher' = professor vinculado.
+        reviewer: purpose === 'profile_analysis' ? 'ai_zeca' : 'teacher',
         target_type: targetType,
         opponent_id: targetType === 'opponent' ? opponentId : null,
         description: description.trim() || null,
@@ -133,13 +158,29 @@ export default function UploadScreen() {
           throw new Error(detail?.error ?? fnErr.message ?? 'Falha na análise.');
         }
         setStage('');
+        await notify({
+          userId: user.id,
+          type: 'video_analyzed',
+          title: 'Análise concluída',
+          body: 'O Zeca (IA) avaliou seu vídeo e atualizou seus atributos.',
+          data: { video_id: video.id },
+        });
         Alert.alert('Análise concluída', 'Seus atributos foram atualizados a partir do vídeo.', [
           { text: 'Ver perfil', onPress: () => router.replace('/(player)/profile') },
           { text: 'OK', onPress: () => router.replace('/(player)/videos') },
         ]);
       } else {
         setStage('');
-        Alert.alert('Enviado!', 'Vídeo enviado para o Prof. Zeca avaliar.', [
+        if (teacher) {
+          await notify({
+            userId: teacher.id,
+            type: 'video_submitted',
+            title: 'Novo vídeo para avaliar',
+            body: `${profile?.name?.trim() || 'Seu aluno'} enviou um vídeo para avaliação técnica.`,
+            data: { video_id: video.id },
+          });
+        }
+        Alert.alert('Enviado!', `Vídeo enviado para ${teacherLabel} avaliar.`, [
           { text: 'OK', onPress: () => router.replace('/(player)/videos') },
         ]);
       }
@@ -216,42 +257,68 @@ export default function UploadScreen() {
               className={`rounded-2xl p-4 border ${purpose === 'profile_analysis' ? 'bg-primary border-primary' : 'bg-surface border-border'}`}
             >
               <View className="flex-row items-center gap-3">
-                <Ionicons name="analytics" size={22} color={purpose === 'profile_analysis' ? '#000' : '#F97316'} />
+                <Image
+                  source={zecaPhoto}
+                  style={{ width: 40, height: 40, borderRadius: 20, borderWidth: 2, borderColor: purpose === 'profile_analysis' ? '#000' : '#F97316' }}
+                />
                 <View className="flex-1">
                   <View className="flex-row items-center gap-2">
                     <Text className={`font-inter-bold text-base ${purpose === 'profile_analysis' ? 'text-black' : 'text-text-primary'}`}>
-                      Análise de Perfil
+                      Avaliação do Zeca
                     </Text>
                     <View className="bg-ai-bg px-2 py-0.5 rounded-full">
                       <Text className="text-ai-text font-inter text-xs">IA</Text>
                     </View>
                   </View>
                   <Text className={`font-inter text-xs mt-0.5 ${purpose === 'profile_analysis' ? 'text-black' : 'text-text-secondary'}`}>
-                    IA extrai atributos técnicos do vídeo automaticamente
+                    Análise automática com o método e os critérios do Prof. Zeca Mota
                   </Text>
                 </View>
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => setPurpose('technical_review')}
-              className={`rounded-2xl p-4 border ${purpose === 'technical_review' ? 'bg-primary border-primary' : 'bg-surface border-border'}`}
-            >
-              <View className="flex-row items-center gap-3">
-                <Image
-                  source={zecaPhoto}
-                  style={{ width: 40, height: 40, borderRadius: 20, borderWidth: 2, borderColor: purpose === 'technical_review' ? '#000' : '#F97316' }}
-                />
-                <View className="flex-1">
-                  <Text className={`font-inter-bold text-base ${purpose === 'technical_review' ? 'text-black' : 'text-text-primary'}`}>
-                    Avaliação Técnica
-                  </Text>
-                  <Text className={`font-inter text-xs mt-0.5 ${purpose === 'technical_review' ? 'text-black' : 'text-text-secondary'}`}>
-                    Prof. Zeca Mota revisa e envia feedback personalizado
-                  </Text>
+            {teacher ? (
+              <TouchableOpacity
+                onPress={() => setPurpose('technical_review')}
+                className={`rounded-2xl p-4 border ${purpose === 'technical_review' ? 'bg-primary border-primary' : 'bg-surface border-border'}`}
+              >
+                <View className="flex-row items-center gap-3">
+                  <View
+                    className="w-10 h-10 rounded-full items-center justify-center"
+                    style={{ backgroundColor: purpose === 'technical_review' ? '#00000022' : '#F9731633' }}
+                  >
+                    <Text className={`font-inter-bold text-base ${purpose === 'technical_review' ? 'text-black' : 'text-primary'}`}>
+                      {teacherLabel[0].toUpperCase()}
+                    </Text>
+                  </View>
+                  <View className="flex-1">
+                    <Text className={`font-inter-bold text-base ${purpose === 'technical_review' ? 'text-black' : 'text-text-primary'}`}>
+                      Avaliação do Professor
+                    </Text>
+                    <Text className={`font-inter text-xs mt-0.5 ${purpose === 'technical_review' ? 'text-black' : 'text-text-secondary'}`}>
+                      {teacherLabel} assiste ao vídeo e escreve o feedback
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ) : (
+              <View className="rounded-2xl p-4 border border-border bg-surface opacity-70">
+                <View className="flex-row items-center gap-3">
+                  <View className="w-10 h-10 rounded-full items-center justify-center bg-bg border border-border">
+                    <Ionicons name="person-outline" size={18} color="#9CA3AF" />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-text-secondary font-inter-bold text-base">Avaliação do Professor</Text>
+                    <Text className="text-text-secondary font-inter text-xs mt-0.5">
+                      Disponível quando você tiver um professor vinculado.
+                    </Text>
+                    <TouchableOpacity onPress={() => router.push('/(player)/teacher')} className="mt-2">
+                      <Text className="text-primary font-inter-semibold text-xs">Vincular um professor</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
-            </TouchableOpacity>
+            )}
           </View>
         </View>
 

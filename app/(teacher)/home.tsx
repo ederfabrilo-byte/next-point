@@ -9,6 +9,7 @@ import IdentityCard from '../../components/IdentityCard';
 export default function TeacherHome() {
   const { user, reset, setRole } = useAuthStore();
   const [studentCount, setStudentCount] = useState(0);
+  const [pendingVideos, setPendingVideos] = useState(0);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -18,8 +19,12 @@ export default function TeacherHome() {
     Promise.all([
       supabase.from('student_teacher').select('student_id', { count: 'exact', head: true }).eq('teacher_id', user.id).eq('status', 'accepted'),
       supabase.from('users').select('avatar_url, name').eq('id', user.id).single(),
-    ]).then(([students, userRes]) => {
+      // RLS já limita aos alunos vinculados deste professor.
+      supabase.from('videos').select('id', { count: 'exact', head: true })
+        .eq('purpose', 'technical_review').eq('reviewer', 'teacher').eq('status', 'pending_review'),
+    ]).then(([students, userRes, pending]) => {
       setStudentCount(students.count ?? 0);
+      setPendingVideos(pending.count ?? 0);
       if (userRes.data?.avatar_url) setAvatarUrl(userRes.data.avatar_url);
       setName(userRes.data?.name ?? null);
       setLoading(false);
@@ -83,10 +88,20 @@ export default function TeacherHome() {
           <ActivityIndicator color="#F97316" />
         ) : (
           <View className="flex-row gap-3 mb-6">
-            <View className="flex-1 bg-surface border border-border rounded-2xl p-4 items-center">
+            <TouchableOpacity
+              onPress={() => router.push('/(teacher)/students')}
+              className="flex-1 bg-surface border border-border rounded-2xl p-4 items-center active:opacity-75"
+            >
               <Text className="text-primary font-inter-bold text-3xl">{studentCount}</Text>
               <Text className="text-text-secondary font-inter text-xs mt-1">Alunos</Text>
-            </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push('/(teacher)/videos')}
+              className="flex-1 bg-surface border border-border rounded-2xl p-4 items-center active:opacity-75"
+            >
+              <Text className="text-primary font-inter-bold text-3xl">{pendingVideos}</Text>
+              <Text className="text-text-secondary font-inter text-xs mt-1">Vídeos a avaliar</Text>
+            </TouchableOpacity>
           </View>
         )}
 
@@ -97,7 +112,24 @@ export default function TeacherHome() {
             className="bg-surface border border-border rounded-2xl p-5 active:opacity-75"
           >
             <Text className="text-text-primary font-inter-bold text-lg">👥 Alunos</Text>
-            <Text className="text-text-secondary font-inter text-sm mt-1">Gerencie sua turma</Text>
+            <Text className="text-text-secondary font-inter text-sm mt-1">Turma e convites pendentes</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => router.push('/(teacher)/videos')}
+            className="bg-surface border border-border rounded-2xl p-5 active:opacity-75"
+          >
+            <View className="flex-row items-center justify-between">
+              <View>
+                <Text className="text-text-primary font-inter-bold text-lg">📹 Vídeos</Text>
+                <Text className="text-text-secondary font-inter text-sm mt-1">Avaliações técnicas dos seus alunos</Text>
+              </View>
+              {pendingVideos > 0 && (
+                <View className="bg-primary rounded-full w-6 h-6 items-center justify-center">
+                  <Text className="text-black font-inter-bold text-xs">{pendingVideos}</Text>
+                </View>
+              )}
+            </View>
           </TouchableOpacity>
         </View>
       </View>

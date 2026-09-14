@@ -47,7 +47,8 @@ function Avatar({ url, label, size = 44 }: { url: string | null; label: string; 
 }
 
 export default function MyTeacherScreen() {
-  const { user } = useAuthStore();
+  const { user, profile } = useAuthStore();
+  const myName = profile?.name?.trim() || (profile?.username ? `@${profile.username}` : 'Um jogador');
   const [teacher, setTeacher] = useState<Teacher | null>(null);
   const [logs, setLogs] = useState<TrainingLog[]>([]);
   const [pending, setPending] = useState<PendingLink[]>([]);
@@ -113,7 +114,7 @@ export default function MyTeacherScreen() {
     if (!user || busy) return;
     setBusy(true);
     try {
-      await requestLink({ teacherId: t.id, studentId: user.id, requestedBy: user.id });
+      await requestLink({ teacherId: t.id, studentId: user.id, requestedBy: user.id, fromName: myName });
       setQuery('');
       setFound(null);
       await load();
@@ -126,9 +127,15 @@ export default function MyTeacherScreen() {
   }
 
   async function handleAccept(link: PendingLink) {
+    if (!user) return;
     setBusy(true);
     try {
-      await acceptLink(link.teacher_id, link.student_id);
+      await acceptLink({
+        teacherId: link.teacher_id,
+        studentId: link.student_id,
+        acceptedBy: user.id,
+        acceptedByName: myName,
+      });
       await load();
     } catch (e: any) {
       Alert.alert('Erro', e.message);
@@ -148,9 +155,16 @@ export default function MyTeacherScreen() {
           text: mine ? 'Cancelar convite' : 'Recusar',
           style: 'destructive',
           onPress: async () => {
+            if (!user) return;
             setBusy(true);
             try {
-              await removeLink(link.teacher_id, link.student_id);
+              await removeLink({
+                teacherId: link.teacher_id,
+                studentId: link.student_id,
+                removedBy: user.id,
+                removedByName: myName,
+                wasPending: true,
+              });
               await load();
             } catch (e: any) {
               Alert.alert('Erro', e.message);
@@ -176,7 +190,13 @@ export default function MyTeacherScreen() {
           onPress: async () => {
             setBusy(true);
             try {
-              await removeLink(teacher.id, user.id);
+              await removeLink({
+                teacherId: teacher.id,
+                studentId: user.id,
+                removedBy: user.id,
+                removedByName: myName,
+                wasPending: false,
+              });
               await load();
             } catch (e: any) {
               Alert.alert('Erro', e.message);
