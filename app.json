@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "scheme": "next-point",
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -35,7 +35,13 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O Next Point precisa acessar sua galeria para você enviar vídeos dos seus treinos e jogos."
+        }
+      ]
     ],
     "extra": {
       "router": {},
