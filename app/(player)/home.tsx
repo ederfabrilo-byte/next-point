@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useAuthStore } from '../../lib/store';
 import { supabase } from '../../lib/supabase';
+import { unregisterPush } from '../../lib/push';
 
 export default function PlayerHome() {
   const { user, reset, setRole } = useAuthStore();
@@ -33,6 +34,7 @@ export default function PlayerHome() {
   }, [user]));
 
   async function handleSignOut() {
+    if (user) await unregisterPush(user.id);
     await supabase.auth.signOut();
     reset();
   }

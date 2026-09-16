@@ -1,5 +1,5 @@
 import '../global.css';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import {
@@ -12,9 +12,12 @@ import {
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../lib/store';
 import { Role } from '../lib/types';
+import { registerForPush, listenPushOpened } from '../lib/push';
 
 export default function RootLayout() {
   const { session, role, isAdmin, setSession, setRole, setIsAdmin, setProfile, setLoading } = useAuthStore();
+  // Toque numa push antes de o perfil carregar (cold start): guarda e navega depois.
+  const pendingPushOpen = useRef(false);
 
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -36,6 +39,7 @@ export default function RootLayout() {
         if (data?.role) setRole(data.role as Role);
         setIsAdmin(data?.is_admin ?? false);
         setProfile(data ? { name: data.name, username: data.username } : null);
+        registerForPush(session.user.id);
       }
       setLoading(false);
     }
@@ -52,11 +56,30 @@ export default function RootLayout() {
         if (data?.role) setRole(data.role as Role);
         setIsAdmin(data?.is_admin ?? false);
         setProfile(data ? { name: data.name, username: data.username } : null);
+        registerForPush(session.user.id);
       }
     });
 
-    return () => subscription.unsubscribe();
+    const stopPushListener = listenPushOpened(() => {
+      pendingPushOpen.current = true;
+      openNotificationsTab();
+    });
+
+    return () => {
+      subscription.unsubscribe();
+      stopPushListener();
+    };
   }, []);
+
+  /** Leva para a aba Avisos do perfil atual. Se o perfil ainda não carregou, fica pendente. */
+  function openNotificationsTab() {
+    const { session, role, isAdmin } = useAuthStore.getState();
+    if (!session) return;
+    const group = isAdmin ? '(admin)' : role === 'player' ? '(player)' : role === 'teacher' ? '(teacher)' : null;
+    if (!group) return;
+    pendingPushOpen.current = false;
+    router.push(`/${group}/notifications`);
+  }
 
   useEffect(() => {
     if (!fontsLoaded) return;
@@ -72,6 +95,7 @@ export default function RootLayout() {
     } else {
       router.replace('/(teacher)/home');
     }
+    if (pendingPushOpen.current) openNotificationsTab();
   }, [session, role, isAdmin, fontsLoaded]);
 
   if (!fontsLoaded) return null;

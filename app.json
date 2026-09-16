@@ -42,7 +42,15 @@
           "photosPermission": "O Next Point precisa acessar sua galeria para você enviar vídeos dos seus treinos e jogos."
         }
       ],
-      "expo-video"
+      "expo-video",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#F97316",
+          "defaultChannel": "default"
+        }
+      ]
     ],
     "extra": {
       "router": {},

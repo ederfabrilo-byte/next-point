@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'rea
 import { router, useFocusEffect } from 'expo-router';
 import { useAuthStore } from '../../lib/store';
 import { supabase } from '../../lib/supabase';
+import { unregisterPush } from '../../lib/push';
 import AvatarPicker from '../../components/AvatarPicker';
 import IdentityCard from '../../components/IdentityCard';
 
@@ -33,6 +34,7 @@ export default function AdminHome() {
   }, [user]));
 
   async function handleSignOut() {
+    if (user) await unregisterPush(user.id);
     await supabase.auth.signOut();
     reset();
   }

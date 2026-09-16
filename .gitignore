@@ -45,3 +45,7 @@ supabase/.temp/
 /android
 android/
 ios/
+
+# credenciais FCM (Android push) — vem do EAS via env var de arquivo
+google-services.json
+fcm-service-account.json

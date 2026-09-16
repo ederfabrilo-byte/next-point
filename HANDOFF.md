@@ -3,7 +3,7 @@
 > Documento de continuidade entre máquinas. Se você (Claude Code) está retomando numa
 > sessão nova, este é o ponto exato onde o trabalho parou. Leia também o `CLAUDE.md`.
 >
-> Atualizado em **2026-09-13**.
+> Atualizado em **2026-09-16**.
 
 ## ⚠️ Leia antes de escrever qualquer migration
 
@@ -36,6 +36,11 @@ aberto ao lado da nova; sempre `drop` a antiga).
 - **Expo SDK 54** + Supabase (cloud) + NativeWind + Zustand. Rodar: `npm install` e `npx expo start --tunnel`.
 - Project ref `aymztftngjojdjnwkgyn` (`sa-east-1`).
 - `.env` não vem no git: `cp .env.example .env`.
+- Também fora do git, na raiz: `google-services.json` e `fcm-service-account.json` (FCM).
+  Para regerar: `firebase apps:sdkconfig ANDROID 1:702946796390:android:7a745327b88e8d7946dea7 -o google-services.json`
+  (Firebase CLI logada) e a chave pelo IAM da conta `firebase-adminsdk-fbsvc@next-point-6040b`.
+- No Mac o EAS autentica por `EXPO_TOKEN` (`~/.expo/token`) e o Supabase por PAT em
+  `~/.supabase/access-token`.
 - Credenciais já cadastradas como env vars do **projeto** no EAS (dev/preview/prod) — `eas env:list --environment preview`.
 - Build: `eas build --profile preview --platform android` gera APK standalone. O profile
   `development` exigiria `expo-dev-client`, que não está instalado.
@@ -74,6 +79,16 @@ foram **removidas de propósito**; se reaparecerem, é regressão.
 - **Notificações** in-app (`notifications`) com aba Avisos e badge nos três perfis.
   Pegadinha: a policy de INSERT exige linha em `student_teacher` entre os dois — ao avisar
   sobre vínculo **desfeito**, notifique **antes** do delete.
+- **Push notifications** (2026-09-16). Toda linha nova em `notifications` vira push, sem o
+  app ou as Edge Functions saberem: trigger `notifications_send_push` → `pg_net` → Edge
+  Function `send-push` (deployada com `--no-verify-jwt`, protegida pelo header
+  `x-webhook-secret`; o valor vive no Vault como `send_push_webhook_secret` e no secret
+  `PUSH_WEBHOOK_SECRET` da função) → Expo Push API. Token `DeviceNotRegistered` é zerado
+  pela função. No app: `lib/push.ts` grava `users.push_token` no login, zera no logout e
+  leva para a aba Avisos ao tocar na push. Android exige FCM: projeto Firebase
+  `next-point-6040b`, `google-services.json` na raiz (ignorado; no EAS vem pela env var de
+  arquivo `GOOGLE_SERVICES_JSON` via `app.config.js`) e chave FCM V1 já cadastrada em
+  `eas credentials`. iOS ainda sem APNs (nunca houve build iOS).
 - **Estratégia**: Edge Function `generate-strategy` (`claude-sonnet-4-6`, `max_tokens 4096`).
 - **Vídeo**: upload real, frames extraídos no cliente (`expo-video-thumbnails`), IA via
   `analyze-video`. Fila do professor com **player funcionando** (`expo-video` + signed URL).
@@ -83,8 +98,10 @@ foram **removidas de propósito**; se reaparecerem, é regressão.
 
 ## Pendências conhecidas
 
-1. **Push notifications** — `users.push_token` existe desde maio e nunca foi usada; hoje as
-   notificações são só in-app. É a maior pendência.
+1. **Push: validar no aparelho.** Pipeline testado ponta-a-ponta só até a Expo Push API
+   (token falso → `DeviceNotRegistered`). Falta abrir o APK, aceitar a permissão, conferir
+   `users.push_token` preenchido e receber uma push real. iOS precisa de APNs quando houver
+   build iOS.
 2. **`coach_config` e `video_analysis_config`** estão vazias e substituídas por
    `ai_agent_config`. Candidatas a `DROP` — decisão do dono.
 3. **Fila do Zeca faz join em `opponents(name)`** e a RLS de `opponents` é só do dono →
@@ -96,6 +113,13 @@ foram **removidas de propósito**; se reaparecerem, é regressão.
    convidar → recusar → convidar de novo.
 
 ## Gotchas
+
+- **`eas credentials` é menu interativo** e não roda pelo `!` do Claude Code. Dá para dirigir
+  com `expect` (feito em 2026-09-16 para subir a chave FCM V1). O classificador do Claude
+  Code também barra escrita em secret store (`eas env:create`, `supabase secrets set`,
+  criação de chave IAM) — os scripts `scripts-*.sh` na raiz existem para o Eder rodar.
+- **Testar push exige build nativo** (APK preview). Expo Go não recebe push remoto no
+  Android desde o SDK 53; emulador também não.
 
 - **Reanimated 4 exige new architecture** — `newArchEnabled: true` no `app.json`. Com `false`
   o build Android morre em `assertNewArchitectureEnabledTask`.
