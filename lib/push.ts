@@ -13,8 +13,8 @@ import { supabase } from './supabase';
  * notificação in-app vira push automaticamente, sem o app (nem outra Edge
  * Function) precisar saber disso.
  *
- * Exige build nativo (APK/IPA). No Expo Go e na web não há push — as funções
- * abaixo simplesmente não fazem nada.
+ * Exige build nativo (APK/IPA) — exceto Expo Go no iOS, que ainda recebe push.
+ * No Expo Go Android e na web não há push — as funções abaixo não fazem nada.
  */
 
 const ANDROID_CHANNEL = 'default';
@@ -32,8 +32,9 @@ Notifications.setNotificationHandler({
 function isPushCapable(): boolean {
   if (Platform.OS === 'web') return false;
   if (!Device.isDevice) return false; // emulador/simulador não recebe push
-  // Expo Go (SDK 53+) não suporta push remoto no Android.
-  return Constants.appOwnership !== 'expo';
+  // Expo Go (SDK 53+) não recebe push remoto no Android; no iOS ainda recebe.
+  if (Constants.appOwnership === 'expo') return Platform.OS === 'ios';
+  return true;
 }
 
 /**
