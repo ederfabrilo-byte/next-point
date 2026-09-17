@@ -3,7 +3,33 @@
 > Documento de continuidade entre máquinas. Se você (Claude Code) está retomando numa
 > sessão nova, este é o ponto exato onde o trabalho parou. Leia também o `CLAUDE.md`.
 >
-> Atualizado em **2026-09-16**.
+> Atualizado em **2026-09-17**.
+
+## ▶ Retomar aqui (estado em 2026-09-17, fim da sessão no Mac)
+
+- **Código**: `main` = `origin/main` = `bc67c59`. Nada pendente de commit.
+- **Banco** (`aymztftngjojdjnwkgyn`): 41 policies, RLS em todas as tabelas, 21 migrations
+  registradas (18 do repo + 3 do dashboard de maio), cron `fail-stale-processing-videos`
+  ativo, trigger de push ativo, 0 vídeos presos.
+- **Edge Functions**: `analyze-video` (19:30), `generate-strategy`, `send-push`
+  (`--no-verify-jwt`). **`review-video-zeca` ainda está deployada mas não existe no repo**
+  (sobra do branch antigo do Mac) — candidata a remoção, decisão do Eder.
+- **APK preview** com push/FCM: build `9bee27cc` —
+  https://expo.dev/artifacts/eas/Ouo77oe-9EYGIOl9a-tFanSQaNTXRe_QHA2SkmbXK-0.apk
+  (gerado antes dos commits de 17/09; para testar o app atual no celular, gerar outro).
+- **Contas de teste**: `ederfabrilo@gmail.com` (jogador, vinculado ao Zeca, 2 vídeos de
+  teste com descrição "Teste: …") · `zeca@nextpoint.app` / `teste1234` (admin+professor) ·
+  `zecamota09@gmail.com` (jogador sem vínculo).
+- **No Mac**: PAT Supabase em `~/.supabase/access-token`, `EXPO_TOKEN` em `~/.expo/token`,
+  Firebase CLI logada, `google-services.json` e `fcm-service-account.json` na raiz.
+  Web: `cd ~/next-point && EXPO_TOKEN=$(cat ~/.expo/token) npx expo start` → localhost:8081.
+- **O que foi feito em 17/09**: teste completo no browser nos 3 papéis; corrigidos deadlock
+  de auth, CORS das Edge Functions, vídeos presos, `Alert.alert` no web, datas de treino,
+  recarga da tela de avaliação; RLS de `opponents` para professor; IA passa a devolver
+  parecer em texto; botão ↻ Reavaliar (frames guardados, `temperature 0`).
+- **Próximos passos sugeridos**: (1) Zeca preencher "Orientação — Vídeo" e "Estratégia" no
+  Agente de IA (hoje só há um rascunho no Contexto); (2) Apple Developer → APNs → build iOS;
+  (3) validar push num aparelho real; (4) itens 2, 4, 5, 6 e 8 das pendências abaixo.
 
 ## ⚠️ Leia antes de escrever qualquer migration
 
