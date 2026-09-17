@@ -29,24 +29,47 @@ Deno.serve(async (req) => {
     return new Response('ok', { headers: cors });
   }
 
-  try {
-    const { video_id, frames } = await req.json();
-    if (!video_id) throw new Error('video_id é obrigatório');
-    if (!Array.isArray(frames) || frames.length === 0) {
-      throw new Error('frames é obrigatório (array de imagens base64 ou URLs)');
-    }
+  // Service role: função de servidor confiável (lê Agente + vídeo, aplica scores)
+  const admin = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  );
+  let videoId: string | null = null;
 
-    // Service role: função de servidor confiável (lê Agente + vídeo, aplica scores)
-    const admin = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    );
+  try {
+    const body = await req.json();
+    const video_id: string = body.video_id;
+    let frames: string[] = Array.isArray(body.frames) ? body.frames : [];
+    if (!video_id) throw new Error('video_id é obrigatório');
+    videoId = video_id;
 
     const [{ data: video, error: vErr }, { data: agent }] = await Promise.all([
       admin.from('videos').select('*').eq('id', video_id).single(),
       admin.from('ai_agent_config').select('base_context, video_guidance').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
     ]);
     if (vErr || !video) throw new Error('Vídeo não encontrado');
+
+    // Sem frames no body = reavaliação: usa os que o app guardou no envio
+    // (videos/{uid}/frames/{video_id}/N.jpg). Assim reavaliar não precisa do
+    // arquivo original nem do celular que fez o upload.
+    if (frames.length === 0) {
+      const prefix = `${video.player_id}/frames/${video_id}`;
+      const { data: files } = await admin.storage.from('videos').list(prefix);
+      const names = (files ?? []).map((f) => f.name).filter((n) => n.endsWith('.jpg'))
+        .sort((a, b) => parseInt(a) - parseInt(b));
+      for (const name of names) {
+        const { data: blob } = await admin.storage.from('videos').download(`${prefix}/${name}`);
+        if (!blob) continue;
+        const bytes = new Uint8Array(await blob.arrayBuffer());
+        let bin = '';
+        for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+        frames.push(btoa(bin));
+      }
+      if (frames.length === 0) {
+        throw new Error('Este vídeo não tem frames guardados. Exclua e envie de novo para reavaliar.');
+      }
+      await admin.from('videos').update({ status: 'processing' }).eq('id', video_id);
+    }
 
     // System prompt = contexto base do Agente + orientação de vídeo do Zeca + instrução fixa
     const systemPrompt = [agent?.base_context, agent?.video_guidance, BASE_INSTRUCTION]
@@ -66,6 +89,9 @@ Deno.serve(async (req) => {
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2048,
+      // Determinístico: reavaliar com o mesmo contexto deve dar a mesma nota;
+      // a variação tem que vir do contexto novo, não do sorteio do modelo.
+      temperature: 0,
       system: systemPrompt,
       messages: [{
         role: 'user',
@@ -121,6 +147,8 @@ Deno.serve(async (req) => {
       headers: { ...cors, 'Content-Type': 'application/json' },
     });
   } catch (err: any) {
+    // Não deixa o vídeo preso em processing: o jogador vê "Falhou" e pode reavaliar.
+    if (videoId) await admin.from('videos').update({ status: 'failed' }).eq('id', videoId);
     return new Response(JSON.stringify({ error: err.message }), {
       status: 400,
       headers: { ...cors, 'Content-Type': 'application/json' },

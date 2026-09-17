@@ -26,3 +26,36 @@ export async function getVideoSignedUrl(
     .createSignedUrl(toVideoPath(storageUrl), expiresInSeconds);
   return error ? null : data.signedUrl;
 }
+
+/**
+ * Pasta onde ficam os frames que o app extraiu no envio, para a IA poder
+ * reavaliar o vídeo depois (novo contexto do Agente, análise incompleta) sem
+ * baixar o vídeo de novo. A primeira pasta tem que ser o uid — é o que as
+ * policies do bucket exigem.
+ */
+export function videoFramesPrefix(userId: string, videoId: string): string {
+  return `${userId}/frames/${videoId}`;
+}
+
+/** Sobe os frames (base64 JPEG) do vídeo. Falha aqui não pode derrubar o envio. */
+export async function saveVideoFrames(userId: string, videoId: string, framesB64: string[]): Promise<void> {
+  const { decode } = await import('base64-arraybuffer');
+  const prefix = videoFramesPrefix(userId, videoId);
+  await Promise.all(
+    framesB64.map((b64, i) =>
+      supabase.storage
+        .from(VIDEOS_BUCKET)
+        .upload(`${prefix}/${i + 1}.jpg`, decode(b64), { contentType: 'image/jpeg', upsert: true })
+        .then(({ error }) => { if (error) console.warn('[frames] não guardou', i + 1, error.message); })
+    )
+  );
+}
+
+/** Apaga os frames guardados (chamar ao excluir o vídeo). */
+export async function removeVideoFrames(userId: string, videoId: string): Promise<void> {
+  const prefix = videoFramesPrefix(userId, videoId);
+  const { data } = await supabase.storage.from(VIDEOS_BUCKET).list(prefix);
+  if (data?.length) {
+    await supabase.storage.from(VIDEOS_BUCKET).remove(data.map((f) => `${prefix}/${f.name}`));
+  }
+}

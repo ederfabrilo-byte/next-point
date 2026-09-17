@@ -93,7 +93,13 @@ foram **removidas de propósito**; se reaparecerem, é regressão.
 - **Vídeo**: upload real, frames extraídos no cliente (`expo-video-thumbnails`), IA via
   `analyze-video`. Desde 2026-09-17 a IA devolve também um **parecer em texto** (`feedback`,
   120–200 palavras, tom do Agente) gravado em `videos.feedback` — a mesma coluna do professor
-  humano; o card de Vídeos mostra "Avaliação do Prof. Zeca Mota (IA)". Antes só vinham notas. Fila do professor com **player funcionando** (`expo-video` + signed URL).
+  humano; o card de Vídeos mostra "Avaliação do Prof. Zeca Mota (IA)". Antes só vinham notas.
+  **Reavaliar** (2026-09-17): o envio guarda os frames em `videos/{uid}/frames/{videoId}/N.jpg`;
+  o botão ↻ Reavaliar (cards da IA em `analyzed`/`failed`) chama `analyze-video` só com
+  `video_id` e a função lê os frames guardados via service role. Serve para quando o Agente
+  ganhou contexto ou a análise saiu incompleta. `temperature: 0` na análise para a diferença
+  vir do contexto, não da variância do modelo. Vídeos enviados antes de 17/09 não têm frames
+  guardados — a função responde "Exclua e envie de novo". Excluir o vídeo apaga os frames. Fila do professor com **player funcionando** (`expo-video` + signed URL).
 - **Badges 📹/✎** de origem das notas, via `lib/analyses.ts`.
 - **Área do Zeca** (`is_admin`): Agente de IA, Alunos e Vídeos (como professor dele mesmo).
 - **RLS em 13 de 13 tabelas.**

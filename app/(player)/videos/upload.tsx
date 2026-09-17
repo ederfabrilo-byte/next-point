@@ -9,6 +9,7 @@ import { decode } from 'base64-arraybuffer';
 import { supabase } from '../../../lib/supabase';
 import { useAuthStore } from '../../../lib/store';
 import { notify } from '../../../lib/notifications';
+import { saveVideoFrames } from '../../../lib/storage';
 import { Opponent } from '../../../lib/types';
 
 const zecaPhoto = require('../../../assets/zeca-mota.jpg');
@@ -147,6 +148,8 @@ export default function UploadScreen() {
         setStage('Extraindo frames...');
         const frames = await extractFrames(videoUri, videoDuration);
         if (frames.length === 0) throw new Error('Não foi possível extrair frames do vídeo.');
+        // Guarda os frames: é o que permite "Reavaliar" depois sem reenviar o vídeo.
+        await saveVideoFrames(user.id, video.id, frames);
 
         setStage('Analisando com IA...');
         const { error: fnErr } = await supabase.functions.invoke('analyze-video', {

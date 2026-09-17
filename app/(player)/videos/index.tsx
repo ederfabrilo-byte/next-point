@@ -3,7 +3,8 @@ import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert } from
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../../lib/supabase';
-import { toVideoPath } from '../../../lib/storage';
+import { toVideoPath, removeVideoFrames } from '../../../lib/storage';
+import { notify } from '../../../lib/notifications';
 import { useAuthStore } from '../../../lib/store';
 import { AttributeKey, ATTRIBUTE_LABELS } from '../../../lib/types';
 
@@ -62,6 +63,46 @@ export default function VideosScreen() {
 
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
+  const [reanalyzing, setReanalyzing] = useState<string | null>(null);
+
+  /**
+   * Roda a IA de novo sobre os frames guardados no envio. Serve para quando a
+   * primeira análise saiu incompleta/errada ou o Agente do Zeca ganhou contexto
+   * novo. Gera outra linha em video_analyses (histórico) e um parecer novo.
+   */
+  function handleReanalyze(video: Video) {
+    Alert.alert('Reavaliar vídeo?', 'A IA analisa de novo com o contexto atual do Agente. As notas e o parecer serão substituídos.', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Reavaliar',
+        onPress: async () => {
+          if (!user) return;
+          setReanalyzing(video.id);
+          setVideos((prev) => prev.map((v) => (v.id === video.id ? { ...v, status: 'processing' } : v)));
+          try {
+            const { error } = await supabase.functions.invoke('analyze-video', { body: { video_id: video.id } });
+            if (error) {
+              const detail = await (error as any).context?.json?.().catch(() => null);
+              throw new Error(detail?.error ?? error.message ?? 'Falha na reavaliação.');
+            }
+            await notify({
+              userId: user.id,
+              type: 'video_analyzed',
+              title: 'Reavaliação concluída',
+              body: 'O Prof. Zeca Mota (IA) reavaliou seu vídeo e atualizou seus atributos.',
+              data: { video_id: video.id },
+            });
+          } catch (e: any) {
+            Alert.alert('Não foi possível reavaliar', e.message);
+          } finally {
+            setReanalyzing(null);
+            await load();
+          }
+        },
+      },
+    ]);
+  }
+
   function handleDelete(video: Video) {
     Alert.alert('Excluir vídeo?', 'O arquivo e a análise vinculada são removidos.', [
       { text: 'Cancelar', style: 'cancel' },
@@ -74,6 +115,7 @@ export default function VideosScreen() {
           if (video.storage_url) {
             await supabase.storage.from('videos').remove([toVideoPath(video.storage_url)]);
           }
+          if (user) await removeVideoFrames(user.id, video.id);
           const { error } = await supabase.from('videos').delete().eq('id', video.id);
           if (error) { Alert.alert('Erro', error.message); return; }
           await load();
@@ -123,7 +165,7 @@ export default function VideosScreen() {
           contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
           ItemSeparatorComponent={() => <View className="h-3" />}
           renderItem={({ item }) => {
-            const analysis = item.video_analyses?.[0];
+            const analysis = [...(item.video_analyses ?? [])].sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
             const scored = analysis
               ? (Object.keys(ATTRIBUTE_LABELS) as AttributeKey[])
                   .filter((k) => analysis[k] != null)
@@ -149,6 +191,19 @@ export default function VideosScreen() {
                         {STATUS_LABEL[item.status]}
                       </Text>
                     </View>
+                    {item.purpose === 'profile_analysis' && (item.status === 'analyzed' || item.status === 'failed') && (
+                      <TouchableOpacity
+                        onPress={() => handleReanalyze(item)}
+                        disabled={reanalyzing !== null}
+                        hitSlop={10}
+                        className="flex-row items-center gap-1"
+                      >
+                        {reanalyzing === item.id
+                          ? <ActivityIndicator size="small" color="#F97316" />
+                          : <Ionicons name="refresh-outline" size={16} color="#F97316" />}
+                        <Text className="text-primary font-inter-semibold text-xs">Reavaliar</Text>
+                      </TouchableOpacity>
+                    )}
                     <TouchableOpacity onPress={() => handleDelete(item)} hitSlop={10}>
                       <Ionicons name="trash-outline" size={16} color="#9CA3AF" />
                     </TouchableOpacity>
@@ -170,7 +225,7 @@ export default function VideosScreen() {
                   <View className="mt-3 pt-3 border-t border-border flex-row items-start gap-2">
                     <Ionicons name="alert-circle-outline" size={16} color="#f87171" />
                     <Text className="text-text-secondary font-inter text-xs flex-1">
-                      A análise não foi concluída. Exclua este envio e tente de novo com um clipe mais curto.
+                      A análise não foi concluída. Toque em Reavaliar; se falhar de novo, exclua e envie um clipe mais curto.
                     </Text>
                   </View>
                 )}
