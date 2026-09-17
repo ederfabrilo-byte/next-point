@@ -46,7 +46,7 @@ const STATUS_COLOR: Record<Status, string> = {
 };
 
 export default function VideosScreen() {
-  const { user } = useAuthStore();
+  const { user, profile } = useAuthStore();
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -64,6 +64,47 @@ export default function VideosScreen() {
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
   const [reanalyzing, setReanalyzing] = useState<string | null>(null);
+
+  /**
+   * "Reavaliar" num vídeo do professor = pedir outra avaliação humana: volta
+   * para a fila do professor vinculado e avisa. O feedback antigo fica na
+   * linha até ele escrever o novo (a tela só mostra feedback em `reviewed`).
+   */
+  function handleRequestReview(video: Video) {
+    Alert.alert('Pedir nova avaliação?', 'O vídeo volta para a fila do seu professor, que recebe um aviso.', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Pedir',
+        onPress: async () => {
+          if (!user) return;
+          setReanalyzing(video.id);
+          try {
+            const { data: link } = await supabase
+              .from('student_teacher')
+              .select('teacher_id')
+              .eq('student_id', user.id)
+              .eq('status', 'accepted')
+              .maybeSingle();
+            if (!link) throw new Error('Você não tem um professor vinculado no momento.');
+            const { error } = await supabase.from('videos').update({ status: 'pending_review' }).eq('id', video.id);
+            if (error) throw error;
+            await notify({
+              userId: link.teacher_id,
+              type: 'video_submitted',
+              title: 'Pedido de nova avaliação',
+              body: `${profile?.name?.trim() || 'Seu aluno'} pediu uma nova avaliação de um vídeo.`,
+              data: { video_id: video.id },
+            });
+          } catch (e: any) {
+            Alert.alert('Não foi possível pedir', e.message);
+          } finally {
+            setReanalyzing(null);
+            await load();
+          }
+        },
+      },
+    ]);
+  }
 
   /**
    * Roda a IA de novo sobre os frames guardados no envio. Serve para quando a
@@ -191,9 +232,10 @@ export default function VideosScreen() {
                         {STATUS_LABEL[item.status]}
                       </Text>
                     </View>
-                    {item.purpose === 'profile_analysis' && (item.status === 'analyzed' || item.status === 'failed') && (
+                    {((item.purpose === 'profile_analysis' && (item.status === 'analyzed' || item.status === 'failed')) ||
+                      (item.purpose === 'technical_review' && item.status === 'reviewed')) && (
                       <TouchableOpacity
-                        onPress={() => handleReanalyze(item)}
+                        onPress={() => (item.purpose === 'profile_analysis' ? handleReanalyze(item) : handleRequestReview(item))}
                         disabled={reanalyzing !== null}
                         hitSlop={10}
                         className="flex-row items-center gap-1"
