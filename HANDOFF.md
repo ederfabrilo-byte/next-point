@@ -126,8 +126,8 @@ foram **removidas de propósito**; se reaparecerem, é regressão.
    build iOS.
 2. **`coach_config` e `video_analysis_config`** estão vazias e substituídas por
    `ai_agent_config`. Candidatas a `DROP` — decisão do dono.
-3. **Fila do Zeca faz join em `opponents(name)`** e a RLS de `opponents` é só do dono →
-   mostra "adversário: —". Policy de uma linha resolve.
+3. ~~Fila do Zeca faz join em `opponents(name)`~~ — **resolvido em 2026-09-17**: policy
+   `opponents: teacher reads linked student` (SELECT via `teaches(owner_id)`).
 4. **Upload lê o vídeo inteiro como base64 na memória** — falta limite de tamanho/duração.
 5. **Erro de Edge Function** ainda genérico ("non-2xx") em alguns pontos.
 6. **Antes de produção**: desligar `mailer_autoconfirm`, configurar SMTP, revisar repo público.
