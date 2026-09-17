@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert, ActivityIndicator } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { supabase } from '../../../lib/supabase';
@@ -34,7 +34,9 @@ export default function VideoReviewScreen() {
   // O player aceita null e fica ocioso até a URL assinada chegar.
   const player = useVideoPlayer(signedUrl, (p) => { p.loop = false; });
 
-  useEffect(() => {
+  // useFocusEffect, não useEffect: ao voltar para um vídeo já avaliado a tela
+  // precisa recarregar status/feedback — o web reaproveita a instância montada.
+  useFocusEffect(useCallback(() => {
     async function load() {
       const { data } = await supabase
         .from('videos')
@@ -49,7 +51,7 @@ export default function VideoReviewScreen() {
       setLoading(false);
     }
     load();
-  }, [id]);
+  }, [id]));
 
   async function handleSubmit() {
     if (!video || !user) return;
