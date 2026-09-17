@@ -99,7 +99,9 @@ foram **removidas de propósito**; se reaparecerem, é regressão.
   `video_id` e a função lê os frames guardados via service role. Serve para quando o Agente
   ganhou contexto ou a análise saiu incompleta. `temperature: 0` na análise para a diferença
   vir do contexto, não da variância do modelo. Vídeos enviados antes de 17/09 não têm frames
-  guardados — a função responde "Exclua e envie de novo". Excluir o vídeo apaga os frames. Fila do professor com **player funcionando** (`expo-video` + signed URL).
+  guardados — a função responde "Exclua e envie de novo". Excluir o vídeo apaga os frames.
+  Vídeo do **professor** não tem Reavaliar no lado do aluno (decisão do Eder, 2026-09-17): o
+  professor reabre pela aba Vídeos → "Já avaliados" → "Ver" → "Atualizar feedback". Fila do professor com **player funcionando** (`expo-video` + signed URL).
 - **Badges 📹/✎** de origem das notas, via `lib/analyses.ts`.
 - **Área do Zeca** (`is_admin`): Agente de IA, Alunos e Vídeos (como professor dele mesmo).
 - **RLS em 13 de 13 tabelas.**
