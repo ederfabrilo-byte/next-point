@@ -13,6 +13,7 @@ import {
   removeLink,
   linkErrorMessage,
 } from '../../lib/links';
+import { formatISODate } from '../../lib/dates';
 
 interface Teacher {
   id: string;
@@ -264,7 +265,7 @@ export default function MyTeacherScreen() {
                 {logs.map((log) => (
                   <View key={log.id} className="bg-surface border border-border rounded-2xl p-4">
                     <Text className="text-primary font-inter-semibold text-sm mb-2">
-                      {new Date(log.date).toLocaleDateString('pt-BR')}
+                      {formatISODate(log.date)}
                     </Text>
                     <Text className="text-text-primary font-inter text-sm">{log.notes}</Text>
                     {log.drills_suggested ? (

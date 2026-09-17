@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../../lib/supabase';
 import { useAuthStore } from '../../../lib/store';
 import { PlayerProfile, AttributeKey, ATTRIBUTE_LABELS } from '../../../lib/types';
+import { todayISODate, formatISODate } from '../../../lib/dates';
 
 interface TrainingLog {
   id: string;
@@ -48,7 +49,7 @@ export default function StudentDetailScreen() {
     const { error } = await supabase.from('training_logs').insert({
       teacher_id: user.id,
       student_id: id,
-      date: new Date().toISOString().split('T')[0],
+      date: todayISODate(),
       notes: notes.trim(),
       drills_suggested: drills.trim() || null,
     });
@@ -171,7 +172,7 @@ export default function StudentDetailScreen() {
               {logs.map((log) => (
                 <View key={log.id} className="bg-surface border border-border rounded-2xl p-4">
                   <Text className="text-primary font-inter-semibold text-sm mb-2">
-                    {new Date(log.date).toLocaleDateString('pt-BR')}
+                    {formatISODate(log.date)}
                   </Text>
                   <Text className="text-text-primary font-inter text-sm">{log.notes}</Text>
                   {log.drills_suggested ? (

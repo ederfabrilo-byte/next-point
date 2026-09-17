@@ -98,6 +98,12 @@ foram **removidas de propósito**; se reaparecerem, é regressão.
 - **Vídeo preso em `processing` vira `failed` sozinho** (2026-09-17): job `pg_cron`
   `fail-stale-processing-videos` a cada 10 min, limite de 15 min. Dois vídeos de maio
   (`storage_url = 'pending'`) estavam assim há 118 dias.
+- **`Alert.alert` no web** (2026-09-17): é no-op no React Native Web — confirmações e erros
+  sumiam no browser. `lib/alert-web.ts` troca por `window.confirm/alert`; importado no
+  `_layout`. Celular não muda.
+- **Datas `date`** (2026-09-17): `lib/dates.ts` — `todayISODate()` / `formatISODate()`.
+  `new Date('YYYY-MM-DD')` é UTC e mostrava o dia anterior; `toISOString()` gravava o dia
+  de amanhã depois das 21h. Usado em `training_logs.date`.
 - **Web funciona** (2026-09-17): corrigidos o deadlock do lock de auth (queries com `await`
   dentro de `onAuthStateChange` travavam o app no spinner) e o CORS das Edge Functions
   (`apikey`/`x-client-info` faltavam no preflight → "Failed to fetch" só no browser).
@@ -115,8 +121,13 @@ foram **removidas de propósito**; se reaparecerem, é regressão.
 4. **Upload lê o vídeo inteiro como base64 na memória** — falta limite de tamanho/duração.
 5. **Erro de Edge Function** ainda genérico ("non-2xx") em alguns pontos.
 6. **Antes de produção**: desligar `mailer_autoconfirm`, configurar SMTP, revisar repo público.
-7. **Trigger de recusa instalado mas não exercitado** — não havia vínculos no banco. Teste:
-   convidar → recusar → convidar de novo.
+7. ~~Trigger de recusa não exercitado~~ — **testado em 2026-09-17**: recusa apaga a linha,
+   o aluno recebe `link_rejected`, e o novo convite para o mesmo par entra sem bloqueio.
+8. **`ai_agent_config` tem só um rascunho** no "Contexto & identidade" (marcado
+   `[RASCUNHO PARA O ZECA REVISAR]`). Estratégia e Vídeo continuam vazias. O Zeca precisa
+   escrever o método dele — sem isso a IA roda com o prompt genérico embutido.
+9. **Deep link no web cai sempre em `/home`**: o `router.replace` do `_layout` roda a cada
+   carga e ignora a URL digitada. Só afeta browser.
 
 ## Gotchas
 

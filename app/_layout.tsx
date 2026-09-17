@@ -13,6 +13,10 @@ import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../lib/store';
 import { Role } from '../lib/types';
 import { registerForPush, listenPushOpened } from '../lib/push';
+import { installWebAlert } from '../lib/alert-web';
+
+// Antes de qualquer tela montar: no web, Alert.alert é no-op sem isto.
+installWebAlert();
 
 export default function RootLayout() {
   const { session, role, isAdmin, setSession, setRole, setIsAdmin, setProfile, setLoading } = useAuthStore();
