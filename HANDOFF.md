@@ -91,7 +91,9 @@ foram **removidas de propósito**; se reaparecerem, é regressão.
   `eas credentials`. iOS ainda sem APNs (nunca houve build iOS).
 - **Estratégia**: Edge Function `generate-strategy` (`claude-sonnet-4-6`, `max_tokens 4096`).
 - **Vídeo**: upload real, frames extraídos no cliente (`expo-video-thumbnails`), IA via
-  `analyze-video`. Fila do professor com **player funcionando** (`expo-video` + signed URL).
+  `analyze-video`. Desde 2026-09-17 a IA devolve também um **parecer em texto** (`feedback`,
+  120–200 palavras, tom do Agente) gravado em `videos.feedback` — a mesma coluna do professor
+  humano; o card de Vídeos mostra "Avaliação do Prof. Zeca Mota (IA)". Antes só vinham notas. Fila do professor com **player funcionando** (`expo-video` + signed URL).
 - **Badges 📹/✎** de origem das notas, via `lib/analyses.ts`.
 - **Área do Zeca** (`is_admin`): Agente de IA, Alunos e Vídeos (como professor dele mesmo).
 - **RLS em 13 de 13 tabelas.**

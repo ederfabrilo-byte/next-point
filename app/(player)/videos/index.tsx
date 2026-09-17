@@ -188,12 +188,17 @@ export default function VideosScreen() {
                   </View>
                 )}
 
-                {/* Feedback do professor */}
-                {item.purpose === 'technical_review' && item.status === 'reviewed' && item.feedback && (
+                {/* Parecer: do professor (reviewed) ou da IA com o contexto do Zeca (analyzed) */}
+                {item.feedback && (
+                  (item.purpose === 'technical_review' && item.status === 'reviewed') ||
+                  (item.purpose === 'profile_analysis' && item.status === 'analyzed')
+                ) && (
                   <View className="mt-3 pt-3 border-t border-border">
                     <View className="flex-row items-center gap-2 mb-2">
                       <Ionicons name="chatbubble-ellipses" size={16} color="#F97316" />
-                      <Text className="text-primary font-inter-semibold text-xs">Feedback do professor</Text>
+                      <Text className="text-primary font-inter-semibold text-xs">
+                        {item.purpose === 'profile_analysis' ? 'Avaliação do Prof. Zeca Mota (IA)' : 'Feedback do professor'}
+                      </Text>
                     </View>
                     <Text className="text-text-primary font-inter text-sm leading-5">{item.feedback}</Text>
                   </View>

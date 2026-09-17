@@ -6,8 +6,9 @@ const ATTRS = ['forehand', 'backhand', 'slice', 'serve', 'volley', 'smash', 'dro
 
 const BASE_INSTRUCTION = `Você analisa frames de um jogador de tênis e retorna SOMENTE um objeto JSON, sem texto adicional e sem markdown.
 Notas de 1.0 a 5.0 (passo 0.5). Atributos que NÃO forem observáveis nos frames devem vir como null (não invente).
+Além das notas, escreva em "feedback" um parecer curto em português do Brasil, falando diretamente com o jogador, em texto corrido sem markdown (120 a 200 palavras): o que você observou de bom, o que mais limita o jogo dele hoje, e 2 ou 3 correções concretas para o próximo treino. Cite só o que dá para ver nos frames; se algo não for observável, diga isso em vez de supor.
 Formato exato:
-{"forehand":X,"backhand":X,"slice":X,"serve":X,"volley":X,"smash":X,"dropshot":X,"movement":X,"mental":X,"hand":"right"|"left"|null,"style":"aggressive"|"defensive"|"all-around"|null}`;
+{"forehand":X,"backhand":X,"slice":X,"serve":X,"volley":X,"smash":X,"dropshot":X,"movement":X,"mental":X,"hand":"right"|"left"|null,"style":"aggressive"|"defensive"|"all-around"|null,"feedback":"texto"}`;
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -64,13 +65,13 @@ Deno.serve(async (req) => {
     const anthropic = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY') });
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1024,
+      max_tokens: 2048,
       system: systemPrompt,
       messages: [{
         role: 'user',
         content: [
           ...imageBlocks,
-          { type: 'text', text: `Analise estes ${frames.length} frames e retorne o JSON com as notas. ${video.description ? 'Contexto do jogador: ' + video.description : ''}` },
+          { type: 'text', text: `Analise estes ${frames.length} frames e retorne o JSON com as notas e o feedback. ${video.description ? 'Contexto do jogador: ' + video.description : ''}` },
         ],
       }],
     });
@@ -85,6 +86,9 @@ Deno.serve(async (req) => {
       if (typeof v === 'number' && !Number.isNaN(v)) cleanAttrs[k] = v;
     }
     const hand = scores.hand === 'right' || scores.hand === 'left' ? scores.hand : null;
+    // Parecer em texto — o que o jogador lê. Vai para videos.feedback, a mesma
+    // coluna que o professor humano usa, então a tela mostra os dois igual.
+    const feedback = typeof scores.feedback === 'string' && scores.feedback.trim() ? scores.feedback.trim() : null;
     const style = ['aggressive', 'defensive', 'all-around'].includes(scores.style) ? scores.style : null;
 
     // Grava a análise (histórico)
@@ -111,9 +115,9 @@ Deno.serve(async (req) => {
       }
     }
 
-    await admin.from('videos').update({ status: 'analyzed' }).eq('id', video_id);
+    await admin.from('videos').update({ status: 'analyzed', feedback }).eq('id', video_id);
 
-    return new Response(JSON.stringify({ ok: true, scores }), {
+    return new Response(JSON.stringify({ ok: true, scores, feedback }), {
       headers: { ...cors, 'Content-Type': 'application/json' },
     });
   } catch (err: any) {
