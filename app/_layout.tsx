@@ -27,36 +27,36 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
+    /** Carrega role/admin/identidade do usuário para o store. */
+    async function loadProfile(userId: string) {
+      const { data } = await supabase
+        .from('users')
+        .select('role, is_admin, name, username')
+        .eq('id', userId)
+        .maybeSingle();
+      if (data?.role) setRole(data.role as Role);
+      setIsAdmin(data?.is_admin ?? false);
+      setProfile(data ? { name: data.name, username: data.username } : null);
+      registerForPush(userId);
+    }
+
     async function initSession() {
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
-      if (session?.user) {
-        const { data } = await supabase
-          .from('users')
-          .select('role, is_admin, name, username')
-          .eq('id', session.user.id)
-          .maybeSingle();
-        if (data?.role) setRole(data.role as Role);
-        setIsAdmin(data?.is_admin ?? false);
-        setProfile(data ? { name: data.name, username: data.username } : null);
-        registerForPush(session.user.id);
-      }
+      if (session?.user) await loadProfile(session.user.id);
       setLoading(false);
     }
     initSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    // NÃO usar await em chamadas ao supabase dentro deste callback: ele roda
+    // com o lock de auth (navigator.locks) em mãos, e qualquer query espera
+    // esse mesmo lock → deadlock, o app inteiro fica no spinner. É o caso
+    // documentado pelo Supabase; a saída é adiar para o próximo tick.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       if (session?.user) {
-        const { data } = await supabase
-          .from('users')
-          .select('role, is_admin, name, username')
-          .eq('id', session.user.id)
-          .maybeSingle();
-        if (data?.role) setRole(data.role as Role);
-        setIsAdmin(data?.is_admin ?? false);
-        setProfile(data ? { name: data.name, username: data.username } : null);
-        registerForPush(session.user.id);
+        const userId = session.user.id;
+        setTimeout(() => { loadProfile(userId); }, 0);
       }
     });
 

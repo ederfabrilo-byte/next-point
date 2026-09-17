@@ -6,9 +6,18 @@ Com base nos atributos técnicos do jogador e do adversário, elabore uma estrat
 Seja objetivo e prático. Cubra: padrões de jogo recomendados, pontos fracos do adversário a explorar, como neutralizar os pontos fortes dele, e dicas táticas concretas para cada situação de jogo.
 Responda em texto corrido, sem usar markdown.`;
 
+// O supabase-js manda apikey e x-client-info além de authorization; sem eles no
+// preflight o browser (web) bloqueia a chamada com "Failed to fetch". No celular
+// não há preflight, por isso o bug só aparecia na web.
+const cors = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+};
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, content-type' } });
+    return new Response('ok', { headers: cors });
   }
 
   try {
@@ -82,12 +91,12 @@ Gere uma estratégia de jogo detalhada para enfrentar este adversário.
     if (insertError) throw insertError;
 
     return new Response(JSON.stringify({ strategy_id: strategy.id }), {
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers: { ...cors, 'Content-Type': 'application/json' },
     });
   } catch (err: any) {
     return new Response(JSON.stringify({ error: err.message }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers: { ...cors, 'Content-Type': 'application/json' },
     });
   }
 });
