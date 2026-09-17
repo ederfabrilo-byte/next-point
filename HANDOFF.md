@@ -95,6 +95,12 @@ foram **removidas de propósito**; se reaparecerem, é regressão.
 - **Badges 📹/✎** de origem das notas, via `lib/analyses.ts`.
 - **Área do Zeca** (`is_admin`): Agente de IA, Alunos e Vídeos (como professor dele mesmo).
 - **RLS em 13 de 13 tabelas.**
+- **Vídeo preso em `processing` vira `failed` sozinho** (2026-09-17): job `pg_cron`
+  `fail-stale-processing-videos` a cada 10 min, limite de 15 min. Dois vídeos de maio
+  (`storage_url = 'pending'`) estavam assim há 118 dias.
+- **Web funciona** (2026-09-17): corrigidos o deadlock do lock de auth (queries com `await`
+  dentro de `onAuthStateChange` travavam o app no spinner) e o CORS das Edge Functions
+  (`apikey`/`x-client-info` faltavam no preflight → "Failed to fetch" só no browser).
 
 ## Pendências conhecidas
 
