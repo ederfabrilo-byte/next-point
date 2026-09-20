@@ -9,23 +9,21 @@ import {
   Platform,
   Image,
   ScrollView,
-  useWindowDimensions,
 } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
 
-const hero = require('../assets/zeca-hero.jpg');
-const avatar = require('../assets/zeca-avatar.jpg');
+const poster = require('../assets/zeca-poster.jpg');
 const ball = require('../assets/adaptive-icon.png');
 
 /**
- * Abertura: a foto do Zeca ocupa o topo e escorre para o preto; o formulário
- * fica na metade de baixo. É a primeira coisa que o jogador vê — a promessa
- * do app é o método do professor, então ele aparece antes de qualquer campo.
+ * Abertura: o pôster do Zeca (material de marca dele, P&B com detalhes em
+ * amarelo-limão) ocupa a tela inteira e escorre para o preto; o formulário
+ * fica por cima da metade de baixo. O pôster já traz logo e assinatura, então
+ * o app só assina discretamente no topo e faz a promessa antes do login.
  */
 export default function LoginScreen() {
-  const { height } = useWindowDimensions();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
@@ -68,55 +66,51 @@ export default function LoginScreen() {
     }
   }
 
-  // A foto ocupa ~55% da altura; em telas baixas (web redimensionado) não deixa
-  // o formulário sem espaço.
-  const heroHeight = Math.max(320, Math.min(height * 0.55, 520));
-
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1 bg-bg">
-      <ScrollView
-        className="flex-1 bg-bg"
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
-        bounces={false}
-      >
-        {/* Hero — no web largo a coluna inteira tem 560px; no celular ocupa tudo */}
-        <View style={{ height: heroHeight, width: '100%', maxWidth: 560, alignSelf: 'center' }}>
-          {/* expo-image: ancora o rosto no topo em qualquer proporção de tela */}
-          <ExpoImage
-            source={hero}
-            contentFit="cover"
-            contentPosition="top"
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-          />
-          <LinearGradient
-            colors={['rgba(10,10,10,0.15)', 'rgba(10,10,10,0.55)', '#0A0A0A']}
-            locations={[0, 0.6, 1]}
-            style={{ flex: 1, justifyContent: 'flex-end', paddingHorizontal: 24, paddingBottom: 8 }}
-          >
-           <View style={{ width: '100%', maxWidth: 520, alignSelf: 'center' }}>
-            <View className="flex-row items-center gap-2 mb-3">
-              <Image source={ball} style={{ width: 28, height: 28 }} />
-              <Text className="text-text-primary font-inter-bold text-2xl tracking-tight">Next Point</Text>
-            </View>
-            <Text className="text-text-primary font-inter-bold text-3xl leading-9">
-              Treine com o método{'\n'}do Prof. Zeca Mota
-            </Text>
-            <View className="flex-row items-center gap-3 mt-4">
-              <Image source={avatar} style={{ width: 44, height: 44, borderRadius: 22, borderWidth: 2, borderColor: '#F97316' }} />
-              <View className="flex-1">
-                <Text className="text-text-primary font-inter-semibold text-sm">Zeca Mota</Text>
-                <Text className="text-text-secondary font-inter text-xs">
-                  Tennis coach · análise de vídeo, estratégia e acompanhamento com IA
-                </Text>
-              </View>
-            </View>
-           </View>
-          </LinearGradient>
-        </View>
+    <View className="flex-1 bg-bg items-center">
+    {/* No web largo a tela inteira vira uma coluna de celular; no aparelho ocupa tudo */}
+    <View className="flex-1 w-full" style={{ maxWidth: 560 }}>
+      {/* Pôster fixo atrás de tudo, ancorado no rosto */}
+      <ExpoImage
+        source={poster}
+        contentFit="cover"
+        contentPosition="top"
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+      />
+      <LinearGradient
+        colors={['rgba(10,10,10,0)', 'rgba(10,10,10,0.35)', 'rgba(10,10,10,0.92)', '#0A0A0A']}
+        locations={[0, 0.35, 0.62, 0.8]}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+      />
 
-        {/* Form — no web em tela larga não estica de ponta a ponta */}
-        <View className="px-6 pt-6 pb-10 gap-3" style={{ width: '100%', maxWidth: 520, alignSelf: 'center' }}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1">
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}
+          keyboardShouldPersistTaps="handled"
+          bounces={false}
+        >
+          {/* Assinatura do app, discreta — o pôster já tem a marca do Zeca */}
+          <View className="flex-row items-center gap-2 px-6 pt-14">
+            <Image source={ball} style={{ width: 22, height: 22 }} />
+            <Text className="text-text-primary font-inter-semibold text-base tracking-tight">Next Point</Text>
+          </View>
+
+          <View>
+            <View className="px-6 pt-10">
+              <Text className="text-text-secondary font-inter-semibold text-xs uppercase tracking-widest mb-2">
+                Tênis inteligente
+              </Text>
+              <Text className="text-text-primary font-inter-bold text-3xl leading-9">
+                Treine com o método{'\n'}do Prof. Zeca Mota
+              </Text>
+              <Text className="text-text-secondary font-inter text-sm mt-2">
+                Análise de vídeo, estratégia de jogo e acompanhamento do seu professor — com IA.
+              </Text>
+            </View>
+
+            {/* Form */}
+            <View className="px-6 pt-6 pb-10 gap-3">
           <TextInput
             className="bg-surface text-text-primary font-inter rounded-xl px-4 h-14 border border-border"
             placeholder="E-mail"
@@ -155,8 +149,11 @@ export default function LoginScreen() {
               <Text className="text-primary font-inter-semibold">{isSignUp ? 'Entrar' : 'Cadastrar'}</Text>
             </Text>
           </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
+    </View>
   );
 }
