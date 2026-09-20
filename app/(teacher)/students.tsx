@@ -13,6 +13,7 @@ import {
   removeLink,
   linkErrorMessage,
 } from '../../lib/links';
+import { useLayout } from '../../lib/layout';
 
 interface Student {
   student_id: string;
@@ -26,6 +27,7 @@ interface FoundPlayer {
 }
 
 export default function TeacherStudents() {
+  const { isWide } = useLayout();
   const { user, profile } = useAuthStore();
   const myName = profile?.name?.trim() || (profile?.username ? `@${profile.username}` : 'Um professor');
   // Esta tela também é servida em (admin)/students. Derivar o grupo da rota
@@ -260,6 +262,9 @@ export default function TeacherStudents() {
       )}
 
       <FlatList
+        key={isWide ? 'cols-2' : 'cols-1'}
+        numColumns={isWide ? 2 : 1}
+        columnWrapperStyle={isWide ? { gap: 12 } : undefined}
         data={students}
         keyExtractor={(item) => item.student_id}
         contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
@@ -337,6 +342,7 @@ export default function TeacherStudents() {
           const name = item.users?.name?.trim() || item.users?.username || 'Jogador';
           return (
             <TouchableOpacity
+              style={{ flex: 1 }}
               onPress={() => router.push(`/${group}/student/${item.student_id}`)}
               onLongPress={() => handleRemoveStudent(item, name)}
               className="bg-surface border border-border rounded-2xl p-5 active:opacity-75 flex-row items-center justify-between"

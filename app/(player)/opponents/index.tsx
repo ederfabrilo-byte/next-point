@@ -4,8 +4,10 @@ import { router, useFocusEffect } from 'expo-router';
 import { supabase } from '../../../lib/supabase';
 import { useAuthStore } from '../../../lib/store';
 import { Opponent } from '../../../lib/types';
+import { useLayout } from '../../../lib/layout';
 
 export default function OpponentsList() {
+  const { isWide } = useLayout();
   const { user } = useAuthStore();
   const [opponents, setOpponents] = useState<Opponent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,6 +51,9 @@ export default function OpponentsList() {
         </View>
       ) : (
         <FlatList
+          key={isWide ? 'cols-2' : 'cols-1'}
+          numColumns={isWide ? 2 : 1}
+          columnWrapperStyle={isWide ? { gap: 12 } : undefined}
           data={opponents}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
@@ -57,6 +62,7 @@ export default function OpponentsList() {
             <TouchableOpacity
               onPress={() => router.push(`/(player)/opponents/${item.id}`)}
               className="bg-surface border border-border rounded-2xl p-5 active:opacity-75"
+              style={{ flex: 1 }}
             >
               <Text className="text-text-primary font-inter-bold text-lg">{item.name}</Text>
               <View className="flex-row gap-3 mt-2">

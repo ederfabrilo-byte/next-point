@@ -6,9 +6,12 @@ import { supabase } from '../../lib/supabase';
 import { unregisterPush } from '../../lib/push';
 import AvatarPicker from '../../components/AvatarPicker';
 import IdentityCard from '../../components/IdentityCard';
+import { useLayout } from '../../lib/layout';
 
 export default function TeacherHome() {
   const { user, reset, setRole } = useAuthStore();
+  const { isWide } = useLayout();
+  const menuCard = isWide ? { flexBasis: '48%' as const, flexGrow: 1 } : { width: '100%' as const };
   const [studentCount, setStudentCount] = useState(0);
   const [pendingVideos, setPendingVideos] = useState(0);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -118,8 +121,10 @@ export default function TeacherHome() {
         )}
 
         {/* Atalhos */}
-        <View className="gap-3">
+        {/* Menu: 1 coluna no celular, 2 no PC */}
+        <View className="gap-3 flex-row flex-wrap">
           <TouchableOpacity
+            style={menuCard}
             onPress={() => router.push('/(teacher)/students')}
             className="bg-surface border border-border rounded-2xl p-5 active:opacity-75"
           >
@@ -128,6 +133,7 @@ export default function TeacherHome() {
           </TouchableOpacity>
 
           <TouchableOpacity
+            style={menuCard}
             onPress={() => router.push('/(teacher)/videos')}
             className="bg-surface border border-border rounded-2xl p-5 active:opacity-75"
           >

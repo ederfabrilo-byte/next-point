@@ -4,9 +4,11 @@ import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { supabase } from '../../../lib/supabase';
 import { useAuthStore } from '../../../lib/store';
 import { Opponent, Strategy } from '../../../lib/types';
+import { useLayout } from '../../../lib/layout';
 
 export default function StrategyScreen() {
   const { user } = useAuthStore();
+  const { isWide } = useLayout();
   const { opponentId } = useLocalSearchParams<{ opponentId?: string }>();
   const [opponents, setOpponents] = useState<Opponent[]>([]);
   const [recent, setRecent] = useState<Strategy[]>([]);
@@ -70,6 +72,9 @@ export default function StrategyScreen() {
       ) : (
         <>
           <FlatList
+            key={isWide ? 'cols-2' : 'cols-1'}
+            numColumns={isWide ? 2 : 1}
+            columnWrapperStyle={isWide ? { gap: 12 } : undefined}
             data={opponents}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 120 }}
@@ -80,12 +85,13 @@ export default function StrategyScreen() {
                   <Text className="text-text-secondary font-inter-semibold text-xs uppercase tracking-wider mb-3">
                     Estratégias recentes
                   </Text>
-                  <View className="gap-2">
+                  <View className="gap-2 flex-row flex-wrap">
                     {recent.map((s) => (
                       <TouchableOpacity
                         key={s.id}
                         onPress={() => router.push(`/(player)/strategy/${s.id}`)}
                         className="bg-surface border border-border rounded-xl p-3 flex-row items-center justify-between active:opacity-75"
+                        style={isWide ? { flexBasis: '48%', flexGrow: 1 } : { width: '100%' }}
                       >
                         <View className="flex-1">
                           <Text className="text-text-primary font-inter-semibold text-sm">
@@ -109,6 +115,7 @@ export default function StrategyScreen() {
               const isSelected = selected === item.id;
               return (
                 <TouchableOpacity
+                  style={{ flex: 1 }}
                   onPress={() => setSelected(item.id)}
                   className={`rounded-2xl p-5 border ${isSelected ? 'bg-primary border-primary' : 'bg-surface border-border'} active:opacity-75`}
                 >

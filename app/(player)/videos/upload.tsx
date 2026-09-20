@@ -6,6 +6,8 @@ import * as ImagePicker from 'expo-image-picker';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import * as FileSystem from 'expo-file-system/legacy';
 import { decode } from 'base64-arraybuffer';
+import { Image as ExpoImage } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../../../lib/supabase';
 import { useAuthStore } from '../../../lib/store';
 import { notify } from '../../../lib/notifications';
@@ -14,6 +16,7 @@ import { Opponent } from '../../../lib/types';
 import ScreenHeader from '../../../components/ScreenHeader';
 
 const zecaPhoto = require('../../../assets/zeca-avatar.jpg');
+const zecaAction = require('../../../assets/zeca-action.jpg');
 
 type Purpose = 'profile_analysis' | 'technical_review';
 type TargetType = 'self' | 'opponent';
@@ -248,28 +251,42 @@ export default function UploadScreen() {
         <View>
           <Text className="text-text-secondary font-inter text-sm mb-3">Tipo de análise</Text>
           <View className="gap-3">
+            {/* Opção IA: foto de ação do Zeca ao fundo; selecionada = borda laranja + chip */}
             <TouchableOpacity
               onPress={() => setPurpose('profile_analysis')}
-              className={`rounded-2xl p-4 border ${purpose === 'profile_analysis' ? 'bg-primary border-primary' : 'bg-surface border-border'}`}
+              activeOpacity={0.85}
+              className={`rounded-2xl overflow-hidden border-2 ${purpose === 'profile_analysis' ? 'border-primary' : 'border-border'}`}
+              style={{ height: 112 }}
             >
-              <View className="flex-row items-center gap-3">
+              <ExpoImage
+                source={zecaAction}
+                contentFit="cover"
+                contentPosition="left"
+                style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.9 }}
+              />
+              <LinearGradient
+                colors={['rgba(10,10,10,0.2)', 'rgba(10,10,10,0.85)', 'rgba(10,10,10,0.95)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+              />
+              <View className="flex-1 flex-row items-center gap-3 px-4">
                 <Image
                   source={zecaPhoto}
-                  style={{ width: 40, height: 40, borderRadius: 20, borderWidth: 2, borderColor: purpose === 'profile_analysis' ? '#000' : '#F97316' }}
+                  style={{ width: 44, height: 44, borderRadius: 22, borderWidth: 2, borderColor: '#F97316' }}
                 />
                 <View className="flex-1">
-                  <View className="flex-row items-center gap-2">
-                    <Text className={`font-inter-bold text-base ${purpose === 'profile_analysis' ? 'text-black' : 'text-text-primary'}`}>
-                      Avaliação pelo Professor Zeca Mota
-                    </Text>
-                    <View className="bg-ai-bg px-2 py-0.5 rounded-full">
-                      <Text className="text-ai-text font-inter text-xs">IA</Text>
+                  <View className="flex-row items-center gap-2 flex-wrap">
+                    <Text className="text-text-primary font-inter-bold text-base">Avaliação pelo Prof. Zeca Mota</Text>
+                    <View className={`px-2 py-0.5 rounded-full ${purpose === 'profile_analysis' ? 'bg-primary' : 'bg-ai-bg'}`}>
+                      <Text className={`font-inter-bold text-xs ${purpose === 'profile_analysis' ? 'text-black' : 'text-ai-text'}`}>IA</Text>
                     </View>
                   </View>
-                  <Text className={`font-inter text-xs mt-0.5 ${purpose === 'profile_analysis' ? 'text-black' : 'text-text-secondary'}`}>
+                  <Text className="text-text-secondary font-inter text-xs mt-0.5">
                     Resultado na hora, com o método e os critérios do Prof. Zeca Mota
                   </Text>
                 </View>
+                {purpose === 'profile_analysis' && <Ionicons name="checkmark-circle" size={22} color="#F97316" />}
               </View>
             </TouchableOpacity>
 
