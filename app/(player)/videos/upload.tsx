@@ -12,7 +12,7 @@ import { notify } from '../../../lib/notifications';
 import { saveVideoFrames } from '../../../lib/storage';
 import { Opponent } from '../../../lib/types';
 
-const zecaPhoto = require('../../../assets/zeca-mota.jpg');
+const zecaPhoto = require('../../../assets/zeca-avatar.jpg');
 
 type Purpose = 'profile_analysis' | 'technical_review';
 type TargetType = 'self' | 'opponent';
