@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../../lib/supabase';
 import { useAuthStore } from '../../../lib/store';
 import { PlayerProfile, AttributeKey, ATTRIBUTE_LABELS } from '../../../lib/types';
 import { todayISODate, formatISODate } from '../../../lib/dates';
+import ScreenHeader from '../../../components/ScreenHeader';
 
 interface TrainingLog {
   id: string;
@@ -73,15 +73,7 @@ export default function StudentDetailScreen() {
 
   return (
     <ScrollView className="flex-1 bg-bg" contentContainerStyle={{ paddingBottom: 40 }}>
-      <View className="px-6 pt-16 pb-6 flex-row items-center gap-3">
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="#fff" />
-        </TouchableOpacity>
-        <View>
-          <Text className="text-text-primary font-inter-bold text-2xl">{name}</Text>
-          <Text className="text-text-secondary font-inter text-sm">{student?.email}</Text>
-        </View>
-      </View>
+      <ScreenHeader title={name} subtitle={student?.email} />
 
       <View className="px-6 gap-5">
         {/* Perfil técnico */}

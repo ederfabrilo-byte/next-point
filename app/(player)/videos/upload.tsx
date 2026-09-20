@@ -11,6 +11,7 @@ import { useAuthStore } from '../../../lib/store';
 import { notify } from '../../../lib/notifications';
 import { saveVideoFrames } from '../../../lib/storage';
 import { Opponent } from '../../../lib/types';
+import ScreenHeader from '../../../components/ScreenHeader';
 
 const zecaPhoto = require('../../../assets/zeca-avatar.jpg');
 
@@ -215,15 +216,7 @@ export default function UploadScreen() {
 
   return (
     <ScrollView className="flex-1 bg-bg" contentContainerStyle={{ paddingBottom: 40 }}>
-      <View className="px-6 pt-16 pb-6 flex-row items-center gap-3">
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="#fff" />
-        </TouchableOpacity>
-        <View>
-          <Text className="text-text-primary font-inter-bold text-2xl">Enviar Vídeo</Text>
-          <Text className="text-text-secondary font-inter text-sm">Configure a análise</Text>
-        </View>
-      </View>
+      <ScreenHeader title="Enviar Vídeo" subtitle="Configure a análise" />
 
       <View className="px-6 gap-5">
         {/* Seleção de vídeo */}

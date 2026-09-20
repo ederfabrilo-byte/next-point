@@ -7,6 +7,7 @@ import { supabase } from '../../../lib/supabase';
 import { getVideoSignedUrl } from '../../../lib/storage';
 import { useAuthStore } from '../../../lib/store';
 import { notify } from '../../../lib/notifications';
+import ScreenHeader, { goBack } from '../../../components/ScreenHeader';
 
 interface ReviewVideo {
   id: string;
@@ -75,7 +76,7 @@ export default function VideoReviewScreen() {
       data: { video_id: video.id },
     });
 
-    Alert.alert('Enviado!', 'Feedback enviado ao aluno.', [{ text: 'OK', onPress: () => router.back() }]);
+    Alert.alert('Enviado!', 'Feedback enviado ao aluno.', [{ text: 'OK', onPress: () => goBack() }]);
   }
 
   if (loading) {
@@ -94,15 +95,7 @@ export default function VideoReviewScreen() {
 
   return (
     <ScrollView className="flex-1 bg-bg" contentContainerStyle={{ paddingBottom: 40 }}>
-      <View className="px-6 pt-16 pb-6 flex-row items-center gap-3">
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="#fff" />
-        </TouchableOpacity>
-        <View>
-          <Text className="text-text-primary font-inter-bold text-2xl">Avaliação Técnica</Text>
-          <Text className="text-text-secondary font-inter text-sm">{playerName}</Text>
-        </View>
-      </View>
+      <ScreenHeader title="Avaliação Técnica" subtitle={playerName} />
 
       <View className="px-6 gap-5">
         {/* Player */}

@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { supabase } from '../../../lib/supabase';
 import { Strategy, Opponent } from '../../../lib/types';
+import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function StrategyDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -52,11 +53,7 @@ export default function StrategyDetail() {
 
   return (
     <ScrollView className="flex-1 bg-bg" contentContainerStyle={{ paddingBottom: 40 }}>
-      <View className="px-6 pt-16 pb-4">
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text className="text-primary font-inter text-sm">← Voltar</Text>
-        </TouchableOpacity>
-      </View>
+      <ScreenHeader title="Estratégia" />
 
       <View className="px-6 pb-6">
         <View className="flex-row items-center gap-2 mb-2">

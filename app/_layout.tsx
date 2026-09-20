@@ -1,6 +1,6 @@
 import '../global.css';
 import { useEffect, useRef } from 'react';
-import { Stack, router } from 'expo-router';
+import { Stack, router, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import {
   useFonts,
@@ -19,7 +19,8 @@ import { installWebAlert } from '../lib/alert-web';
 installWebAlert();
 
 export default function RootLayout() {
-  const { session, role, isAdmin, setSession, setRole, setIsAdmin, setProfile, setLoading } = useAuthStore();
+  const { session, role, isAdmin, isLoading, setSession, setRole, setIsAdmin, setProfile, setLoading } = useAuthStore();
+  const segments = useSegments();
   // Toque numa push antes de o perfil carregar (cold start): guarda e navega depois.
   const pendingPushOpen = useRef(false);
 
@@ -60,7 +61,10 @@ export default function RootLayout() {
       setSession(session);
       if (session?.user) {
         const userId = session.user.id;
-        setTimeout(() => { loadProfile(userId); }, 0);
+        // isLoading segura o redirecionamento até o role chegar — senão a tela
+        // pisca em /select-role entre o login e o carregamento do perfil.
+        setLoading(true);
+        setTimeout(() => { loadProfile(userId).finally(() => setLoading(false)); }, 0);
       }
     });
 
@@ -85,22 +89,23 @@ export default function RootLayout() {
     router.push(`/${group}/notifications`);
   }
 
+  // Guarda de área: manda para a Home certa só quando o usuário está FORA
+  // da área dele (login, select-role, área de outro perfil). Se já está na
+  // área certa, não mexe — preserva URL digitada / deep link / push.
   useEffect(() => {
-    if (!fontsLoaded) return;
+    if (!fontsLoaded || isLoading) return;
+    const current = segments[0] as string | undefined;
+    const group = !session ? null : isAdmin ? '(admin)' : role === 'player' ? '(player)' : role === 'teacher' ? '(teacher)' : null;
 
     if (!session) {
-      router.replace('/');
-    } else if (isAdmin) {
-      router.replace('/(admin)/home');
-    } else if (!role) {
-      router.replace('/select-role');
-    } else if (role === 'player') {
-      router.replace('/(player)/home');
-    } else {
-      router.replace('/(teacher)/home');
+      if (current !== undefined) router.replace('/');
+    } else if (!group) {
+      if (current !== 'select-role') router.replace('/select-role');
+    } else if (current !== group) {
+      router.replace(`/${group}/home`);
     }
     if (pendingPushOpen.current) openNotificationsTab();
-  }, [session, role, isAdmin, fontsLoaded]);
+  }, [session, role, isAdmin, isLoading, fontsLoaded, segments[0]]);
 
   if (!fontsLoaded) return null;
 

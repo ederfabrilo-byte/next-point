@@ -14,6 +14,7 @@ import {
   linkErrorMessage,
 } from '../../lib/links';
 import { formatISODate } from '../../lib/dates';
+import ScreenHeader from '../../components/ScreenHeader';
 
 interface Teacher {
   id: string;
@@ -215,15 +216,7 @@ export default function MyTeacherScreen() {
   }
 
   const header = (title: string, subtitle?: string) => (
-    <View className="px-6 pt-16 pb-4 flex-row items-center gap-3">
-      <TouchableOpacity onPress={() => router.back()}>
-        <Ionicons name="arrow-back" size={24} color="#fff" />
-      </TouchableOpacity>
-      <View>
-        <Text className="text-text-primary font-inter-bold text-2xl">{title}</Text>
-        {subtitle ? <Text className="text-text-secondary font-inter text-sm">{subtitle}</Text> : null}
-      </View>
-    </View>
+    <ScreenHeader title={title} subtitle={subtitle} />
   );
 
   // ── Já tem professor ──────────────────────────────────────────────────────

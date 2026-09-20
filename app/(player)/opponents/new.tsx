@@ -6,6 +6,7 @@ import { useAuthStore } from '../../../lib/store';
 import { Opponent, AttributeKey, ATTRIBUTE_LABELS } from '../../../lib/types';
 import AttributeSlider from '../../../components/AttributeSlider';
 import { HandPicker, StylePicker } from '../../../components/HandStylePicker';
+import ScreenHeader, { goBack } from '../../../components/ScreenHeader';
 
 export default function NewOpponent() {
   const { user } = useAuthStore();
@@ -19,17 +20,12 @@ export default function NewOpponent() {
     const { error } = await supabase.from('opponents').insert({ ...form, owner_id: user.id });
     setSaving(false);
     if (error) Alert.alert('Erro', error.message);
-    else router.back();
+    else goBack();
   }
 
   return (
     <ScrollView className="flex-1 bg-bg" contentContainerStyle={{ paddingBottom: 40 }}>
-      <View className="px-6 pt-16 pb-6 flex-row items-center justify-between">
-        <Text className="text-text-primary font-inter-bold text-2xl">Novo Adversário</Text>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text className="text-text-secondary font-inter text-sm">Cancelar</Text>
-        </TouchableOpacity>
-      </View>
+      <ScreenHeader title="Novo Adversário" />
 
       <View className="px-6">
         <View className="mb-5">

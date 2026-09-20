@@ -6,6 +6,7 @@ import { aiTouchedAttributes } from '../../../lib/analyses';
 import { Opponent, Strategy, AttributeKey, ATTRIBUTE_LABELS } from '../../../lib/types';
 import AttributeSlider from '../../../components/AttributeSlider';
 import { HandPicker, StylePicker } from '../../../components/HandStylePicker';
+import ScreenHeader, { goBack } from '../../../components/ScreenHeader';
 
 export default function OpponentDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -58,7 +59,7 @@ export default function OpponentDetail() {
         text: 'Excluir', style: 'destructive',
         onPress: async () => {
           await supabase.from('opponents').delete().eq('id', id);
-          router.back();
+          goBack();
         },
       },
     ]);
@@ -141,19 +142,19 @@ export default function OpponentDetail() {
   // ── Modo leitura ──────────────────────────────────────────────────────────
   return (
     <ScrollView className="flex-1 bg-bg" contentContainerStyle={{ paddingBottom: 40 }}>
-      <View className="px-6 pt-16 pb-4 flex-row items-center justify-between">
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text className="text-primary font-inter text-sm">← Voltar</Text>
-        </TouchableOpacity>
-        <View className="flex-row gap-4">
-          <TouchableOpacity onPress={startEdit}>
-            <Text className="text-primary font-inter text-sm">Editar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleDelete}>
-            <Text className="text-red-400 font-inter text-sm">Excluir</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <ScreenHeader
+        title="Adversário"
+        right={
+          <View className="flex-row gap-3 mr-1">
+            <TouchableOpacity onPress={startEdit} hitSlop={8} className="h-11 justify-center">
+              <Text className="text-primary font-inter-semibold text-sm">Editar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleDelete} hitSlop={8} className="h-11 justify-center">
+              <Text className="text-red-400 font-inter-semibold text-sm">Excluir</Text>
+            </TouchableOpacity>
+          </View>
+        }
+      />
 
       <View className="px-6 pb-6">
         <Text className="text-text-primary font-inter-bold text-2xl">{opponent.name}</Text>
