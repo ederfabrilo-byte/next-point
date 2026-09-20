@@ -13,6 +13,7 @@ import {
 import { Image as ExpoImage } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
+import { requestPasswordReset } from '../lib/auth';
 
 const poster = require('../assets/zeca-poster.jpg');
 const ball = require('../assets/adaptive-icon.png');
@@ -30,6 +31,22 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
+
+  async function handleForgot() {
+    const cleanEmail = email.trim();
+    if (!cleanEmail) {
+      setInfo('');
+      setError('Digite seu e-mail e toque em "Esqueci minha senha".');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    setInfo('');
+    const { error } = await requestPasswordReset(cleanEmail);
+    setLoading(false);
+    if (error) setError(error.message);
+    else setInfo(`Enviamos um link para ${cleanEmail}. Abra-o para definir uma nova senha.`);
+  }
 
   async function handleAuth() {
     const cleanEmail = email.trim();
@@ -143,7 +160,13 @@ export default function LoginScreen() {
               : <Text className="text-black font-inter-bold text-base">{isSignUp ? 'Criar conta' : 'Entrar'}</Text>}
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => { setIsSignUp(!isSignUp); setError(''); }} className="mt-4 items-center">
+          {!isSignUp && (
+            <TouchableOpacity onPress={handleForgot} disabled={loading} className="items-center py-2">
+              <Text className="text-text-secondary font-inter text-sm">Esqueci minha senha</Text>
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity onPress={() => { setIsSignUp(!isSignUp); setError(''); }} className="mt-2 items-center">
             <Text className="text-text-secondary font-inter text-sm">
               {isSignUp ? 'Já tem conta? ' : 'Não tem conta? '}
               <Text className="text-primary font-inter-semibold">{isSignUp ? 'Entrar' : 'Cadastrar'}</Text>

@@ -94,6 +94,15 @@ foram **removidas de propósito**; se reaparecerem, é regressão.
 ## O que está pronto
 
 - **Auth** unificada em `app/index.tsx`. `mailer_autoconfirm` LIGADO (só para testes).
+  **Recuperação de senha** (2026-09-20): "Esqueci minha senha" → `resetPasswordForEmail`
+  → link → `app/reset-password.tsx` lê os tokens do fragmento (`lib/auth.ts`, o client
+  tem `detectSessionInUrl: false`) e chama `updateUser({ password })`. Redirects na allow
+  list do Auth: `next-point://reset-password`, `http://localhost:8081/reset-password`,
+  `exp://**/--/reset-password` (adicionar o domínio de produção quando existir). O mailer
+  padrão do Supabase limita a 2 e-mails/hora — SMTP próprio antes de produção.
+- **Navegação** (2026-09-20): `components/ScreenHeader` (← com fallback para a Home do
+  perfil + botão Home) em toda tela fora das abas; o `_layout` só redireciona quando o
+  usuário está fora da área dele — deep links e URLs digitadas funcionam.
 - **Identidade**: `users.username` único (gerado no cadastro a partir do e-mail, com
   desempate) + `name` editável. `components/IdentityCard.tsx` edita os dois.
 - **Vínculo aluno↔professor = convite com aceite.** `student_teacher.status`

@@ -97,6 +97,9 @@ export default function RootLayout() {
     const current = segments[0] as string | undefined;
     const group = !session ? null : isAdmin ? '(admin)' : role === 'player' ? '(player)' : role === 'teacher' ? '(teacher)' : null;
 
+    // /reset-password se administra sozinha (com ou sem sessão): não redireciona.
+    if (current === 'reset-password') return;
+
     if (!session) {
       if (current !== undefined) router.replace('/');
     } else if (!group) {
@@ -115,6 +118,7 @@ export default function RootLayout() {
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#0A0A0A' } }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="select-role" />
+        <Stack.Screen name="reset-password" />
         <Stack.Screen name="(player)" />
         <Stack.Screen name="(teacher)" />
         <Stack.Screen name="(admin)" />
