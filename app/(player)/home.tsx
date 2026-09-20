@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useAuthStore } from '../../lib/store';
 import { supabase } from '../../lib/supabase';
@@ -45,10 +45,20 @@ export default function PlayerHome() {
     reset();
   }
 
-  async function handleSwitchRole() {
-    if (!user) return;
-    await supabase.from('users').update({ role: null }).eq('id', user.id);
-    setRole(null);
+  function handleSwitchRole() {
+    // Zera o role e manda para a seleção — um toque sem querer tirava a
+    // pessoa da área dela. Confirma antes.
+    Alert.alert('Trocar de perfil?', 'Você sai da área de jogador e escolhe de novo entre jogador e professor. Seus dados continuam salvos.', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Trocar',
+        onPress: async () => {
+          if (!user) return;
+          await supabase.from('users').update({ role: null }).eq('id', user.id);
+          setRole(null);
+        },
+      },
+    ]);
   }
 
   // gap-3 = 12px; em 2 colunas cada card leva metade menos meio gap
