@@ -17,8 +17,12 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.nextpoint.app",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      }
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryUsageDescription": "O Next Point precisa acessar sua galeria para você enviar vídeos dos seus treinos e jogos.",
+        "NSCameraUsageDescription": "O Next Point usa a câmera para você tirar a foto do seu perfil.",
+        "NSPhotoLibraryAddUsageDescription": "O Next Point salva imagens na sua galeria quando você pedir."
+      },
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {

@@ -15,6 +15,9 @@
       "distribution": "internal",
       "env": {
         "NPM_FLAGS": "--legacy-peer-deps"
+      },
+      "ios": {
+        "simulator": false
       }
     },
     "production": {
