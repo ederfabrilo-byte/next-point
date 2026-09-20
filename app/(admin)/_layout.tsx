@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useUnreadCount } from '../../lib/notifications';
+import { column } from '../../lib/layout';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -15,7 +16,9 @@ export default function AdminLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: { backgroundColor: '#1A1A1A', borderTopColor: '#333', height: 60, paddingBottom: 8 },
+        // PC: conteúdo e barra de abas numa coluna centralizada; celular: tela cheia.
+        sceneStyle: { backgroundColor: '#0A0A0A', ...column },
+        tabBarStyle: { backgroundColor: '#1A1A1A', borderTopColor: '#333', height: 60, paddingBottom: 8, ...column },
         tabBarActiveTintColor: '#F97316',
         tabBarInactiveTintColor: '#9CA3AF',
         tabBarLabelStyle: { fontFamily: 'Inter_500Medium', fontSize: 10 },
