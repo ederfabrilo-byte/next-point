@@ -100,6 +100,12 @@ foram **removidas de propósito**; se reaparecerem, é regressão.
   list do Auth: `next-point://reset-password`, `http://localhost:8081/reset-password`,
   `exp://**/--/reset-password` (adicionar o domínio de produção quando existir). O mailer
   padrão do Supabase limita a 2 e-mails/hora — SMTP próprio antes de produção.
+- **Web publicado** (2026-09-21): **https://next-point-six.vercel.app** — projeto Vercel
+  `next-point` (conta ederfabrilo-3581), `vercel.json` com build `expo export --platform web`
+  e rewrite SPA; env vars `EXPO_PUBLIC_*` em Production. Deploy manual: `vercel --prod --yes`
+  (a CLI precisa de `vercel login`). Site URL e allow list do Supabase Auth apontam para
+  esse domínio. No web o envio de vídeo pelo jogador não funciona (extração de frames é
+  nativa); professor/Zeca têm tudo.
 - **Navegação** (2026-09-20): `components/ScreenHeader` (← com fallback para a Home do
   perfil + botão Home) em toda tela fora das abas; o `_layout` só redireciona quando o
   usuário está fora da área dele — deep links e URLs digitadas funcionam.
